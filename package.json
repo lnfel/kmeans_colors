@@ -5,6 +5,9 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"build:prod": "vite build && npm run postbuild && npm run npm:ci",
+		"postbuild": "node ./scripts/postbuild.js",
+		"npm:ci": "cd ./build && npm ci --omit dev",
 		"preview": "vite preview",
 		"lint": "eslint .",
 		"image:bin:kmeans": "./src/lib/bin/kmeans_colors",
@@ -24,10 +27,12 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"chalk": "^5.2.0",
 		"commander": "^10.0.0",
 		"dargs": "^8.1.0",
 		"execa": "^7.0.0",
 		"mupdf-js": "^1.1.1",
-		"short-unique-id": "^4.4.4"
+		"short-unique-id": "^4.4.4",
+		"tar": "^6.1.13"
 	}
 }
