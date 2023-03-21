@@ -1,6 +1,7 @@
 import { mkdir, mkdtemp } from 'node:fs/promises'
 import { writeFile } from 'node:fs/promises'
 import ShortUniqueId from "short-unique-id"
+import { storage_path } from "$lib/config.js"
 
 /**
  * Save base64 images to disk
@@ -10,7 +11,7 @@ import ShortUniqueId from "short-unique-id"
  */
 export const saveFromBase64 = async (base64Images) => {
     try {
-        const filedir = `storage/tmp/${new ShortUniqueId()()}`
+        const filedir = `${storage_path}/tmp/${new ShortUniqueId()()}`
         await mkdir(filedir, { recursive: true })
         
         base64Images.forEach(async (image, index) => {

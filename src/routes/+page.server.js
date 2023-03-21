@@ -1,10 +1,6 @@
-import * as path from "path"
-import { fileURLToPath } from "url"
 import { writeFile } from 'node:fs/promises'
 import KmeansColors, { defaultFlags, hexToRgb, hexToCmyk } from '$lib/execa/kmeans-colors'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+import { storage_path } from "$lib/config.js"
 
 export const load = async ({ locals }) => {
     return { }
@@ -38,11 +34,11 @@ export const actions = {
             // Save file to disk
             const buffer = Buffer.from(await files[i].arrayBuffer())
             const extension = files[i].type.replace('image/', '')
-            const filepath = `storage/tmp/file-${i}.${extension}`
+            const filepath = `${storage_path}/tmp/file-${i}.${extension}`
             await writeFile(filepath, buffer, { flag: 'w+' })
 
             // Compute dominant colors on the saved image
-            const flags = defaultFlags(path.join(__dirname, `../../${filepath}`))
+            const flags = defaultFlags(filepath)
             const {stdout} = await KmeansColors.exec(flags)
             console.log(stdout)
 
