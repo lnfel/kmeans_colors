@@ -1,0 +1,23 @@
+name: Deploy to EC2 (Staging)
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  deploy-staging:
+    name: Release to staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Copy files to Server
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.EC2_HOSTNAME }}
+          REMOTE_USER: ${{ secrets.EC2_USER }}
+          TARGET: ${{ secrets.DEPLOY_PATH }}
