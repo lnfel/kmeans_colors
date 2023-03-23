@@ -1,6 +1,6 @@
 import * as path from "path"
 import { fileURLToPath } from "url"
-import { writeFile, readFile } from 'node:fs/promises'
+import { writeFile, readFile, access, constants } from 'node:fs/promises'
 // import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf"
 import ShortUniqueId from "short-unique-id"
 // import { createCanvas } from "canvas"
@@ -76,7 +76,16 @@ export const preview = async (arrayBuffer, filedir, format = 'image/png', scale 
  * @returns {Promise<Object>} KmeansColor object
  */
 export const kmeansColors = async (imagepath) => {
+    console.log("Setting defaultFlags with imagepath: ", imagepath)
     const flags = defaultFlags(imagepath)
+    try {
+        await access(imagepath, constants.R_OK | constants.W_OK)
+        console.log("Can access imagepath.")
+    } catch (error) {
+        console.log("Cannot access imagepath.")
+        console.log(error)
+        return error
+    }
     const {stdout} = await KmeansColors.exec(flags)
     const kmeans = stdout.split('\n')
     const colors = kmeans[0].split(',')
