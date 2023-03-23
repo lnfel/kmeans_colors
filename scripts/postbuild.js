@@ -3,7 +3,6 @@ import { fileURLToPath } from "url"
 import tar from "tar"
 import chalk from 'chalk'
 import { readFile, writeFile, mkdir, open, rm } from 'node:fs/promises'
-import { readFileSync, writeFileSync, mkdirSync, openSync, rmSync } from 'node:fs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -86,7 +85,10 @@ const getUrlLastPath = (url) => {
  */
 const binaries = async () => {
     return [
-        await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-macos-x86_64.tar.gz"),
+        process.env.BUILD_ENVIRONMENT === 'production'
+            ? await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-linux-x86_64.tar.gz")
+            : await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-macos-x86_64.tar.gz")
+            ,
     ]
 }
 
@@ -100,6 +102,7 @@ async function install(binaries) {
     console.log(chalk.yellow('Installing binaries.'))
 
     binaries.forEach(async (binary) => {
+        console.log(`${chalk.yellow('Fetching from')} ${binary.url}`)
         const response = await fetch(binary.url)
         const file = await response.blob()
         const buffer = Buffer.from(await file.arrayBuffer())

@@ -6,7 +6,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"build:prod": "vite build && npm run postbuild && npm run npm:ci",
-		"postbuild": "node ./scripts/postbuild.js",
+		"postbuild": "node -r dotenv/config ./scripts/postbuild.js",
 		"npm:ci": "cd ./build && npm ci --omit dev",
 		"preview": "vite preview",
 		"lint": "eslint .",
