@@ -13,7 +13,7 @@
 		"image:bin:kmeans": "./src/lib/bin/kmeans_colors",
 		"image:execa:kmeans": "node ./src/lib/execa/kmeans-colors.js",
 		"serve:local": "ORIGIN=http://localhost:3000 BODY_SIZE_LIMIT=0 node build",
-        "serve:prod": "ORIGIN=http://localhost:3000 BODY_SIZE_LIMIT=0 node -r dotenv/config build"
+        "serve:prod": "ORIGIN=http://www-staging.pingsailor.com BODY_SIZE_LIMIT=0 node -r dotenv/config build"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^2.0.0",

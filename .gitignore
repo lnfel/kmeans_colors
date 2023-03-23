@@ -11,3 +11,4 @@ vite.config.ts.timestamp-*
 notes.md
 Kayaks - Joel Reynolds.jpeg
 *.bak
+/server
