@@ -19,7 +19,6 @@ export const saveFromBase64 = async (base64Images) => {
             await writeFile(`${filedir}/page-${index}.png`, buffer, { flag: 'w+' })
         })
 
-        console.log("filedir is returned: ", filedir)
         return filedir
     } catch (error) {
         console.log(error)

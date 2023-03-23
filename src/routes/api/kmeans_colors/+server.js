@@ -16,15 +16,12 @@ export const POST = async ({ request, locals, cookies }) => {
     })
 
     const filedir = await saveFromBase64(base64Images)
-    console.log("filedir awaited: ", filedir)
 
     let kmeans_colors = []
     for (let i = 0; i < images.length; i++) {
         const imagepath = `${filedir}/page-${i}.png`
-        console.log("Calling kmeansColors.")
         const color = await kmeansColors(imagepath)
         kmeans_colors = [...kmeans_colors, color]
-        console.log("color awaited and merged to kmeans_colors")
     }
 
     return json({

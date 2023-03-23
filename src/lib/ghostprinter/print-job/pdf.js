@@ -76,11 +76,10 @@ export const preview = async (arrayBuffer, filedir, format = 'image/png', scale 
  * @returns {Promise<Object>} KmeansColor object
  */
 export const kmeansColors = async (imagepath) => {
-    console.log("Setting defaultFlags with imagepath: ", imagepath)
     const flags = defaultFlags(imagepath)
     try {
         await access(imagepath, constants.R_OK | constants.W_OK)
-        console.log("Can access imagepath.")
+        // console.log("Can access imagepath.")
     } catch (error) {
         console.log("Cannot access imagepath.")
         console.log(error)
