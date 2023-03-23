@@ -170,7 +170,7 @@
                 for (let i = 1; i < pages; i++) {
                     const base64Image = mupdf.drawPageAsPNG(pdf, i, 10)
                     const image = {
-                        url: base64Image.replace(/\n/, ""),
+                        url: base64Image.replaceAll(/\n/, ""),
                         name: file.name,
                         type: file.type
                     }
