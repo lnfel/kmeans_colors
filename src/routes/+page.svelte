@@ -121,11 +121,12 @@
                 loading = true
                 const before = Date.now()
                 const mupdf = await createMuPdf()
-                console.log('mupdf: ', mupdf)
+                // console.log('mupdf: ', mupdf)
                 const fileArrayBuffer = await file.arrayBuffer()
                 const fileBuffer = new Uint8Array(fileArrayBuffer)
                 const pdf = mupdf.load(fileBuffer)
                 const pages = mupdf.countPages(pdf)
+                console.log("Pages: ", pages)
                 const images = await mupdfGeneratePreviews(mupdf, pdf, file, pages)
 
                 // Calculate dominant colors from generated images
@@ -167,7 +168,7 @@
         return new Promise((resolve, reject) => {
             try {
                 let preview = []
-                for (let i = 1; i < pages; i++) {
+                for (let i = 1; i <= pages; i++) {
                     const base64Image = mupdf.drawPageAsPNG(pdf, i, 10)
                     const image = {
                         url: base64Image.replaceAll(/\n/g, ""),
