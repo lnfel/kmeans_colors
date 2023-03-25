@@ -72,6 +72,11 @@ export const preview = async (arrayBuffer, filedir, format = 'image/png', scale 
 /**
  * Calculate dominant colors of image
  * 
+ * NOTE:
+ * We are doing access check to slow down reading of file
+ * Without this, the code would read to fast than the image could even finish being created.
+ * We did an async await before calling kmeansColors but it seems not enough
+ * 
  * @param {String} imagepath Path to image on disk
  * @returns {Promise<Object>} KmeansColor object
  */
@@ -79,7 +84,6 @@ export const kmeansColors = async (imagepath) => {
     const flags = defaultFlags(imagepath)
     try {
         await access(imagepath, constants.R_OK | constants.W_OK)
-        // console.log("Can access imagepath.")
     } catch (error) {
         console.log("Cannot access imagepath.")
         console.log(error)
