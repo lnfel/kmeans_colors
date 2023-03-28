@@ -191,7 +191,7 @@
 
 <main>
     <section>
-        <form method="POST" use:enhance={upload} class="flex flex-wrap gap-4 px-[3rem]" enctype="multipart/form-data">
+        <form method="POST" use:enhance={upload} class="flex flex-wrap gap-4 px-[3rem] py-4" enctype="multipart/form-data">
             <div>
                 <input bind:this={fileinput} on:change={onChange} type="file" name="file" multiple accept="image/*,.pdf" />
             </div>
@@ -208,21 +208,24 @@
                 <div class="text-center px-[3rem]">
                     Generating preview.
                 </div>
-            {:then images} 
-                <div class="preview-container">
-                    <div class="px-[3rem]">Files: {images?.length ?? 0}</div>
+            {:then images}
+                <div class="preview-container space-y-4">
+                    <div class="px-[3rem]">Pages: {images?.length ?? 0}</div>
                     {#each images ?? [] as preview, index}
                         <div class="grid place-items-center px-[3rem]">
                             <figure class="space-y-2">
                                 <img src={preview.url} alt={preview.name} class="mx-auto" />
-                                <figcaption class="text-center">{preview.name}</figcaption>
+                                <figcaption class="text-center">
+                                    <div>Page {index + 1}</div>
+                                    <div>{preview.name}</div>
+                                </figcaption>
                             </figure>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 px-[3rem]">
                             {#each $page.form?.kmeans_colors[index] ?? kmeans_colors[index] ?? [] as pallete}
                                 <div>
-                                    <div style:background-color={pallete.color} class="p-4"></div>
+                                    <div style="background-color: {pallete.color}; border: 1px solid rgb(203 213 225);" class="p-4"></div>
                                     <div>Hex: { pallete.hex }</div>
                                     <div>RGB: { pallete.rgb }</div>
                                     <div>CMYK: { pallete.cmyk }</div>
@@ -261,6 +264,7 @@
     img {
         max-width: 100%;
         max-height: 15rem;
+        border: 1px solid rgb(203 213 225);
         border-radius: 0.5rem;
     }
 </style>
