@@ -4,7 +4,7 @@
     import { invalidateAll } from "$app/navigation"
     import { createMuPdf, MuPdf } from "mupdf-js"
 
-    import Pulse from "../lib/component/Pulse.svelte"
+    import Pulse from "$lib/component/Pulse.svelte"
 
     /**
      * How To Create A SvelteKit Image Upload (step-by-step)
