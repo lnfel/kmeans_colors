@@ -13,6 +13,7 @@
     let fileinput, submitBtn, image, showImage
     let images = [], promise
     let kmeans_colors = []
+    let cmyk
 
     // SVG loaders
     // https://samherbert.net/svg-loaders/
@@ -142,6 +143,7 @@
                     loading = false
                 }
                 kmeans_colors = data.kmeans_colors ?? []
+                cmyk = data.cmyk ?? null
 
                 const after = Date.now()
                 console.log(`mupdfPreview done in ${Math.round((after - before) / 1000)}s`)
@@ -228,6 +230,26 @@
                                 </div>
                             {/each}
                         </div>
+
+                        {#if $page.form?.cmyk || cmyk}
+                            <div class="px-[3rem] py-4 space-y-4">
+                                <div>CMYK Summary:</div>
+                                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-cyan-400 px-2 py-0.5">Cyan</div> {$page.form?.cmyk.summary[index].c ?? cmyk.summary[index].c}%
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-pink-600 text-white px-2 py-0.5">Magenta</div> {$page.form?.cmyk.summary[index].m ?? cmyk.summary[index].m}%
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-yellow-300 px-2 py-0.5">Yellow</div> {$page.form?.cmyk.summary[index].y ?? cmyk.summary[index].y}%
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-black text-white px-2 py-0.5">Key</div> {$page.form?.cmyk.summary[index].k ?? cmyk.summary[index].k}%
+                                    </div>
+                                </div>
+                            </div>
+                        {/if}
                     {/each}
                 </div>
             {/await}
