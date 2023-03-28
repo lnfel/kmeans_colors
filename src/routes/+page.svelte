@@ -71,6 +71,8 @@
 
     async function reset(clearPreview = true) {
         images = []
+        kmeans_colors = []
+        cmyk = null
         await invalidateAll()
         if (clearPreview) {
             const previewContainer = document.querySelector('.preview-container')
