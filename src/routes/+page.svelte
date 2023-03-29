@@ -238,19 +238,62 @@
 
                         {#if $page.form?.cmyk || cmyk}
                             <div class="px-[3rem] py-4 space-y-4">
-                                <div>CMYK Summary:</div>
-                                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div>
+                                    <div>CMYK Total</div>
+                                    <small>Each number stands for the sum of C, M, Y and K in respective order from left to right.</small>
+                                </div>
+                                <div class="cmyk-total">
+                                    {$page.form?.cmyk.total[index] ?? cmyk.total[index]}
+                                </div>
+
+                                <div>
+                                    <div>CMYK Summary</div>
+                                    <div><small>Formula: ((cmyk total / color length) / 100) * (colored space / 100) * 100</small></div>
+                                </div>
+                                <div class="cmyk-summary grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div class="cyan group relative flex items-center gap-2">
+                                        <div class="w-20 bg-cyan-400 border border-slate-500 px-2 py-0.5">Cyan</div>
+                                        <div class="value">{`${$page.form?.cmyk.summary[index].c.value ?? cmyk.summary[index].c.value}%`}</div>
+                                        <div class="formula invisible group-hover:visible absolute bottom-[125%] whitespace-nowrap bg-slate-800 text-white rounded px-2 py-0.5 after:content[''] after:absolute after:top-full after:left-1/2 after:border-8 after:border-solid after:border-transparent after:border-t-slate-800">
+                                            {$page.form?.cmyk.summary[index].c.formula ?? cmyk.summary[index].c.formula}
+                                        </div>
+                                    </div>
+                                    <div class="magenta group relative flex items-center gap-2">
+                                        <div class="w-20 bg-pink-600 text-white border border-slate-500 px-2 py-0.5">Magenta</div>
+                                        <div class="value">{`${$page.form?.cmyk.summary[index].m.value ?? cmyk.summary[index].m.value}%`}</div>
+                                        <div class="formula invisible group-hover:visible absolute bottom-[125%] whitespace-nowrap bg-slate-800 text-white rounded px-2 py-0.5 after:content[''] after:absolute after:top-full after:left-1/2 after:border-8 after:border-solid after:border-transparent after:border-t-slate-800">
+                                            {$page.form?.cmyk.summary[index].m.formula ?? cmyk.summary[index].m.formula}
+                                        </div>
+                                    </div>
+                                    <div class="yellow group relative flex items-center gap-2">
+                                        <div class="w-20 bg-yellow-300 border border-slate-500 px-2 py-0.5">Yellow</div>
+                                        <div class="value">{`${$page.form?.cmyk.summary[index].y.value ?? cmyk.summary[index].y.value}%`}</div>
+                                        <div class="formula invisible group-hover:visible absolute bottom-[125%] whitespace-nowrap bg-slate-800 text-white rounded px-2 py-0.5 after:content[''] after:absolute after:top-full after:left-1/2 after:border-8 after:border-solid after:border-transparent after:border-t-slate-800">
+                                            {$page.form?.cmyk.summary[index].y.formula ?? cmyk.summary[index].y.formula}
+                                        </div>
+                                    </div>
+                                    <div class="key group relative flex items-center gap-2">
+                                        <div class="w-20 bg-black text-white border border-slate-500 px-2 py-0.5">Key</div>
+                                        <div class="value">{`${$page.form?.cmyk.summary[index].k.value ?? cmyk.summary[index].k.value}%`}</div>
+                                        <div class="formula invisible group-hover:visible absolute bottom-[125%] whitespace-nowrap bg-slate-800 text-white rounded px-2 py-0.5 after:content[''] after:absolute after:top-full after:left-1/2 after:border-8 after:border-solid after:border-transparent after:border-t-slate-800">
+                                            {$page.form?.cmyk.summary[index].k.formula ?? cmyk.summary[index].k.formula}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div>Color Distribution</div>
+                                    <ul>
+                                        <li><small>*White space is percentage of #ffffff color found by kmeans_colors</small></li>
+                                        <li><small>*Colored space is 100 - white space</small></li>
+                                    </ul>
+                                </div>
+                                <div class="color-distribution grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-20 bg-cyan-400 px-2 py-0.5">Cyan</div> {$page.form?.cmyk.summary[index].c ?? cmyk.summary[index].c}%
+                                        <div class="w-20 bg-white border border-slate-500 px-2 py-0.5">White</div> {$page.form?.cmyk.whiteSpace[index] ?? cmyk.whiteSpace[index]}%
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <div class="w-20 bg-pink-600 text-white px-2 py-0.5">Magenta</div> {$page.form?.cmyk.summary[index].m ?? cmyk.summary[index].m}%
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-20 bg-yellow-300 px-2 py-0.5">Yellow</div> {$page.form?.cmyk.summary[index].y ?? cmyk.summary[index].y}%
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-20 bg-black text-white px-2 py-0.5">Key</div> {$page.form?.cmyk.summary[index].k ?? cmyk.summary[index].k}%
+                                        <div class="w-20 bg-gradient-to-br from-rose-500 via-violet-500 to-sky-500 text-white border border-slate-500 px-2 py-0.5">Colored</div> {$page.form?.cmyk.coloredSpace[index] ?? cmyk.coloredSpace[index]}%
                                     </div>
                                 </div>
                             </div>
