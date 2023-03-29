@@ -91,10 +91,26 @@ export const summary = async (kmeans_colors) => {
     })
     cmyk['summary'] = cmyk['total'].map((cmykString, index) => {
         return {
-            c: (colorAverage(cmykString.split(' ')[0], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
-            m: (colorAverage(cmykString.split(' ')[1], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
-            y: (colorAverage(cmykString.split(' ')[2], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
-            k: (colorAverage(cmykString.split(' ')[3], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+            c: {
+                formula: `((${cmykString.split(' ')[0]} / ${kmeans_colors[index].length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
+                value: (colorAverage(cmykString.split(' ')[0], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+            },
+            m: {
+                formula: `((${cmykString.split(' ')[1]} / ${kmeans_colors[index].length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
+                value: (colorAverage(cmykString.split(' ')[1], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+            },
+            y: {
+                formula: `((${cmykString.split(' ')[2]} / ${kmeans_colors[index].length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
+                value: (colorAverage(cmykString.split(' ')[2], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+            },
+            k: {
+                formula: `((${cmykString.split(' ')[3]} / ${kmeans_colors[index].length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
+                value: (colorAverage(cmykString.split(' ')[3], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+            },
+            // c: (colorAverage(cmykString.split(' ')[0], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+            // m: (colorAverage(cmykString.split(' ')[1], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+            // y: (colorAverage(cmykString.split(' ')[2], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+            // k: (colorAverage(cmykString.split(' ')[3], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
         }
     })
 
