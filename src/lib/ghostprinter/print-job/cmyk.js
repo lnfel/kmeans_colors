@@ -63,7 +63,7 @@ class CMYK {
  * @param {Array} kmeans_colors Array of dominant colors produced by kmeans_colors binary
  * @returns {Object} CMYK object
  */
-export const summary = async (kmeans_colors) => {
+export const summary = async (kmeans_colors = []) => {
     const cmyk = {}
 
     cmyk['total'] = kmeans_colors.map((colorset) => {
@@ -107,10 +107,6 @@ export const summary = async (kmeans_colors) => {
                 formula: `((${cmykString.split(' ')[3]} / ${kmeans_colors[index].length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
                 value: (colorAverage(cmykString.split(' ')[3], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
             },
-            // c: (colorAverage(cmykString.split(' ')[0], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
-            // m: (colorAverage(cmykString.split(' ')[1], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
-            // y: (colorAverage(cmykString.split(' ')[2], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
-            // k: (colorAverage(cmykString.split(' ')[3], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
         }
     })
 
