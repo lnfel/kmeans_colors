@@ -12,12 +12,12 @@ import { summary } from '$lib/ghostprinter/print-job/cmyk.js'
  * @returns {Response} Response object
  */
 export const POST = async ({ request, locals, cookies }) => {
-    const images = await request.json()
+    const { name, images } = await request.json()
     const base64Images = images.map((image) => {
         return image.url
     })
 
-    const filedir = await saveFromBase64(base64Images)
+    const filedir = await saveFromBase64(base64Images, name)
 
     let kmeans_colors = []
 
