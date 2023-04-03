@@ -6,12 +6,13 @@ import { storage_path } from "$lib/config.js"
 /**
  * Save base64 images to disk
  * 
- * @param {Array} base64Images Array of base64 ong images
+ * @param {Array} base64Images Array of base64 images
+ * @param {String} name Optional name otherwise the filedir will be generated using new ShortUniqueId
  * @returns {Promise<String>} filedir path of saved images
  */
-export const saveFromBase64 = async (base64Images) => {
+export const saveFromBase64 = async (base64Images, name) => {
     try {
-        const filedir = `${storage_path}/tmp/${new ShortUniqueId()()}`
+        const filedir = `${storage_path}/tmp/${name ?? new ShortUniqueId()()}`
         await mkdir(filedir, { recursive: true })
         
         base64Images.forEach(async (image, index) => {

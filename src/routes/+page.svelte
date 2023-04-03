@@ -186,7 +186,9 @@
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(images)
+                    body: JSON.stringify({
+                        images
+                    })
                 })
                 const data = await response.json()
                 if (data) {
