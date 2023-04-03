@@ -108,6 +108,9 @@
                     promise =  mupdfPreview(file)
                     // docPreview(file)
                 }
+
+                if (fileCheck.isDoc(file.type)) {
+                    promise = docPreview(file)
                 }
             })
 
@@ -239,13 +242,70 @@
             }
         })
     }
+
+    const docPreview = async (file) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                loading = true
+                const before = performance.now()
+                const doc = await getBase64Doc(file)
+                console.log('doc base64: ', doc)
+                // process document
+                const docResponse = await fetch('/api/doc', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(doc)
+                })
+                const docData = await docResponse.json()
+                // console.log('docData: ', docData)
+
+                const fileBuffer = await fetch(docData.base64PDF)
+                    .then(response => response.arrayBuffer())
+                    .then(arrayBuffer => new Uint8Array(arrayBuffer))
+                // console.log('fileBuffer: ', fileBuffer)
+                const mupdf = await createMuPdf()
+                const pdf = mupdf.load(fileBuffer)
+                const pages = mupdf.countPages(pdf)
+                console.log("Pages: ", pages)
+
+                const images = await mupdfGeneratePreviews(mupdf, pdf, file, pages)
+                
+                // Calculate dominant colors from generated images
+                const response = await fetch('/api/kmeans_colors', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        images,
+                        name: docData.name
+                    })
+                })
+                const data = await response.json()
+                if (data) {
+                    loading = false
+                }
+                kmeans_colors = data.kmeans_colors ?? []
+                cmyk = data.cmyk ?? null
+
+                const after = performance.now()
+                console.log(`docPreview done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}s`)
+                resolve(images)
+            } catch (error) {
+                console.log(error)
+                reject(error)
+            }
+        })
+    }
 </script>
 
 <main>
     <section>
         <form method="POST" use:enhance={upload} class="flex flex-wrap gap-4 px-[3rem] py-4" enctype="multipart/form-data">
             <div>
-                <input bind:this={fileinput} on:change={onChange} type="file" name="file" multiple accept="image/*,.pdf" />
+                <input bind:this={fileinput} on:change={onChange} type="file" name="file" multiple accept="image/*,.pdf,.docx,.doc" />
             </div>
 
             <input bind:this={submitBtn} type="submit" value="Submit" class={showImage ? 'border rounded px-4 text-rose-500 border-rose-500' : 'border rounded px-4 text-gray-500 border-gray-500'} disabled />
