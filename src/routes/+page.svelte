@@ -36,6 +36,21 @@
         })
     }
 
+    async function getBase64Doc(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.readAsDataURL(file)
+            reader.addEventListener("load", function () {
+                const doc = {
+                    url: reader.result,
+                    name: file.name,
+                    type: file.type
+                }
+                resolve(doc)
+            })
+        })
+    }
+
     /**
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
      */
