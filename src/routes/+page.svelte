@@ -39,10 +39,31 @@
     async function onChange() {
         reset(false)
         const files = fileinput.files
-        const allowedFileTypes = [
-            'image/png', 'image/jpeg', 'image/jpg',
-            'image/webp', 'image/svg+xml', 'application/pdf'
-        ]
+        const allowedFileTypes = {
+            images: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml',],
+            pdf: ['application/pdf'],
+            doc: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']
+        }
+        const fileCheck = {
+            isImage: (type) => {
+                return allowedFileTypes.images.includes(type)
+            },
+            isPdf: (type) => {
+                return allowedFileTypes.pdf.includes(type)
+            },
+            isDoc: (type) => {
+                return allowedFileTypes.doc.includes(type)
+            }
+        }
+        // const allowedFileTypes = [
+        //     // IMAGE TYPES
+        //     'image/png', 'image/jpeg', 'image/jpg',
+        //     'image/webp', 'image/svg+xml',
+        //     // PDF
+        //     'application/pdf',
+        //     // DOCX and DOC
+        //     'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'
+        // ]
 
         console.log('onChange files: ', fileinput.files)
 
@@ -53,13 +74,22 @@
             submitBtn.classList.add('text-rose-500', 'border-rose-500')
 
             Array.from(files).forEach(async (file) => {
-                const isPdf = file.type === 'application/pdf'
+                // const isPdf = file.type === 'application/pdf'
                 console.log('file: ', file)
 
-                if (allowedFileTypes.includes(file.type) && !isPdf) {
+                // if (allowedFileTypes.includes(file.type) && !isPdf) {
+                //     promise = getBase64Image(file)
+                // } else {
+                //     promise =  mupdfPreview(file)
+                // }
+                if (fileCheck.isImage(file.type)) {
                     promise = getBase64Image(file)
-                } else {
+                }
+
+                if (fileCheck.isPdf(file.type)) {
                     promise =  mupdfPreview(file)
+                    // docPreview(file)
+                }
                 }
             })
 
