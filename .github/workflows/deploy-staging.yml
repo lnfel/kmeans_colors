@@ -42,4 +42,4 @@ jobs:
           ARGS: -rlgoDzvcO -i
           SCRIPT_AFTER: |
             cd ${{ secrets.DEPLOY_PATH }}
-            pwd
+            npm run pm2:prod
