@@ -90,6 +90,7 @@ export const kmeansColors = async (imagepath) => {
         return error
     }
     const {stdout} = await KmeansColors.exec(flags)
+    console.log('KmeansColors stdout: ', stdout)
     const kmeans = stdout.split('\n')
     const colors = kmeans[0].split(',')
     const percentage = kmeans[1].split(',')
