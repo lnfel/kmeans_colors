@@ -106,11 +106,12 @@
 
                 if (fileCheck.isPdf(file.type)) {
                     promise =  mupdfPreview(file)
-                    // docPreview(file)
                 }
 
                 if (fileCheck.isDoc(file.type)) {
-                    promise = docPreview(file)
+                    // promise = docPreview(file)
+
+                    promise = pdf24Preview(file)
                 }
             })
 
@@ -166,14 +167,14 @@
      * 
      * https://github.com/andytango/mupdf-js/issues/8
      * 
-     * @param {File} file
-     * @returns {Promise<Array>}
+     * @param {File} file PDF file input
+     * @returns {Promise<Array>} Array of images to render
      */
     const mupdfPreview = async (file) => {
         return new Promise(async (resolve, reject) => {
             try {
-                loading = true
-                const before = Date.now()
+                // const before = Date.now()
+                const before = performance.now()
                 const mupdf = await createMuPdf()
                 // console.log('mupdf: ', mupdf)
                 const fileArrayBuffer = await file.arrayBuffer()
@@ -194,14 +195,13 @@
                     })
                 })
                 const data = await response.json()
-                if (data) {
-                    loading = false
-                }
                 kmeans_colors = data.kmeans_colors ?? []
                 cmyk = data.cmyk ?? null
 
-                const after = Date.now()
-                console.log(`mupdfPreview done in ${Math.round((after - before) / 1000)}s`)
+                // const after = Date.now()
+                const after = performance.now()
+                // console.log(`mupdfPreview done in ${Math.round((after - before) / 1000)}s`)
+                console.log(`mupdfPreview done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}s`)
                 resolve(images)
             } catch (error) {
                 console.log(error)
@@ -243,10 +243,19 @@
         })
     }
 
+    /**
+     * Preview DOCX by converting the file from docx to pdf using Libreoffice
+     * Then passing the pdf file to mupdf for further processing
+     * 
+     * Libreoffice command line usage guide
+     * https://help.libreoffice.org/latest/he/text/shared/guide/start_parameters.html
+     * 
+     * @param {File} file Docx file input
+     * @returns {Promise<Array>} Array of images to render
+     */
     const docPreview = async (file) => {
         return new Promise(async (resolve, reject) => {
             try {
-                loading = true
                 const before = performance.now()
                 const doc = await getBase64Doc(file)
                 console.log('doc base64: ', doc)
@@ -284,9 +293,6 @@
                     })
                 })
                 const data = await response.json()
-                if (data) {
-                    loading = false
-                }
                 kmeans_colors = data.kmeans_colors ?? []
                 cmyk = data.cmyk ?? null
 
@@ -296,6 +302,111 @@
             } catch (error) {
                 console.log(error)
                 reject(error)
+            }
+        })
+    }
+
+    /**
+     * Preview DOCX by converting it to pdf using pdf24 convert service
+     * Then passing the pdf to mupdf for further processing
+     * 
+     * Code reference here
+     * https://github.com/customautosys/docx-to-pdf-axios
+     * 
+     * PDF24 service website
+     * https://tools.pdf24.org/en/
+     * 
+     * @param {File} file Docx file input
+     * @returns {Promise<Array>} Array of images to render
+     */
+    const pdf24Preview = async (file) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const before = performance.now()
+
+                const formData = new FormData()
+                formData.append('file', file, file.name)
+                const upload = await fetch('https://filetools2.pdf24.org/client.php?action=upload', {
+                    method: 'POST',
+                    body: formData,
+                })
+                if (!upload.ok) {
+                    throw new Error('Cannot upload docx on pdf24.')
+                }
+                const uploadData = await upload.json()
+                console.log('uploadData: ', uploadData)
+
+                const convert = await fetch('https://filetools2.pdf24.org/client.php?action=convertToPdf', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        files: uploadData
+                    }),
+                    // body: JSON.stringify({
+                    //     files: [{"file":"upload_a68e939918637ea26097e92337d8563f.docx","size":4688445,"name":"Resume - Dec2021 copy.docx","ctime":"2023-04-05 03:42:12","host":"filetools2.pdf24.org"}]
+                    // }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                if (!convert.ok) {
+                    throw new Error('Cannot convert docx on pdf24.')
+                }
+                const convertData = await convert.json()
+                console.log('convertData: ', convertData)
+
+                // Test uploaded data, so we don't spam upload endpoint
+                // const convertDataProxy = {
+                //     jobId: "convertToPdf_172e8d4bd15c4af5c47cf4878fe486de"
+                // }
+
+                // let jobStatus = await fetch(`https://filetools2.pdf24.org/client.php?action=getStatus&jobId=${convertDataProxy.jobId}`)
+                let jobStatus = await fetch(`https://filetools2.pdf24.org/client.php?action=getStatus&jobId=${convertData.jobId}`)
+                if (!jobStatus.ok) {
+                    throw new Error(`Cannot find job for docx on pdf24 with id of ${convertData.jobId}.`)
+                }
+                let jobStatusData = await jobStatus.json()
+                console.log('jobStatusData initial response: ', jobStatusData)
+
+                while (jobStatusData.status !== 'done') {
+                    try {
+                        await new Promise((resolve, reject) => {
+                            setTimeout(resolve, 2000)
+                        })
+                        // jobStatus = await fetch(`https://filetools2.pdf24.org/client.php?action=getStatus&jobId=${convertDataProxy.jobId}`)
+                        jobStatus = await fetch(`https://filetools2.pdf24.org/client.php?action=getStatus&jobId=${convertData.jobId}`)
+                        jobStatusData = await jobStatus.json()
+                    } catch (error) {
+                        console.log(error)
+                    }
+                }
+
+                console.log('jobStatusData after while: ', jobStatusData)
+
+                // const pdf = await fetch(`https://filetools2.pdf24.org/client.php?mode=download&action=downloadJobResult&jobId=${convertDataProxy.jobId}`)
+                const pdf = await fetch(`https://filetools2.pdf24.org/client.php?mode=download&action=downloadJobResult&jobId=${convertData.jobId}`)
+                // https://yahone-chow.medium.com/file-blob-arraybuffer-576a8e99de0d
+                const pdfArrayBuffer = await pdf.arrayBuffer()
+                // console.log('pdfArrayBuffer: ', pdfArrayBuffer)
+                const pdfUi8 = new Uint8Array(pdfArrayBuffer)
+                // console.log('pdfUi8: ', pdfUi8)
+                const pdfRaw = [...pdfUi8]
+                // console.log('pdfRaw: ', pdfRaw)
+                const pdfBlob = new Blob([new Uint8Array(pdfRaw)], { type: 'application/pdf' })
+                // console.log('pdfBlob: ', pdfBlob)
+                // We are returning the input name which ends with .docx but in reality it is pdf format
+                const pdfFile = new File([pdfBlob], jobStatusData.job['0.in.name'], {
+                    type: 'application/pdf'
+                })
+                console.log('pdfFile: ', pdfFile)
+                const after = performance.now()
+                console.log(`docx to pdf done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}s`)
+
+                resolve(mupdfPreview(pdfFile))
+            } catch (error) {
+                console.log('Received error from pdf24, running fallback with libreoffice')
+                console.log(error)
+                resolve(docPreview(file))
+                // reject(error)
             }
         })
     }
@@ -411,6 +522,15 @@
                     {/each}
                 </div>
             {/await}
+
+            <!-- {#if loading}
+                <div class="grid place-items-center p-[3rem]">
+                    <Pulse />
+                </div>
+                <div class="text-center px-[3rem]">
+                    Generating preview.
+                </div>
+            {/if} -->
         </div>
     </section>
 </main>
