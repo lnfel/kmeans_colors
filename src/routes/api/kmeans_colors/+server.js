@@ -18,6 +18,7 @@ export const POST = async ({ request, locals, cookies }) => {
     })
 
     const filedir = await saveFromBase64(base64Images, name)
+    console.log('filedir: ', filedir)
 
     let kmeans_colors = []
 
