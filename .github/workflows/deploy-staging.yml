@@ -40,7 +40,13 @@ jobs:
           REMOTE_USER: ${{ secrets.EC2_USER }}
           TARGET: ${{ secrets.DEPLOY_PATH }}
           ARGS: -rlgoDzvcO -i
-          SCRIPT_AFTER: |
-            ls
+      
+      - name: Reload PM2
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          host: ${{ secrets.EC2_HOSTNAME }}
+          username: ${{ secrets.EC2_USER }}
+          privateKey: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          command: |
             cd ${{ secrets.DEPLOY_PATH }}
             npm run pm2:prod
