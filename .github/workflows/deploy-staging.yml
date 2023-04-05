@@ -49,4 +49,7 @@ jobs:
           privateKey: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           command: |
             cd ${{ secrets.DEPLOY_PATH }}
-            ${{ secrets.NODE_BIN_PATH }}/pm2 reload ecosystem.config.cjs --only kmeans_colors --env production
+            export PATH="${{ secrets.NODE_BIN_PATH }}/node:$PATH"
+            export PATH="${{ secrets.NODE_BIN_PATH }}/npm:$PATH"
+            export PATH="${{ secrets.NODE_BIN_PATH }}/pm2:$PATH"
+            npm run pm2:prod
