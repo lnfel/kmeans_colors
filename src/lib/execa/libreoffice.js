@@ -19,6 +19,9 @@ import { storage_path } from "$lib/config.js"
  * https://github.com/unoconv/unoserver
  * https://github.com/gotenberg/gotenberg/issues/373
  * 
+ * Headless writer PDF export filter options
+ * https://ask.libreoffice.org/t/headless-writer-pdf-export-filter-options-format/33720
+ * 
  * Gotenberg API
  * https://github.com/gotenberg/gotenberg
  * 
