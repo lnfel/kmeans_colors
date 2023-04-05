@@ -40,6 +40,12 @@ jobs:
           REMOTE_USER: ${{ secrets.EC2_USER }}
           TARGET: ${{ secrets.DEPLOY_PATH }}
           ARGS: -rlgoDzvcO -i
+
+      - name: Add NODE_BIN_PATH to system PATH
+        run: |
+          echo "${{ secrets.NODE_BIN_PATH }}/node" >> $GITHUB_PATH
+          echo "${{ secrets.NODE_BIN_PATH }}/npm" >> $GITHUB_PATH
+          echo "${{ secrets.NODE_BIN_PATH }}/pm2" >> $GITHUB_PATH
       
       - name: Reload PM2
         uses: garygrossgarten/github-action-ssh@release
@@ -49,7 +55,4 @@ jobs:
           privateKey: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           command: |
             cd ${{ secrets.DEPLOY_PATH }}
-            export PATH="${{ secrets.NODE_BIN_PATH }}/node:$PATH"
-            export PATH="${{ secrets.NODE_BIN_PATH }}/npm:$PATH"
-            export PATH="${{ secrets.NODE_BIN_PATH }}/pm2:$PATH"
             npm run pm2:prod
