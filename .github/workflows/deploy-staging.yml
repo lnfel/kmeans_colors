@@ -41,4 +41,5 @@ jobs:
           TARGET: ${{ secrets.DEPLOY_PATH }}
           ARGS: -rlgoDzvcO -i
           SCRIPT_AFTER: |
-            ls
+            cd ${{ secrets.DEPLOY_PATH }}
+            pwd
