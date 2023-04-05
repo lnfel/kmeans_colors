@@ -49,4 +49,4 @@ jobs:
           privateKey: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           command: |
             cd ${{ secrets.DEPLOY_PATH }}
-            ${{ secrets.NODE_BIN_PATH }}/npm run pm2:prod
+            npm run pm2:prod
