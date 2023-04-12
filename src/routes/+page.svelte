@@ -495,7 +495,9 @@
                 </div>
             {:then images}
                 <div class="preview-container space-y-4">
-                    <div class="px-[3rem]">Pages: {images?.length ?? 0}</div>
+                    {#if images}
+                        <div class="px-[3rem]">Pages: {images?.length ?? 0}</div>
+                    {/if}
                     {#each images ?? [] as preview, index}
                         <div class="grid place-items-center px-[3rem]">
                             <figure class="space-y-2">
