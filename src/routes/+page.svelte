@@ -2,7 +2,7 @@
     import { enhance } from "$app/forms"
     import { page } from "$app/stores"
     import { invalidateAll } from "$app/navigation"
-    import { createMuPdf, MuPdf } from "mupdf-js"
+    import { createMuPdf } from "mupdf-js"
 
     import Pulse from "$lib/component/Pulse.svelte"
     import GoogleClient from "$lib/component/GoogleClient.svelte"
@@ -210,8 +210,8 @@
      * 
      * Honestly re-rendeing is inevitable
      * 
-     * @param {MuPdf.Instance} mupdf Object representing MuPdf.Instance from createMuPdf method
-     * @param {MuPdf.DocumentHandle} pdf Number representing MuPdf.DocumentHandle from MuPdf.Instance.load method
+     * @param {import('mupdf-js').MuPdf.Instance} mupdf Object representing MuPdf.Instance from createMuPdf method
+     * @param {import('mupdf-js').MuPdf.DocumentHandle} pdf Number representing MuPdf.DocumentHandle from MuPdf.Instance.load method
      * @param {File} file File from file input
      * @param {Number} pages Number of pages in the pdf file
      * @returns {Promise<Array>} Array of images to render
