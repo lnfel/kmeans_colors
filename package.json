@@ -41,8 +41,10 @@
 		"dargs": "^8.1.0",
 		"dotenv": "^16.0.3",
 		"execa": "^7.0.0",
+		"googleapis": "^114.0.0",
 		"mupdf-js": "^1.1.1",
 		"short-unique-id": "^4.4.4",
+		"svelte-google-auth": "^0.7.2",
 		"tar": "^6.1.13"
 	}
 }
