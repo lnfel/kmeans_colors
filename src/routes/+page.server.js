@@ -2,9 +2,40 @@ import { writeFile } from 'node:fs/promises'
 import { storage_path } from "$lib/config.js"
 import { kmeansColors } from "$lib/ghostprinter/print-job/pdf.js"
 import { summary } from '$lib/ghostprinter/print-job/cmyk.js'
+import { getOAuth2Client, isSignedIn } from 'svelte-google-auth'
+import { google } from 'googleapis'
+
+/**
+ * Sample google server side api call
+ * https://github.com/HalfdanJ/svelte-google-auth/blob/main/src/routes/server-api-call/%2Bpage.server.ts
+ * https://developers.google.com/drive/api/v3/reference/files/list
+ * use the trashed=false query parameter to filter trashed files from the results.
+ * 
+ * @param {import('google-auth-library').OAuth2Client} auth OAuth2Client
+ */
+async function listDriveFiles(auth) {
+    try {
+        const drive = google.drive({ version: 'v3', auth })
+        const response = await drive.files.list({
+            'pageSize': 10,
+            'fields': 'files(id, name)',
+            'q': 'trashed=false'
+        })
+        return response.data.files
+    } catch (error) {
+        throw error
+    }
+}
 
 export const load = async ({ locals }) => {
-    return { }
+    if (isSignedIn(locals)) {
+        const client = getOAuth2Client(locals)
+        // console.log('client: ', client)
+        const driveFiles = await listDriveFiles(client)
+        return {
+            driveFiles
+        }
+    }
 }
 
 export const actions = {
