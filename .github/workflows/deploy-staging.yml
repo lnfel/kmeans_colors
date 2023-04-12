@@ -19,6 +19,14 @@ jobs:
         with:
           envkey_STORAGE_PATH: ${{ secrets.STORAGE_PATH }}
           envkey_BUILD_ENVIRONMENT: ${{ secrets.BUILD_ENVIRONMENT }}
+      
+      - name: Create client_secret.json
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: ./client_secret.json
+          write-mode: overwrite
+          contents: |
+            ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
