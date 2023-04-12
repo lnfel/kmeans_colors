@@ -13,7 +13,7 @@
      * How To Create A SvelteKit Image Upload (step-by-step)
      * https://www.programonaut.com/how-to-create-a-sveltekit-image-upload-step-by-step/
      */
-    let fileinput, submitBtn, image, showImage
+    let fileinput, submitBtn, image, showImage = false
     let images = [], promise
     let kmeans_colors = []
     let cmyk
