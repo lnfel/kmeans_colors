@@ -6,6 +6,8 @@
 
     import Pulse from "$lib/component/Pulse.svelte"
     import GoogleClient from "$lib/component/GoogleClient.svelte"
+    import FileInput from "$lib/component/input/File.svelte"
+    import Button from "$lib/component/Button.svelte"
 
     /**
      * How To Create A SvelteKit Image Upload (step-by-step)
@@ -57,9 +59,10 @@
     /**
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
      */
-    async function onChange() {
+    async function onChange(event) {
         reset(false)
         const files = fileinput.files
+        // const files = event.target.files
         const allowedFileTypes = {
             images: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml',],
             pdf: ['application/pdf'],
@@ -130,9 +133,11 @@
         images = []
         kmeans_colors = []
         cmyk = null
+        showImage = false
         await invalidateAll()
         if (clearPreview) {
             const previewContainer = document.querySelector('.preview-container')
+            console.log('previewContainer: ', previewContainer)
             if (previewContainer.parentNode) {
                 previewContainer.parentNode.removeChild(previewContainer)
             }
@@ -478,12 +483,21 @@
 <main>
     <section>
         <form method="POST" use:enhance={upload} class="flex flex-wrap gap-4 px-[3rem] py-4" enctype="multipart/form-data">
-            <div>
+            <FileInput bind:ref={fileinput} on:change={onChange} label="Upload" id="file" name="file" multiple accept="image/*,.pdf,.docx,.doc" />
+            <!-- <div>
                 <input bind:this={fileinput} on:change={onChange} type="file" name="file" multiple accept="image/*,.pdf,.docx,.doc" />
-            </div>
+            </div> -->
 
-            <input bind:this={submitBtn} type="submit" value="Submit" class={showImage ? 'border rounded px-4 text-rose-500 border-rose-500' : 'border rounded px-4 text-gray-500 border-gray-500'} disabled />
-            <input on:click={reset} type="reset" value="Reset" class="border border-gray-500 rounded px-4">
+            <div class="flex items-end gap-2">
+                <Button bind:ref={submitBtn} type="submit" id="submit" disabled="{!showImage}">
+                    Submit
+                </Button>
+                <Button on:click={reset} type="reset" id="reset">
+                    Reset
+                </Button>
+                <!-- <input bind:this={submitBtn} type="submit" value="Submit" class={showImage ? 'border rounded px-4 text-rose-500 border-rose-500' : 'border rounded px-4 text-gray-500 border-gray-500'} disabled /> -->
+                <!-- <input on:click={reset} type="reset" value="Reset" class="border border-gray-500 rounded px-4"> -->
+            </div>
         </form>
 
         <div class="space-y-4">
