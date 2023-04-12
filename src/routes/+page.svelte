@@ -28,7 +28,8 @@
                 const image = {
                     url: reader.result,
                     name: file.name,
-                    type: file.type
+                    type: file.type,
+                    size: file.size
                 }
                 // https://svelte.dev/tutorial/updating-arrays-and-objects
                 images = [...images, image]
@@ -45,7 +46,8 @@
                 const doc = {
                     url: reader.result,
                     name: file.name,
-                    type: file.type
+                    type: file.type,
+                    size: file.size
                 }
                 resolve(doc)
             })
@@ -112,7 +114,9 @@
                 if (fileCheck.isDoc(file.type)) {
                     // promise = docPreview(file)
 
-                    promise = pdf24Preview(file)
+                    // promise = pdf24Preview(file)
+
+                    promise = googleDrivePreview(file)
                 }
             })
 
@@ -408,6 +412,63 @@
                 console.log(error)
                 resolve(docPreview(file))
                 // reject(error)
+            }
+        })
+    }
+
+    const googleDrivePreview = async (file) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                if (!$page.data.auth.user) {
+                    throw new Error('Please sign in using google oauth first.')
+                }
+
+                const before = performance.now()
+
+                const doc = await getBase64Doc(file)
+                const driveResponse = await fetch('/api/google', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(doc)
+                })
+                const driveData = await driveResponse.json()
+                console.log('driveData: ', driveData)
+
+                const fileBuffer = await fetch(driveData.base64PDF)
+                    .then(response => response.arrayBuffer())
+                    .then(arrayBuffer => new Uint8Array(arrayBuffer))
+                // console.log('fileBuffer: ', fileBuffer)
+                const mupdf = await createMuPdf()
+                const pdf = mupdf.load(fileBuffer)
+                const pages = mupdf.countPages(pdf)
+                console.log("Pages: ", pages)
+
+                const images = await mupdfGeneratePreviews(mupdf, pdf, file, pages)
+
+                // Calculate dominant colors from generated images
+                const response = await fetch('/api/kmeans_colors', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        images
+                    })
+                })
+                const data = await response.json()
+                kmeans_colors = data.kmeans_colors ?? []
+                cmyk = data.cmyk ?? null
+
+                const after = performance.now()
+                console.log(`googleDrivePreview done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}s`)
+
+                resolve(images)
+            } catch (error) {
+                console.log('Received error from google drive preview, running fallback to pdf24')
+                console.log(error)
+                resolve(pdf24Preview(file))
             }
         })
     }
