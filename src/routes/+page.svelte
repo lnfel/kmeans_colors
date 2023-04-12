@@ -464,6 +464,9 @@
     }
 </script>
 
+<svelte:head>
+    <title>Aerial | Extract dominant colors on image and document files</title>
+</svelte:head>
 
 <header class="flex items-center justify-between px-[3rem]">
     <a href="/" class="logo group flex items-center text-indigo-500 dark:text-indigo-200 outline-none">
