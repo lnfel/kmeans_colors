@@ -468,7 +468,7 @@
     <title>Aerial | Extract dominant colors on image and document files</title>
 </svelte:head>
 
-<header class="flex items-center justify-between px-[3rem]">
+<header class="flex items-center justify-between lg:px-[3rem]">
     <a href="/" class="logo group flex items-center text-indigo-500 dark:text-indigo-200 outline-none">
         <!-- generated using https://picsvg.com/ -->
         <!-- https://stackoverflow.com/questions/43744050/animated-light-reflection-on-image-in-css-or-jquery -->
@@ -535,9 +535,9 @@
     <GoogleClient data={$page.data} />
 </header>
 
-<main>
+<main class="lg:px-[3rem]">
     <section>
-        <form method="POST" use:enhance={upload} class="flex flex-wrap gap-4 px-[3rem] py-4" enctype="multipart/form-data">
+        <form method="POST" use:enhance={upload} class="flex flex-wrap gap-4 py-4" enctype="multipart/form-data">
             <FileInput bind:ref={fileinput} on:change={onChange} label="Upload" id="file" name="file" multiple accept="image/*,.pdf,.docx,.doc" />
             <!-- <div>
                 <input bind:this={fileinput} on:change={onChange} type="file" name="file" multiple accept="image/*,.pdf,.docx,.doc" />
@@ -557,19 +557,19 @@
 
         <div class="space-y-4">
             {#await promise}
-                <div class="grid place-items-center p-[3rem]">
+                <div class="grid place-items-center py-[3rem]">
                     <Pulse />
                 </div>
-                <div class="text-center px-[3rem]">
+                <div class="text-center">
                     Generating preview.
                 </div>
             {:then images}
                 <div class="preview-container space-y-4">
                     {#if images}
-                        <div class="px-[3rem]">Pages: {images?.length ?? 0}</div>
+                        <div>Pages: {images?.length ?? 0}</div>
                     {/if}
                     {#each images ?? [] as preview, index}
-                        <div class="grid place-items-center px-[3rem]">
+                        <div class="grid place-items-center">
                             <figure class="space-y-2">
                                 <img src={preview.url} alt={preview.name} class="mx-auto" />
                                 <figcaption class="text-center">
@@ -579,7 +579,7 @@
                             </figure>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 px-[3rem]">
+                        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                             {#each $page.form?.kmeans_colors[index] ?? kmeans_colors[index] ?? [] as pallete}
                                 <div>
                                     <div style="background-color: {pallete.color}; border: 1px solid rgb(203 213 225);" class="p-4"></div>
@@ -592,7 +592,7 @@
                         </div>
 
                         {#if $page.form?.cmyk || cmyk}
-                            <div class="px-[3rem] py-4 space-y-4">
+                            <div class="py-4 space-y-4">
                                 <div>
                                     <div>CMYK Total</div>
                                     <small>Each number stands for the sum of C, M, Y and K in respective order from left to right.</small>
