@@ -1,0 +1,42 @@
+/**
+ * https://stackoverflow.com/questions/43744050/animated-light-reflection-on-image-in-css-or-jquery
+ * https://codepen.io/Allefbr/pen/oGKXoE?editors=1100
+ * https://css-tricks.com/my-struggle-to-use-and-animate-a-conic-gradient-in-svg/
+ * https://css-tricks.com/nested-gradients-with-background-clip/
+ * https://stackoverflow.com/questions/71136234/how-to-animate-fill-in-a-linear-gradient-for-svg
+ * https://codepen.io/ISOgenesis/pen/zxEXPg
+ * https://www.svgbackgrounds.com/animate-svg-gradients/
+ * https://www.youtube.com/watch?v=vh0fQdA3Pho
+ * http://jsfiddle.net/viphalongpro/mzz08e31/
+ * https://css-tricks.com/guide-svg-animations-smil/
+ */
+/* .logo:hover > .logo-image > g,
+.logo:focus > .logo-image > g {
+    fill: url(#logo-gradient)
+} */
+.logo:hover > .logo-image #upper-right,
+.logo:focus > .logo-image #upper-right {
+    fill: url(#upper-right-gradient)
+}
+.logo:hover > .logo-image #mid-trapezoid,
+.logo:focus > .logo-image #mid-trapezoid {
+    fill: url(#mid-trapezoid-gradient)
+}
+.logo:hover > .logo-image #short-arc,
+.logo:focus > .logo-image #short-arc {
+    fill: url(#short-arc-gradient)
+}
+.logo:hover > .logo-image #long-arc,
+.logo:focus > .logo-image #long-arc {
+    fill: url(#long-arc-gradient)
+}
+.logo-text {
+    /* font-family: 'Asul', sans-serif; */
+    font-family: 'sculpin', sans-serif;
+}
+img {
+    max-width: 100%;
+    max-height: 15rem;
+    border: 1px solid rgb(203 213 225);
+    border-radius: 0.5rem;
+}
