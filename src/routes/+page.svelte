@@ -79,15 +79,6 @@
                 return allowedFileTypes.doc.includes(type)
             }
         }
-        // const allowedFileTypes = [
-        //     // IMAGE TYPES
-        //     'image/png', 'image/jpeg', 'image/jpg',
-        //     'image/webp', 'image/svg+xml',
-        //     // PDF
-        //     'application/pdf',
-        //     // DOCX and DOC
-        //     'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'
-        // ]
 
         console.log('onChange files: ', fileinput.files)
 
@@ -98,14 +89,8 @@
             submitBtn.classList.add('text-rose-500', 'border-rose-500')
 
             Array.from(files).forEach(async (file) => {
-                // const isPdf = file.type === 'application/pdf'
                 console.log('file: ', file)
 
-                // if (allowedFileTypes.includes(file.type) && !isPdf) {
-                //     promise = getBase64Image(file)
-                // } else {
-                //     promise =  mupdfPreview(file)
-                // }
                 if (fileCheck.isImage(file.type)) {
                     promise = getBase64Image(file)
                 }
@@ -599,15 +584,6 @@
                     {/each}
                 </div>
             {/await}
-
-            <!-- {#if loading}
-                <div class="grid place-items-center p-[3rem]">
-                    <Pulse />
-                </div>
-                <div class="text-center px-[3rem]">
-                    Generating preview.
-                </div>
-            {/if} -->
         </div>
     </section>
 </main>
