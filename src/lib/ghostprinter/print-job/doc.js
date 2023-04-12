@@ -1,4 +1,3 @@
-import { mkdir, mkdtemp } from 'node:fs/promises'
 import { writeFile } from 'node:fs/promises'
 import ShortUniqueId from "short-unique-id"
 import { storage_path } from "$lib/config.js"

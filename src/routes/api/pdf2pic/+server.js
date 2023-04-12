@@ -1,6 +1,6 @@
-import { mkdir, mkdtemp } from 'node:fs/promises'
-import { writeFile, readFile } from 'node:fs/promises'
-import { json, error } from '@sveltejs/kit'
+import { mkdir } from 'node:fs/promises'
+import { writeFile } from 'node:fs/promises'
+import { json } from '@sveltejs/kit'
 import { prepare, pdf2pic } from "../../../lib/ghostprinter/print-job/pdf.js"
 
 /**

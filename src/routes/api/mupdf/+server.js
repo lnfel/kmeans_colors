@@ -1,8 +1,8 @@
 import * as path from "path"
-import { mkdir, mkdtemp } from 'node:fs/promises'
+import { mkdir } from 'node:fs/promises'
 import { fileURLToPath } from "url"
-import { writeFile, readFile } from 'node:fs/promises'
-import { json, error } from '@sveltejs/kit'
+import { writeFile } from 'node:fs/promises'
+import { json } from '@sveltejs/kit'
 import { prepare, mupdf } from "../../../lib/ghostprinter/print-job/pdf.js"
 
 const __filename = fileURLToPath(import.meta.url)
