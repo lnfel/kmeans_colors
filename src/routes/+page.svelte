@@ -466,6 +466,8 @@
 
 <svelte:head>
     <title>Aerial | Extract dominant colors on image and document files</title>
+    <link rel="alternate" hreflang="en" href="https://www-staging.pingsailor.com" />
+    <link rel="canonical" href="https://www-staging.pingsailor.com"/>
 </svelte:head>
 
 <header class="flex items-center justify-between lg:px-[3rem]">
