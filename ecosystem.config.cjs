@@ -38,7 +38,7 @@ module.exports = {
             env_production: {
                 NODE_ENV: 'production',
                 PORT: 3000,
-                ORIGIN: "http://www-staging.pingsailor.com",
+                ORIGIN: "https://www-staging.pingsailor.com",
                 BODY_SIZE_LIMIT: 0
             },
         }
