@@ -5,6 +5,7 @@
     import { createMuPdf, MuPdf } from "mupdf-js"
 
     import Pulse from "$lib/component/Pulse.svelte"
+    import GoogleClient from "$lib/component/GoogleClient.svelte"
 
     /**
      * How To Create A SvelteKit Image Upload (step-by-step)
@@ -412,6 +413,7 @@
     }
 </script>
 
+    <GoogleClient data={$page.data} />
 <main>
     <section>
         <form method="POST" use:enhance={upload} class="flex flex-wrap gap-4 px-[3rem] py-4" enctype="multipart/form-data">
