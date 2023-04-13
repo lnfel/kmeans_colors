@@ -27,7 +27,8 @@ class CMYK {
 
         this.whiteSpace = kmeans_colors.map((colorset) => {
             const whiteFilter = colorset.filter((color) => {
-                return color.color === '#ffffff'
+                // return color.color === '#ffffff'
+                return color.cmyk === '0 0 0 0'
             })
     
             return parseFloat(whiteFilter[0]?.percentage ?? 0)
@@ -79,9 +80,12 @@ export const summary = async (kmeans_colors = []) => {
             return `${c} ${m} ${y} ${k}`
         }, '0 0 0 0')
     })
+    // console.log('kmeans_colors: ', kmeans_colors)
+    // console.log("cmyk['total]: ", cmyk['total'])
     cmyk['whiteSpace'] = kmeans_colors.map((colorset) => {
         const whiteFilter = colorset.filter((color) => {
-            return color.color === '#ffffff'
+            // return color.color === '#ffffff'
+            return color.cmyk === '0 0 0 0'
         })
 
         return parseFloat(whiteFilter[0]?.percentage ?? 0)
