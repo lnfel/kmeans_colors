@@ -605,7 +605,7 @@
 
                                 <div>
                                     <div>CMYK Summary</div>
-                                    <div><small>Formula: ((cmyk total / color length) / 100) * (colored space / 100) * 100</small></div>
+                                    <div><small>Formula: ((cmyk total / non-white colors length) / 100) * (colored space / 100) * 100</small></div>
                                 </div>
                                 <div class="cmyk-summary grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                                     <div class="cyan group relative flex items-center gap-2">
@@ -641,7 +641,7 @@
                                 <div>
                                     <div>Color Distribution</div>
                                     <ul>
-                                        <li><small>*White space is percentage of #ffffff color found by kmeans_colors</small></li>
+                                        <li><small>*White space is percentage of cmyk 0 0 0 0 color range (close to white or #ffffff) found by kmeans_colors</small></li>
                                         <li><small>*Colored space is 100 - white space</small></li>
                                     </ul>
                                 </div>
