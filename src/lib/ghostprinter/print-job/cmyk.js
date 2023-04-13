@@ -96,20 +96,20 @@ export const summary = async (kmeans_colors = []) => {
     cmyk['summary'] = cmyk['total'].map((cmykString, index) => {
         return {
             c: {
-                formula: `((${cmykString.split(' ')[0]} / ${kmeans_colors[index].length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
-                value: (colorAverage(cmykString.split(' ')[0], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+                formula: `((${cmykString.split(' ')[0]} / ${kmeans_colors[index].filter(color => color.cmyk !== '0 0 0 0').length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
+                value: (colorAverage(cmykString.split(' ')[0], kmeans_colors[index].filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
             },
             m: {
-                formula: `((${cmykString.split(' ')[1]} / ${kmeans_colors[index].length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
-                value: (colorAverage(cmykString.split(' ')[1], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+                formula: `((${cmykString.split(' ')[1]} / ${kmeans_colors[index].filter(color => color.cmyk !== '0 0 0 0').length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
+                value: (colorAverage(cmykString.split(' ')[1], kmeans_colors[index].filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
             },
             y: {
-                formula: `((${cmykString.split(' ')[2]} / ${kmeans_colors[index].length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
-                value: (colorAverage(cmykString.split(' ')[2], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+                formula: `((${cmykString.split(' ')[2]} / ${kmeans_colors[index].filter(color => color.cmyk !== '0 0 0 0').length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
+                value: (colorAverage(cmykString.split(' ')[2], kmeans_colors[index].filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
             },
             k: {
-                formula: `((${cmykString.split(' ')[3]} / ${kmeans_colors[index].length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
-                value: (colorAverage(cmykString.split(' ')[3], kmeans_colors[index].length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
+                formula: `((${cmykString.split(' ')[3]} / ${kmeans_colors[index].filter(color => color.cmyk !== '0 0 0 0').length}) / 100) * (${cmyk['coloredSpace'][index]} / 100) * 100`,
+                value: (colorAverage(cmykString.split(' ')[3], kmeans_colors[index].filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'][index] / 100) * 100,
             },
         }
     })
