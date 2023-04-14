@@ -41,6 +41,18 @@ module.exports = {
                 ORIGIN: "https://www-staging.pingsailor.com",
                 BODY_SIZE_LIMIT: 0
             },
+        },
+        /**
+         * https://stackoverflow.com/questions/42501219/how-to-make-a-task-job-with-pm2
+         */
+        {
+            name: "aerial_cron_jobs",
+            script: "scripts/cron.js",
+            instances: 1,
+            // we already have node-cron handle cron timer
+            // cron_restart: "* * * * *",
+            watch: false,
+            autorestart: false
         }
     ]
 }
