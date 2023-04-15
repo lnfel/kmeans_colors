@@ -11,7 +11,9 @@
     export let data
     const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'
     // 'https://www.googleapis.com/auth/drive.metadata.readonly'
-    const SCOPES = ['openid', 'profile', 'email', 'https://www.googleapis.com/auth/drive']
+    // 'https://www.googleapis.com/auth/drive.file'
+    // 'https://www.googleapis.com/auth/drive'
+    const SCOPES = ['openid', 'profile', 'email', 'https://www.googleapis.com/auth/drive.file']
     // console.log('data: ', data)
     initialize(data, invalidateAll)
 
