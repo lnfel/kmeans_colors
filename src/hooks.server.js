@@ -23,8 +23,8 @@ import { sequence } from '@sveltejs/kit/hooks'
 
 const auth = new SvelteGoogleAuthHook(client_secret.web)
 const svelteHandleBotBlock = createHandler({
-    log: true,
-    block: false
+    log: false,
+    block: true
 })
 
 async function svelteHandleAuth({ event, resolve }) {
