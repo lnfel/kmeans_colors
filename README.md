@@ -1,69 +1,21 @@
-# KmeansColors JS
+<p align="center">
+    <a href="https://lnfel.github.io/lamy-debugbar/" target="_blank">
+        <img src="https://raw.githubusercontent.com/lnfel/kmeans_colors/main/static/favicon.png" height="150">
+    </a>
+    <h1 align="center">Aerial</h1>
+</p>
 
-A javascript wrapper for [kmeans_colors](https://github.com/okaneco/kmeans-colors) rust crate
+## About
 
-## Installation
-```s
-npm i kmeans-colors
-```
+Aerial is a self hosted sveltekit application that extracts dominant colors from images and documents (mainly docx and pdf format) and displays the summary on the client. The core functionality relies heavily on [kmeans_colors](https://github.com/okaneco/kmeans-colors), a k-means clustering library written in Rust.
 
-## Usage
-```js
-import KmeansColors, { defaultFlags } from 'kmeans-colors'
+## Pre-requisites
 
-const flags = defaultFlags('imagePath')
-const {stdout} = await KmeansColors.exec(flags)
+Before deploying the app on your server, the server must have the following installed first.
 
-console.log(stdout)
-// cc8049,98562b,4f290f,1c1009,d13607,e7c912,4a72c5,2eb30c
-// 0.3831,0.2084,0.1361,0.0845,0.0806,0.0530,0.0281,0.0262
-```
+- [Node.js](https://nodejs.org/en/download) version 18+ (required to run sveltekit application)
+- [Libreoffice](https://www.libreoffice.org/download/download-libreoffice/) tested using version 7.3.7.2 30(Build:2) with [ubuntu](https://wiki.ubuntu.com/LibreOffice) (required for processing docx files)
 
-### Flags
+> Note: Aerial uses kmeans_colors compiled rust binary so we don't need to install the Rust compiler, Aerial should work on development or production server without rust installed.
+> Source: [/r/rust Reddit thread](https://www.reddit.com/r/rust/comments/wjubpl/comment/ijjz2hv/?utm_source=share&utm_medium=web2x&context=3)
 
-All available flags from `kmeans_colors` binary executable is available. By default `KmeansColors JS` sets the following default flags object using the `defaultFlags` utility:
-```js
-{
-    "no-file": true,
-    print: true,
-    rgb: true,
-    sort: true,
-    pct: true,
-    input: imagePath,
-}
-```
-
-To use a different sets of flags just build an object containing valid flags, note that input flag must always be present:
-```js
-import KmeansColors from 'kmeans-colors'
-
-const flags = {
-    iterations: 30,
-    ext: 'jpeg',
-    print: true,
-    rgb: true,
-    pct: true,
-    input: imagePath,
-}
-
-const {stdout} = await KmeansColors.exec(flags)
-
-console.log(stdout)
-// cc8049,98562b,4f290f,1c1009,d13607,e7c912,4a72c5,2eb30c
-// 0.3831,0.2084,0.1361,0.0845,0.0806,0.0530,0.0281,0.0262
-```
-
-For more info about flags, visit the original [repo](https://github.com/okaneco/kmeans-colors) or simply run the `kmeans_colors` executable with the `--help` flag:
-```s
-./kmeans_colors --help
-```
-
-### Custom binary path
-
-For convenience we can also initialize `KmeansColors` with a custom binary path using `create` utility:
-
-```js
-import { create: kmeansColors } from 'kmeans-colors'
-
-const KmeansColors = kmeansColors('path/to/kmeans_colors_executable')
-```
