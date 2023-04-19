@@ -89,4 +89,6 @@ jobs:
           #   npm run pm2:prod
           command: |
             cd ${{ secrets.DEPLOY_PATH }}
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
             ~/.local/share/pnpm/pnpm run pm2:prod
