@@ -40,11 +40,26 @@ jobs:
       # - name: Run build:prod
       #   run: npm run build:prod --if-present
 
+      # https://github.com/pnpm/action-setup
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 7
-          cache: pnpm
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install pnpm dependencies
         run: pnpm install
@@ -67,8 +82,11 @@ jobs:
           host: ${{ secrets.EC2_HOSTNAME }}
           username: ${{ secrets.EC2_USER }}
           privateKey: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          # command: |
+          #   cd ${{ secrets.DEPLOY_PATH }}
+          #   export NVM_DIR=~/.nvm
+          #   source ~/.nvm/nvm.sh
+          #   npm run pm2:prod
           command: |
             cd ${{ secrets.DEPLOY_PATH }}
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh
-            pnpm run pm2:prod
+            ~/.local/share/pnpm/pnpm run pm2:prod
