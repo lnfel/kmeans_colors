@@ -1,5 +1,7 @@
 import { SvelteGoogleAuthHook } from 'svelte-google-auth/server'
 import client_secret from '../client_secret.json'
+import { createHandler, defaultOptions } from 'svelte-kit-bot-block'
+import { sequence } from '@sveltejs/kit/hooks'
 // import { cleanStorage, cleanLogs, cleanCronLogs } from '$lib/aerial/server/cron.js'
 
 /**
@@ -20,7 +22,13 @@ import client_secret from '../client_secret.json'
  */
 
 const auth = new SvelteGoogleAuthHook(client_secret.web)
+const svelteHandleBotBlock = createHandler({
+    log: true,
+    block: false
+})
 
-export const handle = async ({ event, resolve }) => {
+async function svelteHandleAuth({ event, resolve }) {
     return await auth.handleAuth({ event, resolve })
 }
+
+export const handle = sequence(svelteHandleBotBlock, svelteHandleAuth)

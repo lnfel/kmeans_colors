@@ -46,6 +46,7 @@
 		"node-cron": "^3.0.2",
 		"short-unique-id": "^4.4.4",
 		"svelte-google-auth": "^0.7.2",
+		"svelte-kit-bot-block": "^0.0.3",
 		"tar": "^6.1.13"
 	}
 }

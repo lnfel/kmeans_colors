@@ -19,6 +19,7 @@ specifiers:
   short-unique-id: ^4.4.4
   svelte: ^3.54.0
   svelte-google-auth: ^0.7.2
+  svelte-kit-bot-block: ^0.0.3
   tailwindcss: ^3.2.7
   tar: ^6.1.13
   vite: ^4.0.0
@@ -34,6 +35,7 @@ dependencies:
   node-cron: 3.0.2
   short-unique-id: 4.4.4
   svelte-google-auth: 0.7.2
+  svelte-kit-bot-block: 0.0.3
   tar: 6.1.13
 
 devDependencies:
@@ -1999,6 +2001,10 @@ packages:
     dependencies:
       svelte: 3.57.0
     dev: true
+
+  /svelte-kit-bot-block/0.0.3:
+    resolution: {integrity: sha512-DdUjuFX25RHhu6IlHF1bXeolzFX+BXRQ48HjiUSLyPduNsTtqLMTBwkp0TYW+VBctcPfXDID0Ee39glwbX7TCg==}
+    dev: false
 
   /svelte/3.57.0:
     resolution: {integrity: sha512-WMXEvF+RtAaclw0t3bPDTUe19pplMlfyKDsixbHQYgCWi9+O9VN0kXU1OppzrB9gPAvz4NALuoca2LfW2bOjTQ==}
