@@ -21,7 +21,9 @@
      * https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md
      */
     onMount(async () => {
-        GClient = await getGapiClient()
+        GClient = await getGapiClient({
+            discoveryDocs: [DISCOVERY_DOC]
+        })
         // await GClient.init({
         //     apiKey: PUBLIC_GOOGLE_API_KEY,
         //     discoveryDocs: [DISCOVERY_DOC],
@@ -102,6 +104,17 @@
             closeAvatarDropdown()
         }
     }
+
+    async function clearAerialFolder() {
+        if (data.aerialFolder?.id) {
+            await GClient.drive.files.delete({
+                fileId: data.aerialFolder?.id
+            })
+            await invalidateAll()
+            // console.log(data)
+        }
+    }
+    // console.log(data)
 </script>
 
 <svelte:head>
@@ -125,9 +138,29 @@
                 </div>
 
                 {#if open}
-                    <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:slide="{{delay: 250, duration: 300, easing: quintOut, axis: 'y'}}" class="absolute right-0 z-10 mt-2 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-1 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                        <div class="text-sm text-gray-700 px-4 py-2">{data.auth.user?.name}</div>
-                        <button type="button" on:click={logout} class="text-gray-700 block w-full px-4 py-2 text-left text-sm rounded-md border-2 border-transparent outline-none hover:text-indigo-500 focus:text-indigo-500 focus:border-indigo-500" role="menuitem">
+                    <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:slide="{{delay: 250, duration: 300, easing: quintOut, axis: 'y'}}" class="absolute right-0 z-10 mt-2 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-1 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                        <div class="text-sm font-medium text-gray-700 px-4 pt-2">{data.auth.user?.name}</div>
+
+                        <div class="px-4 space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-xs text-slate-800">Storage ({data?.storageQuota.occupiedSpace}% full)</span>
+                            </div>
+                            <div class="min-w-[160px] w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-400">
+                                <div class="bg-indigo-600 h-2.5 rounded-full" style={`width: ${data?.storageQuota.occupiedSpace}%`}></div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 text-xs text-slate-800 px-4">
+                            <span>Aerial folder size: {data?.aerialFolder?.totalSize ?? '0 bytes'}</span>
+                            <button type="button" on:click={clearAerialFolder} disabled="{data?.aerialFolder === null}" title="Clear Aerial folder" role="menuitem" class="text-indigo-600 p-1 text-left text-sm rounded-md border-2 border-transparent outline-none hover:text-indigo-500 focus:text-indigo-500 focus:border-indigo-500 disabled:text-slate-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                </svg>
+                                <span class="sr-only">Clear Aerial folder</span>
+                            </button>
+                        </div>
+
+                        <button type="button" on:click={logout} title="Sign Out" role="menuitem" class="text-gray-700 block w-full px-4 py-2 text-left text-sm rounded-md border-2 border-transparent outline-none hover:text-indigo-500 focus:text-indigo-500 focus:border-indigo-500">
                             Sign Out
                         </button>
                     </div>
