@@ -50,7 +50,7 @@ jobs:
         run: pnpm install
 
       - name: Run build:prod
-        run: pnpm run pnpm:build:prod --if-present
+        run: pnpm run pnpm:build:prod
 
       - name: Copy files to Server
         uses: easingthemes/ssh-deploy@main
