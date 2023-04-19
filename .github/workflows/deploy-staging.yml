@@ -28,17 +28,29 @@ jobs:
           contents: |
             ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 18
+      #     cache: 'npm'
 
-      - name: Install npm dependencies
-        run: npm install
+      # - name: Install npm dependencies
+      #   run: npm install
+
+      # - name: Run build:prod
+      #   run: npm run build:prod --if-present
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+          cache: pnpm
+
+      - name: Install pnpm dependencies
+        run: pnpm install
 
       - name: Run build:prod
-        run: npm run build:prod --if-present
+        run: pnpm run build:prod --if-present
 
       - name: Copy files to Server
         uses: easingthemes/ssh-deploy@main
@@ -59,4 +71,4 @@ jobs:
             cd ${{ secrets.DEPLOY_PATH }}
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
-            npm run pm2:prod
+            pnpm run pm2:prod
