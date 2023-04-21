@@ -100,10 +100,6 @@
                 }
 
                 if (fileCheck.isDoc(file.type)) {
-                    // promise = docPreview(file)
-
-                    // promise = pdf24Preview(file)
-
                     promise = googleDrivePreview(file)
                 }
             })
@@ -168,10 +164,8 @@
     const mupdfPreview = async (file) => {
         return new Promise(async (resolve, reject) => {
             try {
-                // const before = Date.now()
                 const before = performance.now()
                 const mupdf = await createMuPdf()
-                // console.log('mupdf: ', mupdf)
                 const fileArrayBuffer = await file.arrayBuffer()
                 const fileBuffer = new Uint8Array(fileArrayBuffer)
                 const pdf = mupdf.load(fileBuffer)
@@ -193,9 +187,7 @@
                 kmeans_colors = data.kmeans_colors ?? []
                 cmyk = data.cmyk ?? null
 
-                // const after = Date.now()
                 const after = performance.now()
-                // console.log(`mupdfPreview done in ${Math.round((after - before) / 1000)}s`)
                 console.log(`mupdfPreview done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}s`)
                 resolve(images)
             } catch (error) {
@@ -263,12 +255,10 @@
                     body: JSON.stringify(doc)
                 })
                 const docData = await docResponse.json()
-                // console.log('docData: ', docData)
 
                 const fileBuffer = await fetch(docData.base64PDF)
                     .then(response => response.arrayBuffer())
                     .then(arrayBuffer => new Uint8Array(arrayBuffer))
-                // console.log('fileBuffer: ', fileBuffer)
                 const mupdf = await createMuPdf()
                 const pdf = mupdf.load(fileBuffer)
                 const pages = mupdf.countPages(pdf)
@@ -381,13 +371,9 @@
                 const pdf = await fetch(`https://filetools2.pdf24.org/client.php?mode=download&action=downloadJobResult&jobId=${convertData.jobId}`)
                 // https://yahone-chow.medium.com/file-blob-arraybuffer-576a8e99de0d
                 const pdfArrayBuffer = await pdf.arrayBuffer()
-                // console.log('pdfArrayBuffer: ', pdfArrayBuffer)
                 const pdfUi8 = new Uint8Array(pdfArrayBuffer)
-                // console.log('pdfUi8: ', pdfUi8)
                 const pdfRaw = [...pdfUi8]
-                // console.log('pdfRaw: ', pdfRaw)
                 const pdfBlob = new Blob([new Uint8Array(pdfRaw)], { type: 'application/pdf' })
-                // console.log('pdfBlob: ', pdfBlob)
                 // We are returning the input name which ends with .docx but in reality it is pdf format
                 const pdfFile = new File([pdfBlob], jobStatusData.job['0.in.name'], {
                     type: 'application/pdf'
@@ -401,7 +387,6 @@
                 console.log('Received error from pdf24, running fallback with libreoffice')
                 console.log(error)
                 resolve(docPreview(file))
-                // reject(error)
             }
         })
     }
@@ -429,7 +414,6 @@
                 const fileBuffer = await fetch(driveData.base64PDF)
                     .then(response => response.arrayBuffer())
                     .then(arrayBuffer => new Uint8Array(arrayBuffer))
-                // console.log('fileBuffer: ', fileBuffer)
                 const mupdf = await createMuPdf()
                 const pdf = mupdf.load(fileBuffer)
                 const pages = mupdf.countPages(pdf)
@@ -541,9 +525,6 @@
     <section>
         <form method="POST" use:enhance={upload} class="flex flex-wrap gap-4 py-4" enctype="multipart/form-data">
             <FileInput bind:ref={fileinput} on:change={onChange} label="Upload" id="file" name="file" multiple accept="image/*,.pdf,.docx,.doc" />
-            <!-- <div>
-                <input bind:this={fileinput} on:change={onChange} type="file" name="file" multiple accept="image/*,.pdf,.docx,.doc" />
-            </div> -->
 
             <div class="flex items-end gap-2">
                 <Button bind:ref={submitBtn} type="submit" id="submit" disabled="{!showImage}">
@@ -552,8 +533,6 @@
                 <Button on:click={reset} type="reset" id="reset">
                     Reset
                 </Button>
-                <!-- <input bind:this={submitBtn} type="submit" value="Submit" class={showImage ? 'border rounded px-4 text-rose-500 border-rose-500' : 'border rounded px-4 text-gray-500 border-gray-500'} disabled /> -->
-                <!-- <input on:click={reset} type="reset" value="Reset" class="border border-gray-500 rounded px-4"> -->
             </div>
         </form>
 
