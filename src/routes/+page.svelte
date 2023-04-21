@@ -4,6 +4,7 @@
     import { invalidateAll } from "$app/navigation"
     import { createMuPdf } from "mupdf-js"
 
+    import Logo from "$lib/component/Logo.svelte"
     import Pulse from "$lib/component/Pulse.svelte"
     import GoogleClient from "$lib/component/GoogleClient.svelte"
     import FileInput from "$lib/component/input/File.svelte"
