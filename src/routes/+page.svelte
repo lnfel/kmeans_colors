@@ -16,7 +16,7 @@
      * How To Create A SvelteKit Image Upload (step-by-step)
      * https://www.programonaut.com/how-to-create-a-sveltekit-image-upload-step-by-step/
      */
-    let fileinput, submitBtn, image, showImage = false
+    let fileinput, submitBtn, hasImage = false
     let images = [], promise
     let plotty
 
@@ -138,6 +138,10 @@
 
                 if (fileCheck.isImage(file.type)) {
                     promise = getBase64Image(file, index)
+                    hasImage = true
+                    // submitBtn.disabled = false
+                    submitBtn.classList.remove('text-gray-500', 'border-gray-500')
+                    submitBtn.classList.add('text-rose-500', 'border-rose-500')
                 }
 
                 if (fileCheck.isPdf(file.type)) {
@@ -154,18 +158,16 @@
             return
         }
 
-        showImage = false
+        hasImage = false
     }
 
     async function reset(clearPreview = true) {
         images = []
-        kmeans_colors = []
-        cmyk = null
-        showImage = false
+        hasImage = false
         await invalidateAll()
         if (clearPreview) {
             const previewContainer = document.querySelector('.preview-container')
-            console.log('previewContainer: ', previewContainer)
+            // console.log('previewContainer: ', previewContainer)
             if (previewContainer.parentNode) {
                 previewContainer.parentNode.removeChild(previewContainer)
             }
@@ -189,7 +191,8 @@
             // can be accessed via $page.form
             console.log(result)
 
-            submitBtn.disabled = true
+            hasImage = false
+            // submitBtn.disabled = true
             submitBtn.classList.add('text-gray-500', 'border-gray-500')
             submitBtn.classList.remove('text-rose-500', 'border-rose-500')
 
@@ -215,7 +218,7 @@
             <FileInput bind:ref={fileinput} on:change={onChange} label="Upload" id="file" name="file" multiple accept="image/*,.pdf,.docx,.doc" />
 
             <div class="flex items-end gap-2">
-                <Button bind:ref={submitBtn} type="submit" id="submit" disabled="{!showImage}">
+                <Button bind:ref={submitBtn} type="submit" id="submit" disabled="{!hasImage}">
                     Submit
                 </Button>
                 <Button on:click={reset} type="reset" id="reset">
