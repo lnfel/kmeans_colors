@@ -3,6 +3,7 @@
     import { enhance } from "$app/forms"
     import { page } from "$app/stores"
     import { invalidateAll } from "$app/navigation"
+    import { googleDrivePreview, mupdfPreview, libreofficePreview, pdf24Preview, imagePreview } from "$lib/aerial/client/index.js"
     import { fromArrayBuffer, fromBlob } from 'geotiff'
 
     import Logo from "$lib/component/Logo.svelte"

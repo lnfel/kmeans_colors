@@ -324,9 +324,26 @@ export const googleDrivePreview = async (file, $page) => {
     })
 }
 
+/**
+ * Batch processing of images on server-side
+ * The idea is to have the images processed by sharp so that we get all output as PNG
+ * then process them with kmeans_colors in one go
+ * 
+ * @param {File} file Image file input
+ */
+export const imagePreview = async (files) => {
+    const response = await fetch('/api/image', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+}
+
 export default {
     mupdfPreview,
     libreofficePreview,
     pdf24Preview,
-    googleDrivePreview
+    googleDrivePreview,
+    imagePreview
 }
