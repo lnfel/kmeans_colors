@@ -28,13 +28,9 @@ export const POST = async ({ request, locals, cookies, fetch }) => {
         console.log('isSignedIn: ', isSignedIn(locals))
         const split = 262144 // This is a sample chunk size. https://stackoverflow.com/a/73264129/12478479
         const doc = Buffer.from(base64.replace('data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,', ''), 'base64')
-        // console.log('doc: ', doc)
         const docSize = doc.length
-        // console.log('docSize: ', docSize)
         const array = [...new Int8Array(doc)]
-        // console.log('array: ', array)
         const chunks = [...Array(Math.ceil(array.length / split))].map((_) => Buffer.from(new Int8Array(array.splice(0, split))))
-        // console.log('chunks: ', chunks)
 
         const client = getOAuth2Client(locals)
         console.log('client: ', client)

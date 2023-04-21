@@ -267,63 +267,6 @@ export const pdf2pic = async (GhostPrintPDF) => {
     }
 }
 
-/**
- * NOTE: Cannot use mupdf on server in svelte
- * Error: Cannot use relative URL (/Users/pingsailor/Sites/kmeans_colors_js/node_modules/mupdf-js/dist/libmupdf.wasm) with global fetch — use `event.fetch` instead: https://kit.svelte.dev/docs/web-standards#fetch-apis
- * 
- * Obtaining JavaScript import object entries from a WebAssembly .wasm module
- * https://stackoverflow.com/questions/44444050/obtaining-javascript-import-object-entries-from-a-webassembly-wasm-module
- * @param {Object} GhostPrintPDF 
- * @returns {Object}
- */
-export const mupdf = async (GhostPrintPDF) => {
-    try {
-        // const mupdfInstance = await createMuPdf()
-        // const mupdfWasmBuffer = await readFile(path.join(__dirname, '../../../../node_modules/mupdf-js/dist/libmupdf.wasm'))
-        // console.log('mupdfWasmBuffer: ', mupdfWasmBuffer)
-
-        // const mupdfModule = await WebAssembly.compile(mupdfWasmBuffer)
-        // console.log('mupdfModule: ', mupdfModule)
-
-        // const mupdfModule2 = new WebAssembly.Module(mupdfWasmBuffer)
-        // console.log('mupdfModule2: ', mupdfModule2)
-
-        // let importObject = {}
-        // for (let imp of WebAssembly.Module.imports(mupdfModule)) {
-        //     if (typeof importObject[imp.module] === "undefined") {
-        //         importObject[imp.module] = {}
-        //     }
-        //     switch (imp.kind) {
-        //         case "function": importObject[imp.module][imp.name] = () => {}; break;
-        //         case "table": importObject[imp.module][imp.name] = new WebAssembly.Table({ initial: 0, element: "anyfunc" }); break;
-        //         case "memory": importObject[imp.module][imp.name] = new WebAssembly.Memory({ initial: 12000, maximum: 32768 }); break;
-        //         case "global": importObject[imp.module][imp.name] = 0; break;
-        //     }
-        // }
-
-        // console.log('importObject: ', importObject)
-        // const testImports = WebAssembly.Module.imports(mupdfModule)
-        // console.log('testImports: ', testImports)
-        // const mupdfWA = new WebAssembly.Instance(mupdfModule)
-        // console.log('mupdfWA: ', mupdfWA)
-
-        // const mupdfInstance = await WebAssembly.instantiate(mupdfWasmBuffer, importObject)
-        // console.log('mupdfInstance: ', mupdfInstance)
-
-        // const mupdf = await initMuPdf()
-
-        return {
-            images: []
-            // kmeans_colors
-        }
-    } catch (error) {
-        console.log(error)
-        return {
-            images: []
-        }
-    }
-}
-
 export default {
     prepare,
     preview,
