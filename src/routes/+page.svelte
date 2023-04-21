@@ -1,8 +1,9 @@
 <script>
+    import { onMount } from 'svelte'
     import { enhance } from "$app/forms"
     import { page } from "$app/stores"
     import { invalidateAll } from "$app/navigation"
-    import { googleDrivePreview, mupdfPreview, libreofficePreview, pdf24Preview } from "$lib/aerial/client/index.js"
+    import { fromArrayBuffer, fromBlob } from 'geotiff'
 
     import Logo from "$lib/component/Logo.svelte"
     import Pulse from "$lib/component/Pulse.svelte"
@@ -16,45 +17,92 @@
      */
     let fileinput, submitBtn, image, showImage = false
     let images = [], promise
-    let kmeans_colors = []
-    let cmyk
+    let plotty
 
-    // SVG loaders
-    // https://samherbert.net/svg-loaders/
-    let loading = false
+    onMount(async () => {
+        plotty = await import('plotty')
+    })
 
-    async function getBase64Image(file) {
+    /**
+     * Get status of a promise
+     * 
+     * https://stackoverflow.com/a/35820220/12478479
+     * 
+     * @param {Promise} promise
+     * @returns {String}
+     */
+    function promiseState(promise) {
+        const t = {}
+        return Promise.race([promise, t])
+            .then(v => (v === t) ? 'pending' : 'fulfilled', () => 'rejected')
+    }
+
+    async function getBase64Image(file, index) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader()
-            reader.readAsDataURL(file)
-            reader.addEventListener("load", function () {
-                const image = {
-                    url: reader.result,
-                    name: file.name,
-                    type: file.type,
-                    size: file.size
+            console.log('getBase64Image file: ', file)
+            file.type === 'image/tiff'
+                ? reader.readAsArrayBuffer(file)
+                : reader.readAsDataURL(file)
+
+            reader.addEventListener("load", async function() {
+                if (reader.result instanceof ArrayBuffer) {
+                    const buffer = reader.result
+                    console.log(buffer)
+                    const tiff = await fromArrayBuffer(buffer)
+                    console.log(tiff)
+                    const tiffImage = await tiff.getImage()
+                    console.log(tiffImage)
+                    const data = await tiffImage.readRasters()
+                    // const data = await tiffImage.readRGB()
+                    // console.log(data)
+                    // console.log(data[0])
+                    const image = {
+                        url: null,
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        data: data[0],
+                        canvasId: `plotty-${index}`,
+                        tiffImage
+                    }
+                    images = [...images, image]
+                    resolve({
+                        images
+                    })
+                    // const fulfilled = await promiseState(promise)
+                    // console.log('fulfilled: ', fulfilled)
+                } else {
+                    const image = {
+                        url: reader.result,
+                        name: file.name,
+                        type: file.type,
+                        size: file.size
+                    }
+                    // https://svelte.dev/tutorial/updating-arrays-and-objects
+                    images = [...images, image]
+                    resolve({
+                        images
+                    })
                 }
-                // https://svelte.dev/tutorial/updating-arrays-and-objects
-                images = [...images, image]
-                resolve(images)
             })
         })
     }
 
-    async function getBase64Doc(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader()
-            reader.readAsDataURL(file)
-            reader.addEventListener("load", function () {
-                const doc = {
-                    url: reader.result,
-                    name: file.name,
-                    type: file.type,
-                    size: file.size
-                }
-                resolve(doc)
-            })
+    function renderTiff(preview) {
+        console.log('renderTiff preview: ', preview)
+        console.log('plotty: ', plotty)
+        const canvas = document.querySelector(`#${preview.canvasId}`)
+        const plot = new plotty.plot({
+            canvas,
+            data: preview.data,
+            width: preview.tiffImage.getWidth(),
+            height: preview.tiffImage.getHeight(),
+            domain: [0, 255],
+            useWebGL: false
+            // colorScale: "rainbow"
         })
+        plot.render()
     }
 
     /**
@@ -65,7 +113,7 @@
         const files = fileinput.files
         // const files = event.target.files
         const allowedFileTypes = {
-            images: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml',],
+            images: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml', 'image/gif', 'image/tiff'],
             pdf: ['application/pdf'],
             doc: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']
         }
@@ -84,16 +132,11 @@
         console.log('onChange files: ', fileinput.files)
 
         if (files) {
-            showImage = true
-            submitBtn.disabled = false
-            submitBtn.classList.remove('text-gray-500', 'border-gray-500')
-            submitBtn.classList.add('text-rose-500', 'border-rose-500')
-
-            Array.from(files).forEach(async (file) => {
+            Array.from(files).forEach(async (file, index) => {
                 console.log('file: ', file)
 
                 if (fileCheck.isImage(file.type)) {
-                    promise = getBase64Image(file)
+                    promise = getBase64Image(file, index)
                 }
 
                 if (fileCheck.isPdf(file.type)) {
@@ -196,7 +239,16 @@
                     {#each data?.images ?? [] as preview, index}
                         <div class="grid place-items-center">
                             <figure class="space-y-2">
+                            {#if preview.url}
                                 <img src={preview.url} alt={preview.name} class="mx-auto" />
+                            {:else}
+                                {#await promiseState(promise) then fulfilled} 
+                                    {#if fulfilled === 'fulfilled'}
+                                        <div class="hidden">{renderTiff(preview)}</div>
+                                    {/if}
+                                {/await}
+                                <canvas id="plotty-{index}"></canvas>
+                            {/if}
                                 <figcaption class="text-center">
                                     <div>Page {index + 1}</div>
                                     <div>{preview.name}</div>
