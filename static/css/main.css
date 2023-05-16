@@ -30,7 +30,8 @@
 .logo:focus > .logo-image #long-arc {
     fill: url(#long-arc-gradient)
 }
-.logo-text {
+.logo-text,
+.font-sculpin {
     /* font-family: 'Asul', sans-serif; */
     font-family: 'sculpin', sans-serif;
 }
