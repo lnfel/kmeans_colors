@@ -48,6 +48,7 @@
 		"mupdf-js": "^1.1.1",
 		"node-cron": "^3.0.2",
 		"plotty": "^0.4.9",
+		"quirrel": "^1.13.4",
 		"sharp": "^0.32.0",
 		"short-unique-id": "^4.4.4",
 		"svelte-google-auth": "^0.7.2",
