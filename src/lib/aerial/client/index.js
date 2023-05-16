@@ -1,4 +1,7 @@
+import { writable } from 'svelte/store'
 import { createMuPdf } from "mupdf-js"
+export const error = writable()
+export const hasFile = writable(false)
 
 /**
  * Convert DOCX to base64
@@ -20,6 +23,10 @@ async function getBase64Doc(file) {
             resolve(doc)
         })
     })
+}
+
+async function clearErrors() {
+    error.set(null)
 }
 
 /**
