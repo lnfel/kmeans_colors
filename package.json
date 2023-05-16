@@ -4,6 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "concurrently 'vite dev --open' 'DISABLE_TELEMETRY=true quirrel'",
+		"dev:windows": "concurrently \"vite dev --open\" \"DISABLE_TELEMETRY=true quirrel\"",
 		"build": "vite build",
 		"build:prod": "vite build && npm run postbuild && npm run npm:ci",
 		"postbuild": "node -r dotenv/config ./scripts/postbuild.js",
