@@ -170,8 +170,8 @@ export const actions = {
                 // await writeFile(imagepath, buffer, { flag: 'w+' })
 
                 const pngBuffer = await sharp(buffer)
-                        .toFormat('png')
-                        .toBuffer()
+                    .toFormat('png')
+                    .toBuffer()
                 console.log('pngBuffer: ', pngBuffer)
                 const imagepath = `${storage_path}/tmp/file-${i}.png`
                 await writeFile(imagepath, pngBuffer, { flag: 'w+' })
