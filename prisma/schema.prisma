@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Reset migrations by deleting prisma/migrations folder and running:
+// npx prisma migrate dev --name init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+
+enum ArtifactType {
+    IMAGE
+    DOCUMENT
+}
+
+enum Mimetype {
+    IMAGE_PNG
+    IMAGE_JPEG
+    IMAGE_JPG
+    IMAGE_WEBP
+    IMAGE_SVG
+    IMAGE_GIF
+    IMAGE_TIFF
+    APPLICATION_PDF
+    APPLICATION_DOCX
+    APPLICATION_MSWORD
+}
+
+// Models
+// Set up relationship
+// https://www.prisma.io/docs/concepts/components/prisma-schema/relations#the-relation-attribute
+// Use Prisma with Sveltekit
+// https://www.prisma.io/blog/sveltekit-prisma-kvCOEoeQlC
+
+// Generate custom id using prisma middleware
+// https://github.com/prisma/prisma/issues/6719#issuecomment-1178211695
+
+model ArtifactCollection {
+    // id String @id @default(uuid())
+    // We are generating id using prisma middleware
+    // see /src/lib/prisma.js generateShortUniqueId function
+    id String @id 
+    label String?
+    artifacts Artifact[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Artifact {
+    // id String @id @default(uuid())
+    // We are generating id using prisma middleware
+    // see /src/lib/prisma.js generateShortUniqueId function
+    id String @id 
+    label String?
+    type ArtifactType
+    mimetype Mimetype
+    url String?
+    collection ArtifactCollection? @relation(fields: [collectionId], references: [id])
+    collectionId String?
+    kmeansColors KmeansColors? @relation(fields: [kmeansColorsId], references: [id])
+    kmeansColorsId String? @unique
+    cmyk CMYK? @relation(fields: [cmykId], references: [id])
+    cmykId String? @unique
+    pages Int? @default(0)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model KmeansColors {
+    id String @id
+    artifact Artifact?
+    artifactId String?
+    colors Json
+    // colors Color[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+// model Color {
+//     id String @id
+//     hex String
+//     rgb String
+//     cmyk String
+//     percentage Float
+//     cluster KmeansColors? @relation(fields: [clusterId], references: [id])
+//     clusterId String
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+// }
+
+model CMYK {
+    id String @id
+    artifact Artifact?
+    artifactId String?
+    total String
+    whiteSpace Float
+    coloredSpace Float
+    summary Json
+    // summary CMYKSummary[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+// model CMYKSummary {
+//     id String @id
+//     cmyk CMYK @relation(fields: [cmykId], references: [id])
+//     cmykId String
+// }
