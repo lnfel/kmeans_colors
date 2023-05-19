@@ -13,7 +13,7 @@
     import GoogleClient from "$lib/component/GoogleClient.svelte"
     import FileInput from "$lib/component/input/File.svelte"
     import TextInput from "$lib/component/input/Text.svelte"
-    import Filepond from "$lib/component/input/Filepond.svelte"
+    // import Filepond from "$lib/component/input/Filepond.svelte"
     import Button from "$lib/component/Button.svelte"
 
     // const uid = new ShortUniqueId()
