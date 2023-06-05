@@ -2,6 +2,7 @@ import * as path from "path"
 import { fileURLToPath } from "url"
 import { execa } from 'execa'
 import dargs from "dargs"
+import { platform } from "os"
 
 /**
  * kmeans_colors
@@ -23,7 +24,7 @@ import dargs from "dargs"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const defaultBinaryPath = path.join(__dirname, '../bin/kmeans_colors')
+const defaultBinaryPath = path.join(__dirname, `../bin/kmeans_colors${platform() === 'win32' ? '.exe' : ''}`)
 
 /**
  * Argument parser
