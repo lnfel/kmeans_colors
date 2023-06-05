@@ -41,8 +41,24 @@ const queue = Queue(
         artifacts.forEach(async (artifact) => {
             // test loop
             // await appendFile(`${storage_path}/aerial/${artifactCollection.id}/artifacts.txt`, artifact.id)
-            const kmeans_colors = await kmeansColors(`${storage_path}/aerial/${artifactCollection.id}/${artifact.id}${getFileExtension(mimetypeMapFromEnum[artifact.mimetype])}`)
-            await writeFile(`${storage_path}/aerial/${artifactCollection.id}/kmeans.json`, JSON.stringify(kmeans_colors, null, 4))
+            const colors = await kmeansColors(`${storage_path}/aerial/${artifactCollection.id}/${artifact.id}${getFileExtension(mimetypeMapFromEnum[artifact.mimetype])}`)
+            await writeFile(`${storage_path}/aerial/${artifactCollection.id}/kmeans.json`, JSON.stringify(colors, null, 4))
+
+            const kmeansColor = await prisma.kmeansColors.create({
+                data: {
+                    artifactId: artifact.id,
+                    colors
+                }
+            })
+
+            await prisma.artifact.update({
+                where: {
+                    id: artifact.id
+                },
+                data: {
+                    kmeansColorsId: kmeansColor.id
+                }
+            })
         })
     }
 )
