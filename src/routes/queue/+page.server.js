@@ -17,7 +17,15 @@ export const load = async () => {
     // }
 
     const artifacts = await prisma.artifact.findMany()
-    const artifactCollections = await prisma.artifactCollection.findMany()
+    const artifactCollections = await prisma.artifactCollection.findMany({
+        include: {
+            artifacts: {
+                include: {
+                    kmeansColors: true
+                }
+            }
+        }
+    })
 
     return {
         artifacts,
