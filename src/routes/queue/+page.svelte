@@ -163,5 +163,8 @@
             {JSON.stringify(form)}
         </div> -->
         <!-- <Filepond allowMultiple={true} /> -->
+        <pre>
+{JSON.stringify($page?.data?.artifactCollections, null, 4)}
+        </pre>
     </section>
 </main>
