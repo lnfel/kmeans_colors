@@ -33,15 +33,15 @@ const queue = Queue(
             }
         })
         // test that queue job is invoked
-        await writeFile(`${storage_path}/aerial/${artifactCollection.id}/test.json`, JSON.stringify(artifactCollection, null, 4))
+        //await writeFile(`${storage_path}/aerial/${artifactCollection.id}/test.json`, JSON.stringify(artifactCollection, null, 4))
 
         const artifacts = artifactCollection.artifacts
 
         artifacts.forEach(async (artifact) => {
             // test loop
             // await appendFile(`${storage_path}/aerial/${artifactCollection.id}/artifacts.txt`, artifact.id)
-
-            
+            const kmeans_colors = await kmeansColors(`${storage_path}/aerial/${artifactCollection.id}/${artifact.id}${getFileExtension(mimetypeMapFromEnum[artifact.mimetype])}`)
+            await writeFile(`${storage_path}/aerial/${artifactCollection.id}/kmeans.json`, JSON.stringify(kmeans_colors, null, 4))
         })
     }
 )
