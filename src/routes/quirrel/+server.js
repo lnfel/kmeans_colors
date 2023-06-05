@@ -3,6 +3,7 @@ import { writeFile, appendFile } from 'node:fs/promises'
 import { storage_path } from "$lib/config.js"
 import prisma, { mimetypeMapToEnum, mimetypeMapFromEnum } from '$lib/prisma.js'
 import { getFileExtension } from '$lib/aerial/hybrid/util.js'
+import { kmeansColors } from '$lib/aerial/server/index.js'
 
 /**
  * This route is dedicated to handling queues added in /api/queue to Quirrel Queue
