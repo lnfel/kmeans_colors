@@ -3,7 +3,7 @@ import { writeFile, appendFile } from 'node:fs/promises'
 import { storage_path } from "$lib/config.js"
 import prisma, { mimetypeMapToEnum, mimetypeMapFromEnum } from '$lib/prisma.js'
 import { getFileExtension } from '$lib/aerial/hybrid/util.js'
-import { kmeansColors } from '$lib/aerial/server/index.js'
+import { kmeansColors, summary } from '$lib/aerial/server/index.js'
 
 /**
  * This route is dedicated to handling queues added in /api/queue to Quirrel Queue
@@ -42,23 +42,34 @@ const queue = Queue(
             // test loop
             // await appendFile(`${storage_path}/aerial/${artifactCollection.id}/artifacts.txt`, artifact.id)
             const colors = await kmeansColors(`${storage_path}/aerial/${artifactCollection.id}/${artifact.id}${getFileExtension(mimetypeMapFromEnum[artifact.mimetype])}`)
-            await writeFile(`${storage_path}/aerial/${artifactCollection.id}/kmeans.json`, JSON.stringify(colors, null, 4))
+            // await writeFile(`${storage_path}/aerial/${artifactCollection.id}/kmeans.json`, JSON.stringify(colors, null, 4))
 
-            const kmeansColor = await prisma.kmeansColors.create({
-                data: {
-                    artifactId: artifact.id,
-                    colors
-                }
-            })
-
-            await prisma.artifact.update({
+            const kmeansColor = await prisma.kmeansColors.findFirst({
                 where: {
-                    id: artifact.id
-                },
-                data: {
-                    kmeansColorsId: kmeansColor.id
+                    id: 'kc_Jel4oz'
                 }
             })
+            await writeFile(`${storage_path}/aerial/${artifactCollection.id}/kmeans.json`, JSON.stringify(kmeansColor, null, 4))
+
+            const cmyk = await summary(kmeansColor.colors)
+            console.log('cmyk: ', cmyk)
+            await writeFile(`${storage_path}/aerial/${artifactCollection.id}/cmyk.json`, JSON.stringify(cmyk, null, 4))
+
+            // const kmeansColor = await prisma.kmeansColors.create({
+            //     data: {
+            //         artifactId: artifact.id,
+            //         colors
+            //     }
+            // })
+
+            // await prisma.artifact.update({
+            //     where: {
+            //         id: artifact.id
+            //     },
+            //     data: {
+            //         kmeansColorsId: kmeansColor.id
+            //     }
+            // })
         })
     }
 )
