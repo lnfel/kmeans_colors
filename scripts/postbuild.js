@@ -3,10 +3,13 @@ import { fileURLToPath } from "url"
 import tar from "tar"
 import chalk from 'chalk'
 import { readFile, writeFile, mkdir, open, rm } from 'node:fs/promises'
+import { platform } from "os"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const defaultBuildBinPath = path.join(__dirname, '../build/server/bin')
+const defaultBuildBinPath = process.env.BUILD_ENVIRONMENT === 'production'
+    ? path.join(__dirname, '../build/server/bin')
+    : path.join(__dirname, '../src/lib/bin')
 
 /**
  * Copy package.json to package output directory
@@ -49,6 +52,7 @@ async function initStorage() {
  * @returns {Object} Binary dependency object
  */
 const addBinaryDependency = async (name, url, binPath = defaultBuildBinPath) => {
+    const extension = platform() === 'win32' ? '.exe' : ''
     /**
      * @namespace {Object} binary
      * @property {String} binary.name The binary name
@@ -61,7 +65,7 @@ const addBinaryDependency = async (name, url, binPath = defaultBuildBinPath) => 
         name,
         url,
         binPath,
-        executablePath: path.join(binPath, name),
+        executablePath: `${path.join(binPath, name)}${extension}`,
         installDirectory: path.join(binPath, getUrlLastPath(url))
     }
 
@@ -79,21 +83,32 @@ const getUrlLastPath = (url) => {
 }
 
 /**
+ * Download appropriate binary build depending on current platform
+ */
+const kmeansBinaryMap = {
+    darwin: await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-macos-x86_64.tar.gz"),
+    linux: await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-linux-x86_64.tar.gz"),
+    win32: await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-windows-x86_64.tar.gz")
+}
+
+/**
  * To add new binary dependency use the addBinaryDependency helper
  * 
  * @returns {Promise<Array>} Promise<array>
  */
 const binaries = async () => {
+    console.log(kmeansBinaryMap[platform()])
     return [
-        process.env.BUILD_ENVIRONMENT === 'production'
-            ? await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-linux-x86_64.tar.gz")
-            : await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-macos-x86_64.tar.gz")
-            ,
+        kmeansBinaryMap[platform()],
+        // process.env.BUILD_ENVIRONMENT === 'production'
+        //     ? await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-linux-x86_64.tar.gz")
+        //     : await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-macos-x86_64.tar.gz")
+        //     ,
     ]
 }
 
 /**
- * Download executable dependencies and extract to /build/server/bin folder
+ * Download executable dependencies and extract to /build/server/bin on production or /src/lib/bin folder when on development
  * 
  * @param {Array} binaries 
  * @returns {Promise<void>} Promise<void>
@@ -106,8 +121,12 @@ async function install(binaries) {
         const response = await fetch(binary.url)
         const file = await response.blob()
         const buffer = Buffer.from(await file.arrayBuffer())
+        // /build/server/bin
         await mkdir(defaultBuildBinPath, { recursive: true })
         await writeFile(binary.installDirectory, buffer, { flag: 'w+' })
+
+        // /src/lib/bin
+        // await writeFile(binary.installDevelopmentDirectory, buffer, { flag: 'w+' })
 
         const filehandle = await open(binary.installDirectory)
         filehandle.createReadStream()
