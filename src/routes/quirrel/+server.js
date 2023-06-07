@@ -51,9 +51,9 @@ const queue = Queue(
             // })
             // await writeFile(`${storage_path}/aerial/${artifactCollection.id}/kmeans.json`, JSON.stringify(kmeansColor, null, 4))
 
-            // const cmyk = await summary(kmeansColor.colors)
-            // console.log('cmyk: ', cmyk)
-            // await writeFile(`${storage_path}/aerial/${artifactCollection.id}/cmyk.json`, JSON.stringify(cmyk, null, 4))
+            // const cmykData = await summary(kmeansColor.colors)
+            // console.log('cmykData: ', cmykData)
+            // await writeFile(`${storage_path}/aerial/${artifactCollection.id}/cmyk.json`, JSON.stringify(cmykData, null, 4))
 
             const kmeansColor = await prisma.kmeansColors.create({
                 data: {
@@ -62,12 +62,25 @@ const queue = Queue(
                 }
             })
 
+            const cmykData = await summary(kmeansColor.colors)
+
+            const cmyk = await prisma.cMYK.create({
+                data: {
+                    artifactId: artifact.id,
+                    total: cmykData.total,
+                    whiteSpace: cmykData.whiteSpace,
+                    coloredSpace: cmykData.coloredSpace,
+                    summary: cmykData.summary
+                }
+            })
+
             await prisma.artifact.update({
                 where: {
                     id: artifact.id
                 },
                 data: {
-                    kmeansColorsId: kmeansColor.id
+                    kmeansColorsId: kmeansColor.id,
+                    cmykId: cmyk.id
                 }
             })
         })
