@@ -7,6 +7,7 @@
     import { invalidateAll } from "$app/navigation"
     // import ShortUniqueId from "short-unique-id"
     import { validateFileInput, error, hasFile } from "$lib/aerial/client/index.js"
+    import LamyDebugbar from "lamy-debugbar"
 
     import Logo from "$lib/component/Logo.svelte"
     import Pulse from "$lib/component/Pulse.svelte"
@@ -163,8 +164,9 @@
             {JSON.stringify(form)}
         </div> -->
         <!-- <Filepond allowMultiple={true} /> -->
-        <pre>
+        <!-- <pre>
 {JSON.stringify($page?.data?.artifactCollections, null, 4)}
-        </pre>
+        </pre> -->
+        <LamyDebugbar data={$page?.data?.artifactCollections} />
     </section>
 </main>
