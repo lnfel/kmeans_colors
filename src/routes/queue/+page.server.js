@@ -124,7 +124,7 @@ export const actions = {
             //     delay: '1h'
             // })
             await quirrel.enqueue(collection.id, {
-                delay: '1h'
+                // delay: '1h' // if delay if not specified, quirrel runs the job ASAP
             })
 
             return {
