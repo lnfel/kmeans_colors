@@ -21,7 +21,8 @@ export const load = async () => {
         include: {
             artifacts: {
                 include: {
-                    kmeansColors: true
+                    kmeansColors: true,
+                    cmyk: true
                 }
             }
         }
