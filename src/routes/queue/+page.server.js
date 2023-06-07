@@ -6,8 +6,18 @@ import { storage_path } from "$lib/config.js"
 import { POST as quirrel } from '../quirrel/+server.js'
 import { fileCheck, emptyFile } from '$lib/aerial/hybrid/validation.js'
 import { getFileExtension } from '$lib/aerial/hybrid/util.js'
+import { getOAuth2Client, isSignedIn } from 'svelte-google-auth'
+import { listDriveFiles, listStorageQuota, listAerialFolderDetails } from '$lib/aerial/server/google/drive.js'
 
-export const load = async () => {
+export const load = async ({ locals }) => {
+    let driveFiles, storageQuota, aerialFolder
+    if (isSignedIn(locals)) {
+        const client = getOAuth2Client(locals)
+        driveFiles = await listDriveFiles(client)
+        storageQuota = await listStorageQuota(client)
+        aerialFolder = await listAerialFolderDetails(client)
+    }
+    
     // const job = await quirrel.getById('be501991-8c74-4af6-96b0-ea85e7f068c1')
     // console.log(job)
     // if(await job?.invoke()) {
@@ -30,7 +40,10 @@ export const load = async () => {
 
     return {
         artifacts,
-        artifactCollections
+        artifactCollections,
+        driveFiles,
+        storageQuota,
+        aerialFolder
     }
 }
 
