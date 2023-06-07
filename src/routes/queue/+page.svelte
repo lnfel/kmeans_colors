@@ -138,7 +138,7 @@
 
             {#each $page?.data?.artifactCollections as artifact, i}
                 <div class:rounded-bl-md={$page?.data?.artifactCollections.length === i + 1} class="px-2 py-1 border-l border-indigo-100">
-                    {artifact.id}
+                    <a href="/artifact-collections/{artifact.id}">{artifact.id}</a>
                 </div>
                 <div class="px-2 py-1">
                     {artifact.label}
