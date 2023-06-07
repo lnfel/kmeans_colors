@@ -9,9 +9,8 @@
     import { validateFileInput, error, hasFile } from "$lib/aerial/client/index.js"
     import LamyDebugbar from "lamy-debugbar"
 
-    import Logo from "$lib/component/Logo.svelte"
+    import Header from "$lib/component/Header.svelte"
     import Pulse from "$lib/component/Pulse.svelte"
-    import GoogleClient from "$lib/component/GoogleClient.svelte"
     import FileInput from "$lib/component/input/File.svelte"
     import TextInput from "$lib/component/input/Text.svelte"
     // import Filepond from "$lib/component/input/Filepond.svelte"
@@ -57,10 +56,7 @@
     <link rel="canonical" href="https://www-staging.pingsailor.com/queue"/>
 </svelte:head>
 
-<header class="flex items-center justify-between lg:px-[3rem]">
-    <Logo />
-    <GoogleClient data={$page.data} />
-</header>
+<Header />
 
 <main class="lg:px-[3rem]">
     <section class="py-4 space-y-8">

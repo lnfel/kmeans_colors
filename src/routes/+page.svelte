@@ -6,9 +6,8 @@
     import { googleDrivePreview, mupdfPreview, libreofficePreview, pdf24Preview, imagePreview } from "$lib/aerial/client/index.js"
     import { fromArrayBuffer, fromBlob } from 'geotiff'
 
-    import Logo from "$lib/component/Logo.svelte"
+    import Header from "$lib/component/Header.svelte"
     import Pulse from "$lib/component/Pulse.svelte"
-    import GoogleClient from "$lib/component/GoogleClient.svelte"
     import FileInput from "$lib/component/input/File.svelte"
     import Button from "$lib/component/Button.svelte"
 
@@ -207,10 +206,7 @@
     <link rel="canonical" href="https://www-staging.pingsailor.com"/>
 </svelte:head>
 
-<header class="flex items-center justify-between lg:px-[3rem]">
-    <Logo />
-    <GoogleClient data={$page.data} />
-</header>
+<Header />
 
 <main class="lg:px-[3rem]">
     <section>
