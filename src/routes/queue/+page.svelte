@@ -167,6 +167,6 @@
         <!-- <pre>
 {JSON.stringify($page?.data?.artifactCollections, null, 4)}
         </pre> -->
-        <LamyDebugbar data={$page?.data?.artifactCollections} />
+        <LamyDebugbar data={{"artifactCollections": $page?.data?.artifactCollections}} />
     </section>
 </main>
