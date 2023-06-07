@@ -15,7 +15,7 @@ export const load = async ({ params }) => {
             }
         }
     })
-    console.log(`artifactCollection: ${JSON.stringify(artifactCollection, null, 4)}`)
+    // console.log(`artifactCollection: ${JSON.stringify(artifactCollection, null, 4)}`)
 
     return {
         artifactCollection
