@@ -99,8 +99,9 @@ export const actions = {
                 /**
                  * Save file(s) or image(s) in collection folder
                  */
-                const imagepath = `${collectionFolder}/${artifact.id}${getFileExtension(files[i].type)}`
-                await writeFile(imagepath, buffer, { flag: 'w+' })
+                // const imagepath = `${collectionFolder}/${artifact.id}${getFileExtension(files[i].type)}`
+                // await writeFile(imagepath, buffer, { flag: 'w+' })
+                const imagepath = `${collectionFolder}/${artifact.id}.png`
                 await writeFile(imagepath, pngBuffer, { flag: 'w+' })
 
                 images.push(image)
