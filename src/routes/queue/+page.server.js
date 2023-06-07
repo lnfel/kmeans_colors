@@ -45,17 +45,17 @@ export const actions = {
             if (emptyFile(files[0])) return { queue }
 
             // Create a collection for this batch
-            // const collection = await prisma.artifactCollection.create({
-            //     data: {
-            //         label: formData.get('label')
-            //     }
-            // })
+            const collection = await prisma.artifactCollection.create({
+                data: {
+                    label: formData.get('label')
+                }
+            })
 
             /**
              * Create collection folder where we save the file(s) or image(s)
              */
-            // const collectionFolder = `${storage_path}/aerial/${collection.id}`
-            // await mkdir(collectionFolder, { recursive: true })
+            const collectionFolder = `${storage_path}/aerial/${collection.id}`
+            await mkdir(collectionFolder, { recursive: true })
 
             for (let i = 0; i < files.length; i++) {
                 // server-side validation, never trust input from client
@@ -86,21 +86,21 @@ export const actions = {
                  * Save details about each file and assign collectionId
                  * so we can query it after quirrel is finished with queue
                  */
-                // const artifact = await prisma.artifact.create({
-                //     data: {
-                //         label: files[i].name,
-                //         mimetype: mimetypeMapToEnum[files[i].type],
-                //         type: 'IMAGE',
-                //         collectionId: collection.id
-                //     }
-                // })
+                const artifact = await prisma.artifact.create({
+                    data: {
+                        label: files[i].name,
+                        mimetype: mimetypeMapToEnum[files[i].type],
+                        type: 'IMAGE',
+                        collectionId: collection.id
+                    }
+                })
 
                 /**
                  * Save file(s) or image(s) in collection folder
                  */
-                // const imagepath = `${collectionFolder}/${artifact.id}${getFileExtension(files[i].type)}`
-                // await writeFile(imagepath, buffer, { flag: 'w+' })
-                // await writeFile(imagepath, pngBuffer, { flag: 'w+' })
+                const imagepath = `${collectionFolder}/${artifact.id}${getFileExtension(files[i].type)}`
+                await writeFile(imagepath, buffer, { flag: 'w+' })
+                await writeFile(imagepath, pngBuffer, { flag: 'w+' })
 
                 images.push(image)
                 // console.log(artifact)
@@ -111,13 +111,13 @@ export const actions = {
              * as they hold many information that may lead to out of ram if we
              * have many pending queues
              */
-            const dummyCollection = {"id":"artc_COI3rJ","label":"test","createdAt":"2023-05-06T03:42:07.880Z","updatedAt":"2023-05-06T03:42:07.880Z"}
-            await quirrel.enqueue(dummyCollection.id, {
-                delay: '1h'
-            })
-            // await quirrel.enqueue(collection.id, {
+            // const dummyCollection = {"id":"artc_4TUQdI","label":"test","createdAt":"2023-05-06T03:42:07.880Z","updatedAt":"2023-05-06T03:42:07.880Z"}
+            // await quirrel.enqueue(dummyCollection.id, {
             //     delay: '1h'
             // })
+            await quirrel.enqueue(collection.id, {
+                delay: '1h'
+            })
 
             return {
                 images
