@@ -7,42 +7,7 @@ import { platform } from "os"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-// const defaultBuildBinPath = process.env.BUILD_ENVIRONMENT === 'production'
-//     ? path.join(__dirname, '../build/server/bin')
-//     : path.join(__dirname, '../src/lib/bin')
-const defaultBuildBinPath = path.join(__dirname, '../build/server/bin')
-
-/**
- * Copy package.json to package output directory
- * 
- * https://github.com/sveltejs/kit/pull/8922
- */
-async function copyPackageJSON() {
-    console.log(chalk.yellow('Copying package.json'))
-
-    // read file into JSON
-    const pkg = JSON.parse(await readFile('package.json', 'utf-8'))
-    const pkgLock = JSON.parse(await readFile('package-lock.json', 'utf-8'))
-
-    // adjust pkg json however you like ..
-
-    // write it to your output directory
-    await writeFile('./build/package.json', JSON.stringify(pkg, null, 4))
-    await writeFile('./build/package-lock.json', JSON.stringify(pkgLock, null, 4))
-
-    console.log(`📁 ${chalk.green('package.json')} copied to build folder.`)
-}
-
-/**
- * Create storage/tmp folder for build directory
- */
-async function initStorage() {
-    console.log(chalk.yellow('Setting up storage'))
-
-    await mkdir('./build/storage/tmp', { recursive: true })
-
-    console.log(`📁 ${chalk.green('./build/storage/tmp')} folder created.`)
-}
+const defaultBuildBinPath = path.join(__dirname, '../src/lib/bin')
 
 /**
  * Create binary dependency object
@@ -101,15 +66,11 @@ const binaries = async () => {
     console.log(kmeansBinaryMap[platform()])
     return [
         kmeansBinaryMap[platform()],
-        // process.env.BUILD_ENVIRONMENT === 'production'
-        //     ? await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-linux-x86_64.tar.gz")
-        //     : await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-macos-x86_64.tar.gz")
-        //     ,
     ]
 }
 
 /**
- * Download executable dependencies and extract to /build/server/bin on production or /src/lib/bin folder when on development
+ * Download executable dependencies and extract to /src/lib/bin folder
  * 
  * @param {Array} binaries 
  * @returns {Promise<void>} Promise<void>
@@ -122,12 +83,9 @@ async function install(binaries) {
         const response = await fetch(binary.url)
         const file = await response.blob()
         const buffer = Buffer.from(await file.arrayBuffer())
-        // /build/server/bin
+
         await mkdir(defaultBuildBinPath, { recursive: true })
         await writeFile(binary.installDirectory, buffer, { flag: 'w+' })
-
-        // /src/lib/bin
-        // await writeFile(binary.installDevelopmentDirectory, buffer, { flag: 'w+' })
 
         const filehandle = await open(binary.installDirectory)
         filehandle.createReadStream()
@@ -142,7 +100,7 @@ async function install(binaries) {
 }
 
 (async () => {
-    Promise.all([copyPackageJSON(), initStorage(), install(await binaries())])
+    Promise.all([install(await binaries())])
         .catch((error) => {
             console.log(error)
         })

@@ -8,6 +8,7 @@
 		"build": "vite build",
 		"build:prod": "vite build && npm run postbuild && npm run npm:ci",
 		"postbuild": "node -r dotenv/config ./scripts/postbuild.js",
+		"postinstall": "node -r dotenv/config ./scripts/postinstall.js",
 		"npm:ci": "cd ./build && npm ci --omit dev",
 		"pnpm:build:prod": "vite build && pnpm run postbuild && pnpm run pnpm:ci",
 		"pnpm:ci": "pnpm install --frozen-lockfile",
