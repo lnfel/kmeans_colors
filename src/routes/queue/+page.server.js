@@ -79,7 +79,8 @@ export const actions = {
                     // base64: `data:${files[i].type};base64,${base64}`,
                     base64: `data:image/png;base64,${base64}`,
                     size: files[i].size,
-                    type: files[i].type,
+                    // type: files[i].type,
+                    type: 'image/png',
                     name: files[i].name
                 }
 
@@ -87,10 +88,15 @@ export const actions = {
                  * Save details about each file and assign collectionId
                  * so we can query it after quirrel is finished with queue
                  */
+                console.log('label: ', files[i].name.replace(getFileExtension(files[i].type), '.png'))
+                console.log('extension: ', getFileExtension(files[i].type))
                 const artifact = await prisma.artifact.create({
                     data: {
-                        label: files[i].name,
-                        mimetype: mimetypeMapToEnum[files[i].type],
+                        label: files[i].name
+                            .replace(getFileExtension(files[i].type), '.png')
+                            .replace('.jpg', '.png'),
+                        // mimetype: mimetypeMapToEnum[files[i].type],
+                        mimetype: 'IMAGE_PNG',
                         type: 'IMAGE',
                         collectionId: collection.id
                     }
