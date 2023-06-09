@@ -79,6 +79,7 @@ const queue = Queue(
                     id: artifact.id
                 },
                 data: {
+                    url: `/storage/aerial/${artifactCollectionId}/${artifact.id}.png`,
                     kmeansColorsId: kmeansColor.id,
                     cmykId: cmyk.id
                 }
