@@ -1,7 +1,9 @@
-import prisma, { mimetypeMapToEnum } from '$lib/prisma.js'
+import prisma from '$lib/prisma.js'
+import { error } from '@sveltejs/kit'
 
 export const load = async ({ params }) => {
-    console.log(`ID: ${params.id}`)
+    try {
+        console.log(`artifact-collections ID: ${params.id}`)
     const artifactCollection = await prisma.artifactCollection.findFirstOrThrow({
         where: {
             id: params.id
@@ -15,9 +17,11 @@ export const load = async ({ params }) => {
             }
         }
     })
-    // console.log(`artifactCollection: ${JSON.stringify(artifactCollection, null, 4)}`)
 
     return {
         artifactCollection
+        }
+    } catch (errorMessage) {
+        throw error(404, 'Artifact collection not found')
     }
 }
