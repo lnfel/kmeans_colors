@@ -74,6 +74,36 @@ export const actions = {
             for (let i = 0; i < files.length; i++) {
                 // server-side validation, never trust input from client
 
+                // TODO: Figure out whether we are working with image, doc or pdf.
+                const allowedFileTypes = {
+                    images: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml', 'image/gif', 'image/tiff'],
+                    pdf: ['application/pdf'],
+                    doc: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']
+                }
+                const fileCheck = {
+                    isImage: (type) => {
+                        return allowedFileTypes.images.includes(type)
+                    },
+                    isPdf: (type) => {
+                        return allowedFileTypes.pdf.includes(type)
+                    },
+                    isDoc: (type) => {
+                        return allowedFileTypes.doc.includes(type)
+                    }
+                }
+
+                if (fileCheck.isImage(files[i].type)) {
+                    console.log(`${files[i].name} is an image.`)
+                }
+
+                if (fileCheck.isPdf(files[i].type)) {
+                    console.log(`${files[i].name} is a pdf file.`)
+                }
+
+                if (fileCheck.isDoc(files[i].type)) {
+                    console.log(`${files[i].name} is a word document.`)
+                }
+
                 // Get buffer and base64 from File/Blob
                 const buffer = Buffer.from(await files[i].arrayBuffer())
                 const pngBuffer = await sharp(buffer)
