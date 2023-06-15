@@ -94,6 +94,58 @@ export const actions = {
 
                 if (fileCheck.isImage(files[i].type)) {
                     console.log(`${files[i].name} is an image.`)
+
+                    // Get buffer and base64 from File/Blob
+                    const buffer = Buffer.from(await files[i].arrayBuffer())
+                    const pngBuffer = await sharp(buffer)
+                        .toFormat('png')
+                        // resize images we don't receive huge base64 string which messes up svelte transition
+                        .resize({ height: 240 })
+                        .toBuffer()
+                    const base64 = pngBuffer.toString('base64')
+                    console.log('file', files[i])
+
+                    /**
+                     * Create image object and push it to queue
+                     * We can also immediately use this to optionally a display preview
+                     */
+                    const image = {
+                        // base64: `data:${files[i].type};base64,${base64}`,
+                        base64: `data:image/png;base64,${base64}`,
+                        size: files[i].size,
+                        // type: files[i].type,
+                        type: 'image/png',
+                        name: files[i].name
+                    }
+
+                    /**
+                     * Save details about each file and assign collectionId
+                     * so we can query it after quirrel is finished with queue
+                     */
+                    console.log('label: ', files[i].name.replace(getFileExtension(files[i].type), '.png'))
+                    console.log('extension: ', getFileExtension(files[i].type))
+                    const artifact = await prisma.artifact.create({
+                        data: {
+                            label: files[i].name
+                                .replace(getFileExtension(files[i].type), '.png')
+                                .replace('.jpg', '.png'),
+                            // mimetype: mimetypeMapToEnum[files[i].type],
+                            mimetype: 'IMAGE_PNG',
+                            type: 'IMAGE',
+                            collectionId: collection.id
+                        }
+                    })
+
+                    /**
+                     * Save file(s) or image(s) in collection folder
+                     */
+                    // const imagepath = `${collectionFolder}/${artifact.id}${getFileExtension(files[i].type)}`
+                    // await writeFile(imagepath, buffer, { flag: 'w+' })
+                    const imagepath = `${collectionFolder}/${artifact.id}.png`
+                    await writeFile(imagepath, pngBuffer, { flag: 'w+' })
+
+                    images.push(image)
+                    // console.log(artifact)
                 }
 
                 if (fileCheck.isPdf(files[i].type)) {
@@ -103,58 +155,6 @@ export const actions = {
                 if (fileCheck.isDoc(files[i].type)) {
                     console.log(`${files[i].name} is a word document.`)
                 }
-
-                // Get buffer and base64 from File/Blob
-                const buffer = Buffer.from(await files[i].arrayBuffer())
-                const pngBuffer = await sharp(buffer)
-                    .toFormat('png')
-                    // resize images we don't receive huge base64 string which messes up svelte transition
-                    .resize({ height: 240 })
-                    .toBuffer()
-                const base64 = pngBuffer.toString('base64')
-                console.log('file', files[i])
-
-                /**
-                 * Create image object and push it to queue
-                 * We can also immediately use this to optionally a display preview
-                 */
-                const image = {
-                    // base64: `data:${files[i].type};base64,${base64}`,
-                    base64: `data:image/png;base64,${base64}`,
-                    size: files[i].size,
-                    // type: files[i].type,
-                    type: 'image/png',
-                    name: files[i].name
-                }
-
-                /**
-                 * Save details about each file and assign collectionId
-                 * so we can query it after quirrel is finished with queue
-                 */
-                console.log('label: ', files[i].name.replace(getFileExtension(files[i].type), '.png'))
-                console.log('extension: ', getFileExtension(files[i].type))
-                const artifact = await prisma.artifact.create({
-                    data: {
-                        label: files[i].name
-                            .replace(getFileExtension(files[i].type), '.png')
-                            .replace('.jpg', '.png'),
-                        // mimetype: mimetypeMapToEnum[files[i].type],
-                        mimetype: 'IMAGE_PNG',
-                        type: 'IMAGE',
-                        collectionId: collection.id
-                    }
-                })
-
-                /**
-                 * Save file(s) or image(s) in collection folder
-                 */
-                // const imagepath = `${collectionFolder}/${artifact.id}${getFileExtension(files[i].type)}`
-                // await writeFile(imagepath, buffer, { flag: 'w+' })
-                const imagepath = `${collectionFolder}/${artifact.id}.png`
-                await writeFile(imagepath, pngBuffer, { flag: 'w+' })
-
-                images.push(image)
-                // console.log(artifact)
             }
 
             /**
