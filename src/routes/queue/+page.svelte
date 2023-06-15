@@ -110,18 +110,18 @@
         {/each} -->
 
         <div class="grid grid-cols-3 rounded-b-md border-b border-indigo-100">
-            <div class:rounded-bl-md={$page?.data?.artifacts.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tl-md">ID</div>
+            <div class:rounded-bl-md={$page?.data?.artifacts?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tl-md">ID</div>
             <div class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1">Label</div>
-            <div class:rounded-br-md={$page?.data?.artifacts.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tr-md">Created at</div>
+            <div class:rounded-br-md={$page?.data?.artifacts?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tr-md">Created at</div>
 
             {#each $page?.data?.artifacts as artifact, i}
-                <div class:rounded-bl-md={$page?.data?.artifacts.length === i + 1} class="px-2 py-1 border-l border-indigo-100">
+                <div class:rounded-bl-md={$page?.data?.artifacts?.length === i + 1} class="px-2 py-1 border-l border-indigo-100">
                     {artifact.id}
                 </div>
                 <div class="px-2 py-1">
                     {artifact.label}
                 </div>
-                <div class:rounded-br-md={$page?.data?.artifacts.length === i + 1} class="px-2 py-1 border-r border-indigo-100">
+                <div class:rounded-br-md={$page?.data?.artifacts?.length === i + 1} class="px-2 py-1 border-r border-indigo-100">
                     {artifact.createdAt.toLocaleString('en-PH', {timezone: 'Asia/Manila', hour12: true, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})
                         .toUpperCase()
                         .replaceAll(/(,)|([.])/g, '')
@@ -132,18 +132,18 @@
         </div>
 
         <div class="grid grid-cols-3 rounded-b-md border-b border-indigo-100">
-            <div class:rounded-bl-md={$page?.data?.artifactCollections.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tl-md">ID</div>
+            <div class:rounded-bl-md={$page?.data?.artifactCollections?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tl-md">ID</div>
             <div class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1">Label</div>
-            <div class:rounded-br-md={$page?.data?.artifactCollections.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tr-md">Created at</div>
+            <div class:rounded-br-md={$page?.data?.artifactCollections?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tr-md">Created at</div>
 
             {#each $page?.data?.artifactCollections as artifact, i}
-                <div class:rounded-bl-md={$page?.data?.artifactCollections.length === i + 1} class="px-2 py-1 border-l border-indigo-100">
+                <div class:rounded-bl-md={$page?.data?.artifactCollections?.length === i + 1} class="px-2 py-1 border-l border-indigo-100">
                     <a href="/artifact-collections/{artifact.id}">{artifact.id}</a>
                 </div>
                 <div class="px-2 py-1">
                     {artifact.label}
                 </div>
-                <div class:rounded-br-md={$page?.data?.artifactCollections.length === i + 1} class="px-2 py-1 border-r border-indigo-100">
+                <div class:rounded-br-md={$page?.data?.artifactCollections?.length === i + 1} class="px-2 py-1 border-r border-indigo-100">
                     {artifact.createdAt.toLocaleString('en-PH', {timezone: 'Asia/Manila', hour12: true, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})
                         .toUpperCase()
                         .replaceAll(/(,)|([.])/g, '')
