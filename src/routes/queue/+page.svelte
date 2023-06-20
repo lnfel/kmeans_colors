@@ -7,7 +7,7 @@
     import { invalidateAll } from "$app/navigation"
     // import ShortUniqueId from "short-unique-id"
     import { validateFileInput, error, hasFile } from "$lib/aerial/client/index.js"
-    import LamyDebugbar from "lamy-debugbar"
+    // import LamyDebugbar from "lamy-debugbar"
 
     import Header from "$lib/component/Header.svelte"
     import Pulse from "$lib/component/Pulse.svelte"
@@ -47,6 +47,17 @@
     async function reset() {
         await invalidateAll()
         error.set(null)
+    }
+
+    async function deleteArtifactCollection(event) {
+        const id = event.target.dataset.id
+        await fetch(`/artifact-collections/${id}`, {
+            method: 'DELETE',
+            headers: {
+                "Accept": "application/json",
+            }
+        })
+        await invalidateAll()
     }
 </script>
 
@@ -109,7 +120,7 @@
                 src={image.base64} alt={image.name} height="240" class="block">
         {/each} -->
 
-        <div class="grid grid-cols-3 rounded-b-md border-b border-indigo-100">
+        <!-- <div class="grid grid-cols-3 rounded-b-md border-b border-indigo-100">
             <div class:rounded-bl-md={$page?.data?.artifacts?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tl-md">ID</div>
             <div class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1">Label</div>
             <div class:rounded-br-md={$page?.data?.artifacts?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tr-md">Created at</div>
@@ -129,9 +140,9 @@
                         .replaceAll(/\//g, '-')}
                 </div>
             {/each}
-        </div>
+        </div> -->
 
-        <div class="grid grid-cols-3 rounded-b-md border-b border-indigo-100">
+        <!-- <div class="grid grid-cols-3 rounded-b-md border-b border-indigo-100">
             <div class:rounded-bl-md={$page?.data?.artifactCollections?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tl-md">ID</div>
             <div class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1">Label</div>
             <div class:rounded-br-md={$page?.data?.artifactCollections?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tr-md">Created at</div>
@@ -151,18 +162,52 @@
                         .replaceAll(/\//g, '-')}
                 </div>
             {/each}
+        </div> -->
+
+        <div class="overflow-x-auto rounded-md border border-indigo-100 whitespace-nowrap">
+            <table class="w-full text-left">
+                <thead class="text-indigo-500 uppercase tracking-wide font-sculpin bg-indigo-100">
+                    <tr>
+                        <th scope="col" class="px-2 py-1">ID</th>
+                        <th scope="col" class="px-2 py-1">Label</th>
+                        <th scope="col" class="px-2 py-1">Created at</th>
+                        <th scope="col" class="text-right px-2 py-1">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {#each $page?.data?.artifactCollections ?? [] as collection, i}
+                        <tr>
+                            <th scope="row" class="px-2 py-1">
+                                <a href="/artifact-collections/{collection.id}" class="text-indigo-500 outline-none hover:underline focus:underline">{collection.id}</a>
+                            </th>
+                            <td class="px-2 py-1">{collection.label}</td>
+                            <td class="text-sm text-slate-400 dark:text-slate-300 px-2 py-1">
+                                {collection.createdAt.toLocaleString('en-PH', {timezone: 'Asia/Manila', hour12: true, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})
+                                    .toUpperCase()
+                                    .replaceAll(/(,)|([.])/g, '')
+                                    .replaceAll(/\s+/g, ' ')
+                                    .replaceAll(/\//g, '-')}
+                            </td>
+                            <td>
+                                <div class="flex items-center justify-end gap-2 px-2 py-1">
+                                    <button data-id={collection.id} on:click={deleteArtifactCollection} type="button" class="bg-rose-400 outline-none ring-1 ring-offset-2 ring-offset-indigo-50 dark:ring-offset-slate-800 ring-transparent hover:bg-rose-500 focus:ring-rose-500 rounded px-1 py-0.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 pointer-events-none">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
         </div>
 
-        <!-- <div>
-            {JSON.stringify($page)}
-        </div> -->
-        <!-- <div>
-            {JSON.stringify(form)}
-        </div> -->
         <!-- <Filepond allowMultiple={true} /> -->
         <!-- <pre>
 {JSON.stringify($page?.data?.artifactCollections, null, 4)}
         </pre> -->
-        <LamyDebugbar data={{"artifactCollections": $page?.data?.artifactCollections ?? []}} />
+        <!-- <LamyDebugbar data={{"artifactCollections": $page?.data?.artifactCollections ?? []}} /> -->
     </section>
 </main>
