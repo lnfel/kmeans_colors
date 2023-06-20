@@ -114,7 +114,7 @@
             <div class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1">Label</div>
             <div class:rounded-br-md={$page?.data?.artifacts?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tr-md">Created at</div>
 
-            {#each $page?.data?.artifacts as artifact, i}
+            {#each $page?.data?.artifacts ?? [] as artifact, i}
                 <div class:rounded-bl-md={$page?.data?.artifacts?.length === i + 1} class="px-2 py-1 border-l border-indigo-100">
                     {artifact.id}
                 </div>
@@ -136,7 +136,7 @@
             <div class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1">Label</div>
             <div class:rounded-br-md={$page?.data?.artifactCollections?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tr-md">Created at</div>
 
-            {#each $page?.data?.artifactCollections as artifact, i}
+            {#each $page?.data?.artifactCollections ?? [] as artifact, i}
                 <div class:rounded-bl-md={$page?.data?.artifactCollections?.length === i + 1} class="px-2 py-1 border-l border-indigo-100">
                     <a href="/artifact-collections/{artifact.id}">{artifact.id}</a>
                 </div>
@@ -163,6 +163,6 @@
         <!-- <pre>
 {JSON.stringify($page?.data?.artifactCollections, null, 4)}
         </pre> -->
-        <LamyDebugbar data={{"artifactCollections": $page?.data?.artifactCollections}} />
+        <LamyDebugbar data={{"artifactCollections": $page?.data?.artifactCollections ?? []}} />
     </section>
 </main>
