@@ -2,7 +2,7 @@ import * as path from "path"
 import { fileURLToPath } from "url"
 import tar from "tar"
 import chalk from 'chalk'
-import { readFile, writeFile, mkdir, open, rm } from 'node:fs/promises'
+import { writeFile, mkdir, open, rm } from 'node:fs/promises'
 import { platform } from "os"
 
 const __filename = fileURLToPath(import.meta.url)
@@ -63,7 +63,7 @@ const kmeansBinaryMap = {
  * @returns {Promise<Array>} Promise<array>
  */
 const binaries = async () => {
-    console.log(kmeansBinaryMap[platform()])
+    // console.log(kmeansBinaryMap[platform()])
     return [
         kmeansBinaryMap[platform()],
     ]
@@ -79,7 +79,7 @@ async function install(binaries) {
     console.log(chalk.yellow('Installing binaries.'))
 
     binaries.forEach(async (binary) => {
-        console.log(`${chalk.yellow('Fetching from')} ${binary.url}`)
+        // console.log(`${chalk.yellow('Fetching from')} ${binary.url}`)
         const response = await fetch(binary.url)
         const file = await response.blob()
         const buffer = Buffer.from(await file.arrayBuffer())
