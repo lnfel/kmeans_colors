@@ -42,6 +42,9 @@ enum Mimetype {
 // Generate custom id using prisma middleware
 // https://github.com/prisma/prisma/issues/6719#issuecomment-1178211695
 
+// Cascade delete
+// https://www.prisma.io/docs/concepts/components/prisma-schema/relations/referential-actions
+
 model ArtifactCollection {
     // id String @id @default(uuid())
     // We are generating id using prisma middleware
@@ -62,11 +65,11 @@ model Artifact {
     type ArtifactType
     mimetype Mimetype
     url String?
-    collection ArtifactCollection? @relation(fields: [collectionId], references: [id])
+    collection ArtifactCollection? @relation(fields: [collectionId], references: [id], onDelete: Cascade)
     collectionId String?
-    kmeansColors KmeansColors? @relation(fields: [kmeansColorsId], references: [id])
+    kmeansColors KmeansColors? //@relation(fields: [kmeansColorsId], references: [id])
     kmeansColorsId String? @unique
-    cmyk CMYK? @relation(fields: [cmykId], references: [id])
+    cmyk CMYK? //@relation(fields: [cmykId], references: [id])
     cmykId String? @unique
     pages Int? @default(0)
     createdAt DateTime @default(now())
@@ -75,8 +78,8 @@ model Artifact {
 
 model KmeansColors {
     id String @id
-    artifact Artifact?
-    artifactId String?
+    artifact Artifact? @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+    artifactId String? @unique
     colors Json
     // colors Color[]
     createdAt DateTime @default(now())
@@ -97,8 +100,8 @@ model KmeansColors {
 
 model CMYK {
     id String @id
-    artifact Artifact?
-    artifactId String?
+    artifact Artifact? @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+    artifactId String? @unique
     total String
     whiteSpace Float
     coloredSpace Float
