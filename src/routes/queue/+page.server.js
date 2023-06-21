@@ -56,7 +56,7 @@ export const actions = {
             let images = []
 
             // Do nothing and return empty array if file input is empty
-            if (emptyFile(files[0])) return { queue }
+            if (emptyFile(files[0])) return {  }
 
             // Create a collection for this batch
             const collection = await prisma.artifactCollection.create({
