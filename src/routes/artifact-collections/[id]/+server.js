@@ -59,11 +59,11 @@ export async function DELETE({ request, url }) {
     const id = url.pathname.replace('/artifact-collections/', '')
 
     try {
-        const deleteArtifacts = prisma.artifact.deleteMany({
-            where: {
-                collectionId: id,
-            },
-        })
+        // const deleteArtifacts = prisma.artifact.deleteMany({
+        //     where: {
+        //         collectionId: id,
+        //     },
+        // })
 
         const deleteArtifactCollection = prisma.artifactCollection.delete({
             where: {
@@ -71,7 +71,8 @@ export async function DELETE({ request, url }) {
             },
         })
 
-        const transaction = await prisma.$transaction([deleteArtifacts, deleteArtifactCollection])
+        // const transaction = await prisma.$transaction([deleteArtifacts, deleteArtifactCollection])
+        const transaction = await prisma.$transaction([deleteArtifactCollection])
         await rm(`${storage_path}/aerial/${id}`, { force: true, recursive: true })
 
         return json({ message: `Artifact collection ${id} has been deleted.` })
