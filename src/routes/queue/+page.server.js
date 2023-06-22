@@ -132,6 +132,21 @@ export const actions = {
 
                 if (fileCheck.isPdf(files[i].type)) {
                     console.log(`${files[i].name} is a pdf file.`)
+
+                    // Get buffer and base64 from File/Blob
+                    const buffer = Buffer.from(await files[i].arrayBuffer())
+
+                    const artifact = await prisma.artifact.create({
+                        data: {
+                            label: files[i].name,
+                            mimetype: mimetypeMapToEnum[files[i].type],
+                            type: 'DOCUMENT',
+                            collectionId: collection.id
+                        }
+                    })
+
+                    const filepath = `${collectionFolder}/${artifact.id}${getFileExtension(files[i].type)}`
+                    await writeFile(filepath, buffer, { flag: 'w+' })
                 }
 
                 if (fileCheck.isDoc(files[i].type)) {
