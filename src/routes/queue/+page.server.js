@@ -81,7 +81,7 @@ export const actions = {
                     const buffer = Buffer.from(await files[i].arrayBuffer())
                     const pngBuffer = await sharp(buffer)
                         .toFormat('png')
-                        // resize images we don't receive huge base64 string which messes up svelte transition
+                        // resize images so we don't receive huge base64 string on the client which messes up svelte transition
                         .resize({ height: 240 })
                         .toBuffer()
                     const base64 = pngBuffer.toString('base64')
