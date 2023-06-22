@@ -1,9 +1,11 @@
 import { Queue } from 'quirrel/sveltekit'
-import { writeFile, appendFile } from 'node:fs/promises'
-import { storage_path } from "$lib/config.js"
+import { writeFile, appendFile, readFile } from 'node:fs/promises'
+import { storage_path } from '$lib/config.js'
 import prisma, { mimetypeMapToEnum, mimetypeMapFromEnum } from '$lib/prisma.js'
 import { getFileExtension } from '$lib/aerial/hybrid/util.js'
+import { fileCheck } from '$lib/aerial/hybrid/validation.js'
 import { kmeansColors, summary } from '$lib/aerial/server/index.js'
+import mupdf from 'mupdf'
 
 /**
  * This route is dedicated to handling queues added in /api/queue to Quirrel Queue
@@ -33,57 +35,122 @@ const queue = Queue(
                 artifacts: true
             }
         })
-        // test that queue job is invoked
-        //await writeFile(`${storage_path}/aerial/${artifactCollection.id}/test.json`, JSON.stringify(artifactCollection, null, 4))
 
         const artifacts = artifactCollection.artifacts
 
         artifacts.forEach(async (artifact) => {
-            // test loop
-            // await appendFile(`${storage_path}/aerial/${artifactCollection.id}/artifacts.txt`, artifact.id)
-            const colors = await kmeansColors(`${storage_path}/aerial/${artifactCollection.id}/${artifact.id}${getFileExtension(mimetypeMapFromEnum[artifact.mimetype])}`)
-            // await writeFile(`${storage_path}/aerial/${artifactCollection.id}/kmeans.json`, JSON.stringify(colors, null, 4))
+            // Check mimetype and process color extraction based on type of file
 
-            // const kmeansColor = await prisma.kmeansColors.findFirst({
-            //     where: {
-            //         id: 'kc_Jel4oz'
-            //     }
-            // })
-            // await writeFile(`${storage_path}/aerial/${artifactCollection.id}/kmeans.json`, JSON.stringify(kmeansColor, null, 4))
+            console.log("Quirrel queue artifact: ", artifact)
+            console.log("Original mimetype: ", mimetypeMapFromEnum[artifact.mimetype])
+            console.log("File extension: ", getFileExtension(mimetypeMapFromEnum[artifact.mimetype]))
 
-            // const cmykData = await summary(kmeansColor.colors)
-            // console.log('cmykData: ', cmykData)
-            // await writeFile(`${storage_path}/aerial/${artifactCollection.id}/cmyk.json`, JSON.stringify(cmykData, null, 4))
+            const filepath = `${storage_path}/aerial/${artifactCollection.id}/${artifact.id}_1${getFileExtension(mimetypeMapFromEnum[artifact.mimetype])}`
+            const kmeans_colors = []
 
-            const kmeansColor = await prisma.kmeansColors.create({
-                data: {
-                    artifactId: artifact.id,
-                    colors
-                }
-            })
+            if (fileCheck.isImage(mimetypeMapFromEnum[artifact.mimetype])) {
+                // If we are working with image file, extract colors right away
+                const color = await kmeansColors(filepath)
+                kmeans_colors.push(color)
+                // await writeFile(`${storage_path}/aerial/${artifactCollection.id}/kmeans.json`, JSON.stringify(colors, null, 4))
 
-            const cmykData = await summary(kmeansColor.colors)
+                const kmeansColor = await prisma.kmeansColors.create({
+                    data: {
+                        artifactId: artifact.id,
+                        colors: kmeans_colors
+                    }
+                })
 
-            const cmyk = await prisma.cMYK.create({
-                data: {
-                    artifactId: artifact.id,
-                    total: cmykData.total,
-                    whiteSpace: cmykData.whiteSpace,
-                    coloredSpace: cmykData.coloredSpace,
-                    summary: cmykData.summary
-                }
-            })
+                const cmykData = await summary(kmeansColor.colors)
 
-            await prisma.artifact.update({
-                where: {
-                    id: artifact.id
-                },
-                data: {
-                    url: `/storage/aerial/${artifactCollectionId}/${artifact.id}.png`,
-                    kmeansColorsId: kmeansColor.id,
-                    cmykId: cmyk.id
-                }
-            })
+                const cmyk = await prisma.cMYK.create({
+                    data: {
+                        artifactId: artifact.id,
+                        // total: cmykData.total,
+                        // whiteSpace: cmykData.whiteSpace,
+                        // coloredSpace: cmykData.coloredSpace,
+                        // summary: cmykData.summary
+                        info: cmykData
+                    }
+                })
+
+                await prisma.artifact.update({
+                    where: {
+                        id: artifact.id
+                    },
+                    data: {
+                        url: `/storage/aerial/${artifactCollectionId}/${artifact.id}_1.png`,
+                        kmeansColorsId: kmeansColor.id,
+                        cmykId: cmyk.id,
+                        pages: 1
+                    }
+                })
+            }
+
+            if (fileCheck.isPdf(mimetypeMapFromEnum[artifact.mimetype])) {
+                /**
+                 * MuPDF WASM
+                 * https://mupdf.readthedocs.io/en/latest/mupdf-wasm.html
+                 * https://mupdf.readthedocs.io/en/latest/mupdf-js.html
+                 */
+                mupdf.ready.then(async () => {
+                    const pdfBuffer = await readFile(filepath.replace('_1', ''))
+
+                    const mupdfDocument = mupdf.Document.openDocument(pdfBuffer, mimetypeMapFromEnum[artifact.mimetype])
+                    const pages = mupdfDocument.countPages()
+                    console.log("MuPDF document: ", mupdfDocument)
+                    console.log("Pages: ", pages)
+
+                    // Convert each page to png image and save to storage
+                    for (let i = 0; i < pages; i++) {
+                        const page = mupdfDocument.loadPage(i)
+                        // const pixmap = page.toPixmap(mupdf.Matrix.identity, mupdf.ColorSpace.DeviceRGB, false)
+                        const pixmap = page.toPixmap(mupdf.Matrix.scale(0.5, 0.5), mupdf.ColorSpace.DeviceRGB, false)
+                        // pixmap.setResolution(300, 300)
+                        await writeFile(`${storage_path}/aerial/${artifactCollection.id}/${artifact.id}_${i + 1}.png`, pixmap.asPNG(), { flag: 'w+' })
+                    }
+
+                    // Extract colors
+                    for (let i = 0; i < pages; i++) {
+                        const color = await kmeansColors(`${storage_path}/aerial/${artifactCollection.id}/${artifact.id}_${i + 1}.png`)
+                        kmeans_colors.push(color)
+                    }
+
+                    const kmeansColor = await prisma.kmeansColors.create({
+                        data: {
+                            artifactId: artifact.id,
+                            colors: kmeans_colors
+                        }
+                    })
+
+                    const cmykData = await summary(kmeansColor.colors)
+
+                    const cmyk = await prisma.cMYK.create({
+                        data: {
+                            artifactId: artifact.id,
+                            // total: cmykData.total,
+                            // whiteSpace: cmykData.whiteSpace,
+                            // coloredSpace: cmykData.coloredSpace,
+                            // summary: cmykData.summary
+                            info: cmykData
+                        }
+                    })
+
+                    await prisma.artifact.update({
+                        where: {
+                            id: artifact.id
+                        },
+                        data: {
+                            url: `/storage/aerial/${artifactCollectionId}/${artifact.id}.pdf`,
+                            kmeansColorsId: kmeansColor.id,
+                            cmykId: cmyk.id,
+                            pages
+                        }
+                    })
+
+                    // console.log("kmeans_colors: ", kmeans_colors)
+                })
+            }
         })
     }
 )

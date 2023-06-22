@@ -123,7 +123,7 @@ export const actions = {
                      */
                     // const imagepath = `${collectionFolder}/${artifact.id}${getFileExtension(files[i].type)}`
                     // await writeFile(imagepath, buffer, { flag: 'w+' })
-                    const imagepath = `${collectionFolder}/${artifact.id}.png`
+                    const imagepath = `${collectionFolder}/${artifact.id}_1.png`
                     await writeFile(imagepath, pngBuffer, { flag: 'w+' })
 
                     images.push(image)
