@@ -51,6 +51,7 @@
 		"geotiff": "^2.0.7",
 		"googleapis": "^114.0.0",
 		"lamy-debugbar": "^0.0.11",
+		"mupdf": "^0.0.5",
 		"mupdf-js": "^1.1.1",
 		"node-cron": "^3.0.2",
 		"plotty": "^0.4.9",
