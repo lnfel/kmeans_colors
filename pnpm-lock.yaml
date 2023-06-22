@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -32,6 +32,9 @@ dependencies:
   lamy-debugbar:
     specifier: ^0.0.11
     version: 0.0.11(@sveltejs/kit@1.14.0)(svelte@3.57.0)
+  mupdf:
+    specifier: ^0.0.5
+    version: 0.0.5
   mupdf-js:
     specifier: ^1.1.1
     version: 1.1.1
@@ -3031,6 +3034,10 @@ packages:
 
   /mupdf-js@1.1.1:
     resolution: {integrity: sha512-9PZGqNH3qTLqGO4yjJgbsosXYt81YEUGR8/AgB9YpboN95DIk1dRPRKiHvgIVODD0gMomdWJt9gvC+HeQN6EmQ==}
+    dev: false
+
+  /mupdf@0.0.5:
+    resolution: {integrity: sha512-HdCOSobBIPJKQYqXdiALOtBBdNBM/6t6V52d0YmFFkHdiaqX+jd2gw+St0TBN4+SYbGdvanIM7e8ed+vOkQpRA==}
     dev: false
 
   /nanoid@3.3.4:
