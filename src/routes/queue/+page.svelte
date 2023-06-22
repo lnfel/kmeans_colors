@@ -199,6 +199,10 @@
                                 </div>
                             </td>
                         </tr>
+                    {:else}
+                        <tr>
+                            <td colspan="4" class="text-center px-4 py-2">No artifact collection yet.</td>
+                        </tr>
                     {/each}
                 </tbody>
             </table>
