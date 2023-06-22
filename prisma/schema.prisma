@@ -102,10 +102,11 @@ model CMYK {
     id String @id
     artifact Artifact? @relation(fields: [artifactId], references: [id], onDelete: Cascade)
     artifactId String? @unique
-    total String
-    whiteSpace Float
-    coloredSpace Float
-    summary Json
+    // total String
+    // whiteSpace Float
+    // coloredSpace Float
+    // summary Json
+    info Json
     // summary CMYKSummary[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
