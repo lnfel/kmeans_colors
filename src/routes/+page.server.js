@@ -3,24 +3,10 @@ import { writeFile } from 'node:fs/promises'
 import { storage_path } from "$lib/config.js"
 import { kmeansColors } from "$lib/ghostprinter/print-job/pdf.js"
 import { summary } from '$lib/ghostprinter/print-job/cmyk.js'
-import { getOAuth2Client, isSignedIn } from 'svelte-google-auth'
-import { listDriveFiles, listStorageQuota, listAerialFolderDetails } from '$lib/aerial/server/google/drive.js'
 import sharp from 'sharp'
 
 export const load = async ({ locals }) => {
-    if (isSignedIn(locals)) {
-        const client = getOAuth2Client(locals)
-        // console.log('client: ', client)
-        const driveFiles = await listDriveFiles(client)
-        const storageQuota = await listStorageQuota(client)
-        const aerialFolder = await listAerialFolderDetails(client)
-        // console.log('aerialFolder: ', aerialFolder)
-        return {
-            driveFiles,
-            storageQuota,
-            aerialFolder
-        }
-    }
+
 }
 
 export const actions = {
