@@ -156,7 +156,7 @@ export const actions = {
             // await quirrel.enqueue(dummyCollection.id, {
             //     delay: '1h'
             // })
-            await quirrel.enqueue(collection.id, {
+            await quirrel.enqueue({ artifactCollectionId: collection.id, locals }, {
                 // delay: '1h' // if delay if not specified, quirrel runs the job ASAP
             })
 

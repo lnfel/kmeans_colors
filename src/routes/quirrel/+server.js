@@ -1,4 +1,5 @@
 import { Queue } from 'quirrel/sveltekit'
+import { getOAuth2Client, isSignedIn } from 'svelte-google-auth'
 import { writeFile, appendFile, readFile } from 'node:fs/promises'
 import { storage_path } from '$lib/config.js'
 import prisma, { mimetypeMapToEnum, mimetypeMapFromEnum } from '$lib/prisma.js'
@@ -22,14 +23,15 @@ import mupdf from 'mupdf'
  */
 const queue = Queue(
     'quirrel',
-    async (artifactCollectionId, meta) => {
+    async (job, meta) => {
+
         /**
          * Perform kmeans_colors and save to database
          * Get artifact collection instance
          */
         const artifactCollection = await prisma.artifactCollection.findFirst({
             where: {
-                id: artifactCollectionId
+                id: job.artifactCollectionId
             },
             include: {
                 artifacts: true
@@ -42,8 +44,8 @@ const queue = Queue(
             // Check mimetype and process color extraction based on type of file
 
             console.log("Quirrel queue artifact: ", artifact)
-            console.log("Original mimetype: ", mimetypeMapFromEnum[artifact.mimetype])
-            console.log("File extension: ", getFileExtension(mimetypeMapFromEnum[artifact.mimetype]))
+            // console.log("Original mimetype: ", mimetypeMapFromEnum[artifact.mimetype])
+            // console.log("File extension: ", getFileExtension(mimetypeMapFromEnum[artifact.mimetype]))
 
             const filepath = `${storage_path}/aerial/${artifactCollection.id}/${artifact.id}_1${getFileExtension(mimetypeMapFromEnum[artifact.mimetype])}`
             const kmeans_colors = []
@@ -66,10 +68,6 @@ const queue = Queue(
                 const cmyk = await prisma.cMYK.create({
                     data: {
                         artifactId: artifact.id,
-                        // total: cmykData.total,
-                        // whiteSpace: cmykData.whiteSpace,
-                        // coloredSpace: cmykData.coloredSpace,
-                        // summary: cmykData.summary
                         info: cmykData
                     }
                 })
@@ -79,7 +77,7 @@ const queue = Queue(
                         id: artifact.id
                     },
                     data: {
-                        url: `/storage/aerial/${artifactCollectionId}/${artifact.id}_1.png`,
+                        url: `/storage/aerial/${job.artifactCollectionId}/${artifact.id}_1.png`,
                         kmeansColorsId: kmeansColor.id,
                         cmykId: cmyk.id,
                         pages: 1
@@ -128,10 +126,6 @@ const queue = Queue(
                     const cmyk = await prisma.cMYK.create({
                         data: {
                             artifactId: artifact.id,
-                            // total: cmykData.total,
-                            // whiteSpace: cmykData.whiteSpace,
-                            // coloredSpace: cmykData.coloredSpace,
-                            // summary: cmykData.summary
                             info: cmykData
                         }
                     })
@@ -141,15 +135,21 @@ const queue = Queue(
                             id: artifact.id
                         },
                         data: {
-                            url: `/storage/aerial/${artifactCollectionId}/${artifact.id}.pdf`,
+                            url: `/storage/aerial/${job.artifactCollectionId}/${artifact.id}.pdf`,
                             kmeansColorsId: kmeansColor.id,
                             cmykId: cmyk.id,
                             pages
                         }
                     })
-
-                    // console.log("kmeans_colors: ", kmeans_colors)
                 })
+            }
+
+            if (fileCheck.isDoc(mimetypeMapFromEnum[artifact.mimetype])) {
+                // make a request to googleDrive API
+                if (isSignedIn(job.locals)) {
+                    console.log('isSignedIn: ', isSignedIn(job.locals))
+                    const split = 262144 // This is a sample chunk size. https://stackoverflow.com/a/73264129/12478479
+                }
             }
         })
     }
