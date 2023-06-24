@@ -50,7 +50,7 @@ export const mimetypeMapToEnum = {
  * @returns {Promise<any>} Promise<any>
  */
 export const generateShortUniqueId = async (params, next) => {
-    console.log('generateShortUniqueId middleware params: ', params)
+    // console.log('generateShortUniqueId middleware params: ', params)
     
     if (params.action === 'create') {
         let prefix = prefixMap[params.model] ?? ''
