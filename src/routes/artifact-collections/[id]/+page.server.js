@@ -1,6 +1,9 @@
 import prisma from '$lib/prisma.js'
 import { error } from '@sveltejs/kit'
 
+/**
+ * @type {import('@sveltejs/kit').ServerLoad} 
+ */
 export const load = async ({ params }) => {
     try {
         console.log(`artifact-collections ID: ${params.id}`)

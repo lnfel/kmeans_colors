@@ -7,6 +7,9 @@ import { POST as quirrel } from '../quirrel/+server.js'
 import { fileCheck, emptyFile } from '$lib/aerial/hybrid/validation.js'
 import { getFileExtension } from '$lib/aerial/hybrid/util.js'
 
+/**
+ * @type {import('@sveltejs/kit').ServerLoad} 
+ */
 export const load = async ({ locals, depends }) => {
     // const job = await quirrel.getById('be501991-8c74-4af6-96b0-ea85e7f068c1')
     // console.log(job)
@@ -36,6 +39,9 @@ export const load = async ({ locals, depends }) => {
     }
 }
 
+/**
+ * @type {import('@sveltejs/kit').Actions}
+ */
 export const actions = {
     default: async ({ request, locals, cookies }) => {
         try {
