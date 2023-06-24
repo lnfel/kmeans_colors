@@ -4,7 +4,7 @@
     import { enhance } from "$app/forms"
     import { fly, fade } from 'svelte/transition'
 	import { backOut, quintOut, sineOut } from 'svelte/easing'
-    import { invalidateAll } from "$app/navigation"
+    import { invalidate, invalidateAll } from "$app/navigation"
     // import ShortUniqueId from "short-unique-id"
     import { validateFileInput, error, hasFile } from "$lib/aerial/client/index.js"
     // import LamyDebugbar from "lamy-debugbar"
@@ -24,7 +24,7 @@
     })
 
     async function queue({ form, data, action, cancel }) {
-        await invalidateAll()
+        await invalidate('queue:artifactCollections')
         // let files = data.getAll('file')
         // console.log(files)
 
@@ -45,7 +45,7 @@
     }
 
     async function reset() {
-        await invalidateAll()
+        await invalidate('queue:artifactCollections')
         error.set(null)
     }
 
@@ -57,7 +57,7 @@
                 "Accept": "application/json",
             }
         })
-        await invalidateAll()
+        await invalidate('queue:artifactCollections')
     }
 </script>
 

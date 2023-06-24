@@ -28,6 +28,8 @@ export const load = async ({ locals, depends }) => {
         }
     })
 
+    depends('queue:artifactCollections')
+
     return {
         artifacts,
         artifactCollections,
