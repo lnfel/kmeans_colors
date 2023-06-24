@@ -5,10 +5,16 @@ import { kmeansColors } from "$lib/ghostprinter/print-job/pdf.js"
 import { summary } from '$lib/ghostprinter/print-job/cmyk.js'
 import sharp from 'sharp'
 
+/**
+ * @type {import('@sveltejs/kit').ServerLoad} 
+ */
 export const load = async ({ locals }) => {
 
 }
 
+/**
+ * @type {import('@sveltejs/kit').Actions}
+ */
 export const actions = {
     /**
      * Save file to disk using node async writeFile

@@ -18,6 +18,7 @@ import { storage_path } from '$lib/config.js'
  * Sample curl request:
  * curl -inlcude -X GET "localhost:5173/artifact-collections/artc_IKpsX5" -H "Accept: application/json"
  * 
+ * @type {import('@sveltejs/kit').RequestHandler}
  * @returns {JSON} ArtifactCollection
  */
 export async function GET({ request, url }) {
@@ -53,6 +54,7 @@ export async function GET({ request, url }) {
  * Delete if exist does not exist at the moment, use catch to handle error gracefully
  * https://github.com/prisma/prisma/issues/4072#issuecomment-1127067981
  * 
+ * @type {import('@sveltejs/kit').RequestHandler}
  * @returns {JSON} ArtifactCollection
  */
 export async function DELETE({ request, url }) {
