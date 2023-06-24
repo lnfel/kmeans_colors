@@ -140,9 +140,9 @@ export const actions = {
                     await writeFile(filepath, buffer, { flag: 'w+' })
                 }
 
-                if (fileCheck.isDoc(files[i].type)) {
-                    console.log(`${files[i].name} is a word document.`)
-                }
+                // if (fileCheck.isDoc(files[i].type)) {
+                //     console.log(`${files[i].name} is a word document.`)
+                // }
             }
 
             /**
