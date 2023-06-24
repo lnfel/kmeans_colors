@@ -115,6 +115,8 @@ export const actions = {
 
                     /**
                      * Save file(s) or image(s) in collection folder
+                     * NOTE: _1 on filename is required for images since we assume all artifacts may have multiple pages
+                     * Is there a way to not hard code this sorcery?
                      */
                     // const imagepath = `${collectionFolder}/${artifact.id}${getFileExtension(files[i].type)}`
                     // await writeFile(imagepath, buffer, { flag: 'w+' })
