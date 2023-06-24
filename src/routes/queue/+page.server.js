@@ -67,13 +67,13 @@ export const actions = {
             await mkdir(collectionFolder, { recursive: true })
 
             for (let i = 0; i < files.length; i++) {
-                // server-side validation, never trust input from client
+                // Get buffer and base64 from File/Blob
+                const buffer = Buffer.from(await files[i].arrayBuffer())
 
+                // server-side validation, never trust input from client
                 if (fileCheck.isImage(files[i].type)) {
                     console.log(`${files[i].name} is an image.`)
 
-                    // Get buffer and base64 from File/Blob
-                    const buffer = Buffer.from(await files[i].arrayBuffer())
                     const pngBuffer = await sharp(buffer)
                         .toFormat('png')
                         // resize images so we don't receive huge base64 string on the client which messes up svelte transition
@@ -122,14 +122,10 @@ export const actions = {
                     await writeFile(imagepath, pngBuffer, { flag: 'w+' })
 
                     images.push(image)
-                    // console.log(artifact)
                 }
 
-                if (fileCheck.isPdf(files[i].type)) {
-                    console.log(`${files[i].name} is a pdf file.`)
-
-                    // Get buffer and base64 from File/Blob
-                    const buffer = Buffer.from(await files[i].arrayBuffer())
+                if (fileCheck.isPdf(files[i].type) || fileCheck.isDoc(files[i].type)) {
+                    console.log(`${files[i].name} is a document file.`)
 
                     const artifact = await prisma.artifact.create({
                         data: {
