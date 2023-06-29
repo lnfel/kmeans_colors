@@ -1,7 +1,8 @@
 import { json } from '@sveltejs/kit'
 import { saveFromBase64 } from "$lib/ghostprinter/print-job/image.js"
-import { kmeansColors } from "$lib/ghostprinter/print-job/pdf.js"
-import { summary } from '$lib/ghostprinter/print-job/cmyk.js'
+import { kmeansColors, summary } from '$lib/aerial/server/index.js'
+// import { kmeansColors } from "$lib/ghostprinter/print-job/pdf.js"
+// import { summary } from '$lib/ghostprinter/print-job/cmyk.js'
 
 /**
  * Handle Post request to /kmeans_colors

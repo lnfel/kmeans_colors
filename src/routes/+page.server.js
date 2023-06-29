@@ -1,8 +1,9 @@
 import { fail } from '@sveltejs/kit'
 import { writeFile } from 'node:fs/promises'
 import { storage_path } from "$lib/config.js"
-import { kmeansColors } from "$lib/ghostprinter/print-job/pdf.js"
-import { summary } from '$lib/ghostprinter/print-job/cmyk.js'
+import { kmeansColors, summary } from '$lib/aerial/server/index.js'
+// import { kmeansColors } from "$lib/ghostprinter/print-job/pdf.js"
+// import { summary } from '$lib/ghostprinter/print-job/cmyk.js'
 import sharp from 'sharp'
 
 /**
