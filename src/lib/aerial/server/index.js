@@ -60,58 +60,15 @@ function nanHelper(value) {
     const number = isNaN(value) ? 0 : value
     return number === 0 ? number : Number(number).toFixed(2)
 }
+
+/**
+ * Generate summary of CMYK with given MULTIPLE kmeans_colors set
  * 
  * @param {Array} kmeans_colors Array of dominant colors produced by kmeans_colors binary
  * @returns {Object} CMYK object
  */
 export const summary = async (kmeans_colors = []) => {
     const cmyk = {}
-
-    // cmyk['total'] = kmeans_colors.map((color) => {
-    //     return color.cmyk
-    // }).reduce((accumulator, cmyk) => {
-    //     const accumulatorArray = accumulator.split(' ')
-    //     const cmykArray = cmyk.split(' ')
-    //     const c = parseInt(accumulatorArray[0], 10) + parseInt(cmykArray[0], 10)
-    //     const m = parseInt(accumulatorArray[1], 10) + parseInt(cmykArray[1], 10)
-    //     const y = parseInt(accumulatorArray[2], 10) + parseInt(cmykArray[2], 10)
-    //     const k = parseInt(accumulatorArray[3], 10) + parseInt(cmykArray[3], 10)
-    //     return `${c} ${m} ${y} ${k}`
-    // }, '0 0 0 0')
-
-    // cmyk['whiteSpace'] = parseFloat(kmeans_colors.filter((color) => {
-    //     return color.cmyk === '0 0 0 0'
-    // })[0]?.percentage ?? 0)
-
-    // cmyk['coloredSpace'] = 100 - cmyk['whiteSpace']
-
-    // cmyk['summary'] = {
-    //     c: {
-    //         formula: `((${cmyk['total'].split(' ')[0]} / ${kmeans_colors.filter(color => color.cmyk !== '0 0 0 0 ').length}) / 100) * (${cmyk['coloredSpace']} / 100) * 100`,
-    //         value: (colorAverage(cmyk['total'].split(' ')[0], kmeans_colors.filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'] / 100) * 100,
-    //     },
-    //     m: {
-    //         formula: `((${cmyk['total'].split(' ')[1]} / ${kmeans_colors.filter(color => color.cmyk !== '0 0 0 0 ').length}) / 100) * (${cmyk['coloredSpace']} / 100) * 100`,
-    //         value: (colorAverage(cmyk['total'].split(' ')[1], kmeans_colors.filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'] / 100) * 100,
-    //     },
-    //     y: {
-    //         formula: `((${cmyk['total'].split(' ')[2]} / ${kmeans_colors.filter(color => color.cmyk !== '0 0 0 0 ').length}) / 100) * (${cmyk['coloredSpace']} / 100) * 100`,
-    //         value: (colorAverage(cmyk['total'].split(' ')[2], kmeans_colors.filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'] / 100) * 100,
-    //     },
-    //     k: {
-    //         formula: `((${cmyk['total'].split(' ')[3]} / ${kmeans_colors.filter(color => color.cmyk !== '0 0 0 0 ').length}) / 100) * (${cmyk['coloredSpace']} / 100) * 100`,
-    //         value: (colorAverage(cmyk['total'].split(' ')[3], kmeans_colors.filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'] / 100) * 100,
-    //     },
-    // }
-
-    // cmyk['summary'] = cmyk['total'].map((cmykString, index) => {
-    //     return {
-    //         c: {
-    //             formula: `((${cmykString.split(' ')[0]} / ${kmeans_colors.filter(color => color.cmyk !== '0 0 0 0').length}) / 100) * (${cmyk['coloredSpace']} / 100) * 100`,
-    //             value: (colorAverage(cmykString.split(' ')[0], kmeans_colors.filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'] / 100) * 100,
-    //         }
-    //     }
-    // })
 
     cmyk['total'] = kmeans_colors.map((colorset) => {
         return colorset.map((color) => {
@@ -157,6 +114,58 @@ export const summary = async (kmeans_colors = []) => {
             },
         }
     })
+
+    return cmyk
+}
+
+/**
+ * Generate summary of CMYK with given SINGLE kmeans_colors set
+ * 
+ * For getting cmyk from multiple kmeans_colors sets:
+ * @see {summary}
+ * 
+ * @param {Array} kmeans_colors Array of dominant colors produced by kmeans_colors binary
+ * @returns {Object} CMYK object
+ */
+export const summarySingleSet = async (kmeans_colors = []) => {
+    const cmyk = {}
+
+    cmyk['total'] = kmeans_colors.map((color) => {
+        return color.cmyk
+    }).reduce((accumulator, cmyk) => {
+        const accumulatorArray = accumulator.split(' ')
+        const cmykArray = cmyk.split(' ')
+        const c = parseInt(accumulatorArray[0], 10) + parseInt(cmykArray[0], 10)
+        const m = parseInt(accumulatorArray[1], 10) + parseInt(cmykArray[1], 10)
+        const y = parseInt(accumulatorArray[2], 10) + parseInt(cmykArray[2], 10)
+        const k = parseInt(accumulatorArray[3], 10) + parseInt(cmykArray[3], 10)
+        return `${c} ${m} ${y} ${k}`
+    }, '0 0 0 0')
+
+    cmyk['whiteSpace'] = parseFloat(kmeans_colors.filter((color) => {
+        return color.cmyk === '0 0 0 0'
+    })[0]?.percentage ?? 0).toFixed(2)
+
+    cmyk['coloredSpace'] = Number(100 - cmyk['whiteSpace']).toFixed(2)
+
+    cmyk['summary'] = {
+        c: {
+            formula: `((${cmyk['total'].split(' ')[0]} / ${kmeans_colors.filter(color => color.cmyk !== '0 0 0 0 ').length}) / 100) * (${cmyk['coloredSpace']} / 100) * 100`,
+            value: nanHelper((colorAverage(cmyk['total'].split(' ')[0], kmeans_colors.filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'] / 100) * 100),
+        },
+        m: {
+            formula: `((${cmyk['total'].split(' ')[1]} / ${kmeans_colors.filter(color => color.cmyk !== '0 0 0 0 ').length}) / 100) * (${cmyk['coloredSpace']} / 100) * 100`,
+            value: nanHelper((colorAverage(cmyk['total'].split(' ')[1], kmeans_colors.filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'] / 100) * 100),
+        },
+        y: {
+            formula: `((${cmyk['total'].split(' ')[2]} / ${kmeans_colors.filter(color => color.cmyk !== '0 0 0 0 ').length}) / 100) * (${cmyk['coloredSpace']} / 100) * 100`,
+            value: nanHelper((colorAverage(cmyk['total'].split(' ')[2], kmeans_colors.filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'] / 100) * 100),
+        },
+        k: {
+            formula: `((${cmyk['total'].split(' ')[3]} / ${kmeans_colors.filter(color => color.cmyk !== '0 0 0 0 ').length}) / 100) * (${cmyk['coloredSpace']} / 100) * 100`,
+            value: nanHelper((colorAverage(cmyk['total'].split(' ')[3], kmeans_colors.filter(color => color.cmyk !== '0 0 0 0').length) / 100) * (cmyk['coloredSpace'] / 100) * 100),
+        },
+    }
 
     return cmyk
 }
