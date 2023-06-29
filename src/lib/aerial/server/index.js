@@ -46,9 +46,20 @@ function colorAverage(total, length) {
 }
 
 /**
- * Generate summary of CMYK with given single kmeans_colors set
+ * When a page is blank (all white space) we have no colors
+ * hence the formula becomes 0 / 0 which returns NaN
+ * https://stackoverflow.com/questions/18838301/in-javascript-why-does-zero-divided-by-zero-return-nan-but-any-other-divided-b
  * 
- * For getting cmyk from multiple kmeans_colors sets see $lib/ghosprinter/print-job/cmyk.js implementation
+ * No null coalescing shortcut for NaN related value
+ * https://github.com/tc39/proposal-nullish-coalescing/issues/28
+ * 
+ * If number is equal to 0 we keep it, otherwise we limit the number
+ * of digits after decimal point to two places
+ */
+function nanHelper(value) {
+    const number = isNaN(value) ? 0 : value
+    return number === 0 ? number : Number(number).toFixed(2)
+}
  * 
  * @param {Array} kmeans_colors Array of dominant colors produced by kmeans_colors binary
  * @returns {Object} CMYK object
@@ -125,19 +136,6 @@ export const summary = async (kmeans_colors = []) => {
     cmyk['coloredSpace'] = cmyk['whiteSpace'].map((whiteSpace) => {
         return 100 - whiteSpace
     })
-
-    /**
-     * When a page is blank (all white space) we have no colors
-     * hence the formula becomes 0 / 0 which returns NaN
-     * https://stackoverflow.com/questions/18838301/in-javascript-why-does-zero-divided-by-zero-return-nan-but-any-other-divided-b
-     * 
-     * No null coalescing shortcut for NaN related value
-     * https://github.com/tc39/proposal-nullish-coalescing/issues/28
-     */
-
-    function nanHelper(value) {
-        return isNaN(value) ? 0 : value
-    }
 
     cmyk['summary'] = cmyk['total'].map((cmykString, index) => {
         return {
