@@ -1,4 +1,9 @@
-import { Queue } from 'quirrel/sveltekit'
+/**
+ * SvelteKit build crash with Quirrel import
+ * https://github.com/quirrel-dev/quirrel/issues/1111#issuecomment-1365873921
+ */
+// import { Queue } from 'quirrel/sveltekit'
+import { Queue } from 'quirrel/sveltekit.cjs'
 import { getOAuth2Client, isSignedIn } from 'svelte-google-auth'
 import { writeFile, appendFile, readFile } from 'node:fs/promises'
 import { storage_path } from '$lib/config.js'
