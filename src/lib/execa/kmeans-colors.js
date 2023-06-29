@@ -167,6 +167,8 @@ export const hexToCmyk = (hexstring) => {
 /**
  * Convert Hex string to integer representation
  * 
+ * The radix we use in parseInt is 16, since there are 16 hexadecimal digits
+ * 
  * https://codepen.io/AudreyRBC/pen/MzmLYx?editors=0010
  * 
  * @param {String} hexstring 
