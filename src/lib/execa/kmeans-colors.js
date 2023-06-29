@@ -105,29 +105,52 @@ export const hexToRgb = (hexstring) => {
 /**
  * RGB color to CMYK
  * 
+ * The rgb to cmyk here is wrong:
  * https://codepen.io/AudreyRBC/pen/MzmLYx?editors=0010
  * 
- * @param {String} rgb Color in rgb format
+ * Updated code is from:
+ * https://www.w3schools.com/colors/colors_converter.asp
+ * https://www.w3schools.com/lib/w3color.js
+ * 
+ * Article about rgb to cmyk formula:
+ * https://wizlogo.com/hex-to-cmyk
+ * 
+ * @param {Array} rgb Array of rgb colors
  * @returns {String} CMYK color string
  */
 export const rgbToCmyk = (rgb) => {
-    let b = 1
-    let cmyk = []
+    let c, m, y, k
 
-    for (var i = 0; i < rgb.length; i++) {
-        let color =  1 - ( rgb[i] / 255 )
+    // We first divide RGB values by 255 to change the range from 0 - 255 to 0 - 1
+    const red = rgb[0] / 255
+    const green = rgb[1] / 255
+    const blue = rgb[2] / 255
 
-        if	( color < b ) b = color
-        if ( b === 1 ) color = 1
-        else color = ( ( color - b ) / ( 1 - b ) ) * 100
+    // Calculate the black key color K
+    k = 1 - Math.max(red, green, blue)
 
-        cmyk[i] = Math.round(color)
+    if (k == 1) {
+        // console.log("Black is 100 percent.")
+        c = 0
+        m = 0
+        y = 0
+    } else {
+        // console.log('There are other colors than black')
+        c = (1 - red - k) / (1 - k)
+        m = (1 - green - k) / (1 - k)
+        y = (1 - blue - k) / (1 - k)
     }
 
-    const cmykDigit = Math.round(b * 100)
-    cmyk.push(cmykDigit)
+    return `${toCmykString(c)} ${toCmykString(m)} ${toCmykString(y)} ${toCmykString(k)}`
+}
 
-    return cmyk.join(' ')
+/**
+ * Convert CMYK decimal to string
+ * 
+ * @param {Number} value CMYK decimal value
+ */
+function toCmykString(value) {
+    return Math.round(Number(value).toFixed(2) * 100)
 }
 
 /**
