@@ -171,5 +171,7 @@ export const summarySingleSet = async (kmeans_colors = []) => {
 }
 
 export default {
+    kmeansColors,
     summary,
+    summarySingleSet
 }
