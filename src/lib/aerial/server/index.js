@@ -131,10 +131,10 @@ export const summary = async (kmeans_colors = []) => {
             return color.cmyk === '0 0 0 0'
         })
 
-        return parseFloat(whiteFilter[0]?.percentage ?? 0)
+        return parseFloat(whiteFilter[0]?.percentage ?? 0).toFixed(2)
     })
     cmyk['coloredSpace'] = cmyk['whiteSpace'].map((whiteSpace) => {
-        return 100 - whiteSpace
+        return Number(100 - whiteSpace).toFixed(2)
     })
 
     cmyk['summary'] = cmyk['total'].map((cmykString, index) => {
