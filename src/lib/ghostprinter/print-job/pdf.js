@@ -4,7 +4,7 @@ import { writeFile, access, constants } from 'node:fs/promises'
 // import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf"
 import ShortUniqueId from "short-unique-id"
 // import { createCanvas } from "canvas"
-import KmeansColors, { defaultFlags, hexToRgb, hexToCmyk } from '../../execa/kmeans-colors'
+import KmeansColors, { defaultFlags, hexToRgb, hexToCmyk } from '$lib/execa/kmeans-colors.js'
 // import { fromPath as pdf2picFromPath, fromBuffer as pdf2picFromBuffer } from "pdf2pic"
 // import { createMuPdf } from "mupdf-js"
 // import initMuPdf from "mupdf-js/dist/libmupdf"
