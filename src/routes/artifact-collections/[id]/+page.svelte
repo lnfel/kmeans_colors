@@ -57,7 +57,7 @@
                                 <small>Each number stands for the sum of C, M, Y and K in respective order from left to right.</small>
                             </div>
                             <div class="cmyk-total">
-                                {artifact.cmyk.total}
+                                {artifact.cmyk.info.total[pageIndex]}
                             </div>
 
                             <div>
