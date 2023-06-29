@@ -19,6 +19,11 @@ jobs:
         with:
           envkey_STORAGE_PATH: ${{ secrets.STORAGE_PATH }}
           envkey_BUILD_ENVIRONMENT: ${{ secrets.BUILD_ENVIRONMENT }}
+          envkey_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          envkey_QUIRREL_TOKEN: ${{ secrets.QUIRREL_TOKEN }}
+          envkey_QUIRREL_BASE_URL: ${{ secrets.QUIRREL_BASE_URL }}
+          envkey_QUIRREL_ENCRYPTION_SECRET: ${{ secrets.QUIRREL_ENCRYPTION_SECRET }}
+          envkey_QUIRREL_API_URL: ${{ secrets.QUIRREL_API_URL }}
       
       - name: Create client_secret.json
         uses: DamianReeves/write-file-action@master
