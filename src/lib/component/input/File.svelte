@@ -46,11 +46,11 @@
         </div>
         {#if showInfo}
             <div
-                in:slide="{{delay: 250, duration: 300, easing: quintOut, axis: 'x'}}"
-                out:slide="{{delay: 500, duration: 300, easing: sineOut, axis: 'x'}}">
+                in:slide|global="{{delay: 250, duration: 300, easing: quintOut, axis: 'x'}}"
+                out:slide|global="{{delay: 500, duration: 300, easing: sineOut, axis: 'x'}}">
                 <div class="md:hidden"
-                    in:slide="{{delay: 500, duration: 300, easing: quintOut, axis: 'y'}}"
-                    out:slide="{{delay: 250, duration: 300, easing: quintOut, axis: 'y'}}">
+                    in:slide|global="{{delay: 500, duration: 300, easing: quintOut, axis: 'y'}}"
+                    out:slide|global="{{delay: 250, duration: 300, easing: quintOut, axis: 'y'}}">
                     {#each description.split(/\r?\n/) as description}
                         <p class="text-sm">{description}</p>
                     {/each}
