@@ -52,9 +52,15 @@ const getUrlLastPath = (url) => {
  * Download appropriate binary build depending on current platform
  */
 const kmeansBinaryMap = {
-    darwin: await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-macos-x86_64.tar.gz"),
-    linux: await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-linux-x86_64.tar.gz"),
-    win32: await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-windows-x86_64.tar.gz")
+    darwin: async () => {
+        return await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-macos-x86_64.tar.gz")
+    },
+    linux: async () => {
+        return await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-linux-x86_64.tar.gz")
+    },
+    win32: async () => {
+        return await addBinaryDependency("kmeans_colors", "https://github.com/okaneco/kmeans-colors/releases/download/0.5.0/kmeans_colors-0.5.0-windows-x86_64.tar.gz")
+    }
 }
 
 /**
@@ -65,7 +71,7 @@ const kmeansBinaryMap = {
 const binaries = async () => {
     // console.log(kmeansBinaryMap[platform()])
     return [
-        kmeansBinaryMap[platform()],
+        await kmeansBinaryMap[platform()](),
     ]
 }
 
@@ -79,7 +85,7 @@ async function install(binaries) {
     console.log(chalk.yellow('Installing binaries.'))
 
     binaries.forEach(async (binary) => {
-        // console.log(`${chalk.yellow('Fetching from')} ${binary.url}`)
+        console.log(`${chalk.yellow('Fetching from')} ${binary.url}`)
         const response = await fetch(binary.url)
         const file = await response.blob()
         const buffer = Buffer.from(await file.arrayBuffer())

@@ -21,7 +21,8 @@ export const kmeansColors = async (imagepath) => {
         console.log(error)
         return error
     }
-    const {stdout} = await KmeansColors.exec(flags)
+    const KmeansColorsExec = await KmeansColors()
+    const {stdout} = await KmeansColorsExec(flags)
     console.log('KmeansColors stdout: ', stdout)
     const kmeans = stdout.split('\n')
     const colors = kmeans[0].split(',')
