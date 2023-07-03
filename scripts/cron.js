@@ -1,5 +1,5 @@
 import cron from 'node-cron'
-import { readFile, writeFile, mkdir, open, rm, readdir, appendFile } from 'node:fs/promises'
+import { rm, readdir, appendFile } from 'node:fs/promises'
 import path from 'node:path'
 
 /**

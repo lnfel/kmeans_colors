@@ -1,4 +1,4 @@
-import { google, Auth, drive_v3 } from 'googleapis'
+import { google } from 'googleapis'
 
 /**
  * Sample google server side api call
@@ -6,7 +6,8 @@ import { google, Auth, drive_v3 } from 'googleapis'
  * https://developers.google.com/drive/api/v3/reference/files/list
  * use the trashed=false query parameter to filter trashed files from the results.
  * 
- * @param {Auth.OAuth2Client} auth OAuth2Client
+ * @param {import('googleapis').Auth.OAuth2Client} auth
+ * @returns {Promise<import('googleapis').drive_v3.Schema$File[]>} Drive files
  */
 export async function listDriveFiles(auth) {
     try {
@@ -27,7 +28,7 @@ export async function listDriveFiles(auth) {
  * 
  * https://developers.google.com/drive/api/v3/reference/about/get
  * 
- * @param {Auth.OAuth2Client} auth 
+ * @param {import('googleapis').Auth.OAuth2Client} auth
  * @returns {Promise<Object>}
  */
 export async function listStorageQuota(auth) {

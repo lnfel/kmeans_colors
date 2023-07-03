@@ -1,4 +1,4 @@
-import Client, { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import ShortUniqueId from "short-unique-id"
 
 const prisma = new PrismaClient()
@@ -44,9 +44,7 @@ export const mimetypeMapToEnum = {
  * Generate custom id using prisma middleware
  * https://github.com/prisma/prisma/issues/6719#issuecomment-1178211695
  * 
- * @type {Client.Prisma.Middleware}
- * @param {Client.Prisma.MiddlewareParams} params 
- * @param {any} next 
+ * @type {import('@prisma/client').Prisma.Middleware}
  * @returns {Promise<any>} Promise<any>
  */
 export const generateShortUniqueId = async (params, next) => {
