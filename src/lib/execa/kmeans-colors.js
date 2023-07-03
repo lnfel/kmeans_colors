@@ -42,13 +42,18 @@ const args = (flags = {}) =>
  * @returns {Promise|Object} Object that contains exec property
  */
 export const create = async (binaryPath) => {
-    const fn = async (flags, options) =>
-        await fn.exec(flags, options)
+    const fn = async (flags, options) => {
+        return await execa(binaryPath, args(flags), options)
+    }
 
-    fn.binaryPath = binaryPath
+    // const fn = async (flags, options) =>
+    //     await fn.exec(flags, options)
+
+    // fn.binaryPath = binaryPath
     
-    fn.exec = async (flags, options) =>
-        await execa(binaryPath, args(flags), options)
+    // fn.exec = async (flags, options) => {
+    //     return await execa(binaryPath, args(flags), options)
+    // }
 
     return fn
 }
@@ -179,7 +184,9 @@ const hexToInt = (hexstring) => {
     return parseInt(hexstring, 16)
 }
 
-export default await create(defaultBinaryPath)
+export default async function() {
+    return await create(defaultBinaryPath)
+}
 
 // try {
 //     const kmeanColors = await create(defaultBinaryPath)

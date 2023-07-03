@@ -21,7 +21,8 @@ export const POST = async ({ request, locals, cookies, fetch }) => {
 
     // Convert to pdf with libreoffice
     const flags = defaultFlags(filepath)
-    const {stdout} = await libreoffice.exec(flags)
+    const libreofficeExec = await libreoffice()
+    const {stdout} = await libreofficeExec(flags)
     console.log('stdout: ', stdout)
 
     const pdfArrayBuffer = await readFile(filepath.replace('.docx', '.pdf'))
