@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit'
 import { getOAuth2Client, isSignedIn } from 'svelte-google-auth'
-import { google, drive_v3, Auth } from 'googleapis'
+import { google } from 'googleapis'
 
 /**
  * https://developers.google.com/drive/api/guides/manage-uploads
@@ -145,8 +145,8 @@ async function searchAerialFolder(client) {
 /**
  * Create Aerial folder in current user's google drive
  * 
- * @param {Auth.OAuth2Client} client OAuth2Client
- * @returns {Promise<drive_v3.Schema$File>} Returns drive file object
+ * @param {import('googleapis').Auth.OAuth2Client} client
+ * @returns {Promise<import('googleapis').drive_v3.Schema$File>} Returns drive file object
  */
 async function aerialFolderCreate(client) {
     const drive = google.drive({version: 'v3', auth: client})

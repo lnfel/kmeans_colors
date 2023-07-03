@@ -64,6 +64,7 @@ export const actions = {
              * Create collection folder where we save the file(s) or image(s)
              */
             const collectionFolder = `${storage_path}/aerial/${collection.id}`
+            // console.log('collectionFolder: ', collectionFolder)
             await mkdir(collectionFolder, { recursive: true })
 
             for (let i = 0; i < files.length; i++) {

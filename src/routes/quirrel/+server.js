@@ -5,7 +5,7 @@
 // import { Queue } from 'quirrel/sveltekit'
 import { Queue } from 'quirrel/sveltekit.cjs'
 import { getOAuth2Client, isSignedIn } from 'svelte-google-auth'
-import { writeFile, appendFile, readFile } from 'node:fs/promises'
+import { writeFile, readFile } from 'node:fs/promises'
 import { storage_path } from '$lib/config.js'
 import prisma, { mimetypeMapToEnum, mimetypeMapFromEnum } from '$lib/prisma.js'
 import { getFileExtension } from '$lib/aerial/hybrid/util.js'
@@ -29,7 +29,7 @@ import mupdf from 'mupdf'
 const queue = Queue(
     'quirrel',
     async (job, meta) => {
-
+        console.log('Running quirrel job')
         /**
          * Perform kmeans_colors and save to database
          * Get artifact collection instance

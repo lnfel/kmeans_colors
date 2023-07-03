@@ -4,7 +4,7 @@
     import { page } from "$app/stores"
     import { invalidateAll } from "$app/navigation"
     import { googleDrivePreview, mupdfPreview, libreofficePreview, pdf24Preview, imagePreview } from "$lib/aerial/client/index.js"
-    import { fromArrayBuffer, fromBlob } from 'geotiff'
+    import { fromArrayBuffer } from 'geotiff'
 
     import Header from "$lib/component/Header.svelte"
     import Pulse from "$lib/component/Pulse.svelte"
