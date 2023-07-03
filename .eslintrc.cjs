@@ -3,7 +3,6 @@ module.exports = {
 	extends: ['eslint:recommended', 'plugin:svelte/recommended'],
     rules: {
         "no-extra-parens": 0,
-        "no-unexpected-multiline": 0,
         "no-unused-vars": ["off", {
             "args": "none"
         }],
