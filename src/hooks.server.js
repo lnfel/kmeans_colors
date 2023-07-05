@@ -42,4 +42,40 @@ async function svelteHandleAuth({ event, resolve }) {
     return await auth.handleAuth({ event, resolve })
 }
 
-export const handle = sequence(svelteHandleBotBlock, svelteHandleAuth)
+/**
+ * Handle CORS
+ * 
+ * https://dev.to/khromov/configure-cors-in-sveltekit-to-make-fetch-requests-to-your-api-routes-from-a-different-host-241k
+ * 
+ * @type {import('@sveltejs/kit').Handle}
+ */
+async function svelteHandleCors({ event, resolve }) {
+    // Apply CORS header for API routes
+    console.log("API route: ", event.url.pathname.startsWith('/api'))
+    if (event.url.pathname.startsWith('/api') || event.url.pathname.startsWith('/quirrel')) {
+        // Required for CORS to work
+        console.log("Request method: ", event.request.method)
+        if (event.request.method === 'OPTIONS') {
+            return new Response(null, {
+                headers: {
+                    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': '*',
+                }
+            })
+        }
+    }
+
+    const response = await resolve(event)
+    if (event.url.pathname.startsWith('/api') || event.url.pathname.startsWith('/quirrel')) {
+        response.headers.append('Access-Control-Allow-Origin', '*')
+    }
+
+    return response
+}
+
+export const handle = sequence(
+    svelteHandleCors,
+    svelteHandleBotBlock,
+    svelteHandleAuth,
+)
