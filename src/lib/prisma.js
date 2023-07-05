@@ -1,6 +1,7 @@
-import { PrismaClient } from '@prisma/client'
+import Prisma from '@prisma/client'
 import ShortUniqueId from "short-unique-id"
 
+const { PrismaClient } = Prisma
 const prisma = new PrismaClient()
 
 const prefixMap = {
