@@ -12,6 +12,12 @@ const config = {
         //     ? adapterAuto()
         //     : adapterNode(),
         adapter: adapterNode(),
+        csrf: {
+            // csrf.check_origin fails in dev mode
+            // https://github.com/sveltejs/kit/issues/8026
+            // checkOrigin: process.env.NODE_ENV === 'development' ? false : true
+            checkOrigin: false
+        },
 	},
     preprocess: vitePreprocess()
 };
