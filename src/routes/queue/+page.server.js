@@ -11,14 +11,6 @@ import { getFileExtension } from '$lib/aerial/hybrid/util.js'
  * @type {import('@sveltejs/kit').ServerLoad} 
  */
 export const load = async ({ locals, depends }) => {
-    // const job = await quirrel.getById('be501991-8c74-4af6-96b0-ea85e7f068c1')
-    // console.log(job)
-    // if(await job?.invoke()) {
-    //     console.log('Job has been invoked.')
-    // } else {
-    //     console.log(`No job found with id of be501991-8c74-4af6-96b0-ea85e7f068c1.`)
-    // }
-
     const artifacts = await prisma.artifact.findMany()
     const artifactCollections = await prisma.artifactCollection.findMany({
         include: {
@@ -43,7 +35,7 @@ export const load = async ({ locals, depends }) => {
  * @type {import('@sveltejs/kit').Actions}
  */
 export const actions = {
-    default: async ({ request, locals, cookies }) => {
+    default: async ({ request, locals }) => {
         try {
             const formData = await request.formData()
             const files = Array.from(formData.getAll('file'))
@@ -153,10 +145,6 @@ export const actions = {
              * as they hold many information that may lead to out of ram if we
              * have many pending queues
              */
-            // const dummyCollection = {"id":"artc_4TUQdI","label":"test","createdAt":"2023-05-06T03:42:07.880Z","updatedAt":"2023-05-06T03:42:07.880Z"}
-            // await quirrel.enqueue(dummyCollection.id, {
-            //     delay: '1h'
-            // })
             await quirrel.enqueue({ artifactCollectionId: collection.id, locals }, {
                 // delay: '1h' // if delay if not specified, quirrel runs the job ASAP
             })
