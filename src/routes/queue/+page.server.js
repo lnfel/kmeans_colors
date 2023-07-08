@@ -154,7 +154,7 @@ export const actions = {
             }
         } catch (error) {
             console.log(error)
-            return fail(422, error)
+            return fail(422, error.message)
         }
     }
 }
