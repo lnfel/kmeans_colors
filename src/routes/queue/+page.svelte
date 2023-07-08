@@ -107,16 +107,16 @@
 
         {#each $page.form?.images ?? [] as image, i (image.name)}
             <img 
-                in:fly="{{ delay: 250 * i, x: -20, duration: 250, easing: quintOut }}"
-                out:fade={{ delay: 250 * i, easing: quintOut }}
+                in:fly|global="{{ delay: 250 * i, x: -20, duration: 250, easing: quintOut }}"
+                out:fade|global={{ delay: 250 * i, easing: quintOut }}
                 src={image.base64} alt={image.name} height="240">
         {/each}
 
         <!-- Slide transition is inconsisten, see https://svelte.dev/repl/a2d06d6be2b64abeafcc0d8cde270913?version=3.58.0 -->
         <!-- {#each $page.form?.images ?? [] as image, i (image.name)}
             <img id={i}
-                in:slide|local="{{ delay: 250 * i, duration: 300, easing: quintOut, axis: 'y' }}"
-                out:slide|local="{{ delay: 250 * i, duration: 300, easing: quintOut, axis: 'y' }}"
+                in:slide="{{ delay: 250 * i, duration: 300, easing: quintOut, axis: 'y' }}"
+                out:slide="{{ delay: 250 * i, duration: 300, easing: quintOut, axis: 'y' }}"
                 src={image.base64} alt={image.name} height="240" class="block">
         {/each} -->
 
