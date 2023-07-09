@@ -9,10 +9,11 @@ export default defineConfig({
 	server: {
 		fs: {
 			allow: [
-				// search up for workspace root
-                searchForWorkspaceRoot(process.cwd()),
-				// your custom rules
-                './storage/aerial/**/*'
+                // We are now using /storage route endpoint for this
+				// // search up for workspace root
+                // searchForWorkspaceRoot(process.cwd()),
+				// // your custom rules
+                // './storage/aerial/**/*'
 			]
 		}
 	}
