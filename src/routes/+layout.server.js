@@ -5,7 +5,7 @@ import { listDriveFiles, listStorageQuota, listAerialFolderDetails } from '$lib/
 /**
  * @type {import('@sveltejs/kit').ServerLoad}
  */
-export const load = async ({ locals }) => {
+export const load = async ({ locals, url }) => {
     let driveFiles, storageQuota, aerialFolder
     if (isSignedIn(locals)) {
         const client = getOAuth2Client(locals)
@@ -20,6 +20,8 @@ export const load = async ({ locals }) => {
         ...hydrateAuth(locals),
         driveFiles,
         storageQuota,
-        aerialFolder
+        aerialFolder,
+        // We must know the pathname change beforehand for the page transition to be accurate
+        url: url.pathname
     }
 }
