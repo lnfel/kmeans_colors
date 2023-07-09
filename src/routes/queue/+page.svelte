@@ -109,7 +109,7 @@
             <img 
                 in:fly|global="{{ delay: 250 * i, x: -20, duration: 250, easing: quintOut }}"
                 out:fade|global={{ delay: 250 * i, easing: quintOut }}
-                src={image.base64} alt={image.name} height="240">
+                src={image.base64} alt={image.name} height="240" class="img-preview">
         {/each}
 
         <!-- Slide transition is inconsisten, see https://svelte.dev/repl/a2d06d6be2b64abeafcc0d8cde270913?version=3.58.0 -->

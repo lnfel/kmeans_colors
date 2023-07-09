@@ -25,7 +25,7 @@
                     <div class="grid place-items-center">
                         <figure class="space-y-2">
                             <!-- <img src={`/storage/aerial/${$page.data?.artifactCollection?.id}/${artifact.id}.png`} alt={artifact.label} class="mx-auto" /> -->
-                            <img src={artifact.url.replace('.pdf', `_${pageIndex + 1}.png`)} alt={artifact.label} class="mx-auto" />
+                            <img src={artifact.url.replace('.pdf', `_${pageIndex + 1}.png`)} alt={artifact.label} class="img-preview mx-auto" />
 
                             <figcaption class="text-center">
                                 <div>{artifact.label}</div>

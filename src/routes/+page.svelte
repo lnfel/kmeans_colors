@@ -240,7 +240,7 @@
                         <div class="grid place-items-center">
                             <figure class="space-y-2">
                             {#if preview.url}
-                                <img src={preview.url} alt={preview.name} class="mx-auto" />
+                                <img src={preview.url} alt={preview.name} class="img-preview mx-auto" />
                             {:else}
                                 {#await promiseState(promise) then fulfilled} 
                                     {#if fulfilled === 'fulfilled'}
