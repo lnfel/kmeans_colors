@@ -51,7 +51,8 @@ async function svelteHandleAuth({ event, resolve }) {
  */
 async function svelteHandleCors({ event, resolve }) {
     // Apply CORS header for API routes
-    console.log("API route: ", event.url.pathname.startsWith('/api'))
+    // console.log("API route: ", event.url.pathname.startsWith('/api'))
+    // console.log("Quirrel route: ", event.url.pathname.startsWith('/quirrel'))
     if (event.url.pathname.startsWith('/api') || event.url.pathname.startsWith('/quirrel')) {
         // Required for CORS to work
         console.log("Request method: ", event.request.method)
