@@ -90,9 +90,6 @@
                 id="file" name="file" multiple accept="image/*,.pdf,.docx,.doc" />
 
             <div class="flex items-end gap-2">
-                <!-- <Button bind:ref={submitBtn} type="submit" id="submit" disabled="{!$hasFile}">
-                    Submit
-                </Button> -->
                 <Button bind:ref={submitBtn} type="submit" id="submit">
                     Submit
                 </Button>
@@ -105,64 +102,13 @@
             <div class="text-rose-500 dark:text-rose-300">{$error?.message}</div>
         {/if}
 
+        <!-- Slide transition is inconsistent, see https://svelte.dev/repl/a2d06d6be2b64abeafcc0d8cde270913?version=3.58.0 -->
         {#each $page.form?.images ?? [] as image, i (image.name)}
             <img 
                 in:fly|global="{{ delay: 250 * i, x: -20, duration: 250, easing: quintOut }}"
                 out:fade|global={{ delay: 250 * i, easing: quintOut }}
                 src={image.base64} alt={image.name} height="240" class="img-preview">
         {/each}
-
-        <!-- Slide transition is inconsisten, see https://svelte.dev/repl/a2d06d6be2b64abeafcc0d8cde270913?version=3.58.0 -->
-        <!-- {#each $page.form?.images ?? [] as image, i (image.name)}
-            <img id={i}
-                in:slide="{{ delay: 250 * i, duration: 300, easing: quintOut, axis: 'y' }}"
-                out:slide="{{ delay: 250 * i, duration: 300, easing: quintOut, axis: 'y' }}"
-                src={image.base64} alt={image.name} height="240" class="block">
-        {/each} -->
-
-        <!-- <div class="grid grid-cols-3 rounded-b-md border-b border-indigo-100">
-            <div class:rounded-bl-md={$page?.data?.artifacts?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tl-md">ID</div>
-            <div class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1">Label</div>
-            <div class:rounded-br-md={$page?.data?.artifacts?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tr-md">Created at</div>
-
-            {#each $page?.data?.artifacts ?? [] as artifact, i}
-                <div class:rounded-bl-md={$page?.data?.artifacts?.length === i + 1} class="px-2 py-1 border-l border-indigo-100">
-                    {artifact.id}
-                </div>
-                <div class="px-2 py-1">
-                    {artifact.label}
-                </div>
-                <div class:rounded-br-md={$page?.data?.artifacts?.length === i + 1} class="px-2 py-1 border-r border-indigo-100">
-                    {artifact.createdAt.toLocaleString('en-PH', {timezone: 'Asia/Manila', hour12: true, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})
-                        .toUpperCase()
-                        .replaceAll(/(,)|([.])/g, '')
-                        .replaceAll(/\s+/g, ' ')
-                        .replaceAll(/\//g, '-')}
-                </div>
-            {/each}
-        </div> -->
-
-        <!-- <div class="grid grid-cols-3 rounded-b-md border-b border-indigo-100">
-            <div class:rounded-bl-md={$page?.data?.artifactCollections?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tl-md">ID</div>
-            <div class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1">Label</div>
-            <div class:rounded-br-md={$page?.data?.artifactCollections?.length === 0} class="bg-indigo-100 text-indigo-500 text-lg font-sculpin px-2 py-1 rounded-tr-md">Created at</div>
-
-            {#each $page?.data?.artifactCollections ?? [] as artifact, i}
-                <div class:rounded-bl-md={$page?.data?.artifactCollections?.length === i + 1} class="px-2 py-1 border-l border-indigo-100">
-                    <a href="/artifact-collections/{artifact.id}">{artifact.id}</a>
-                </div>
-                <div class="px-2 py-1">
-                    {artifact.label}
-                </div>
-                <div class:rounded-br-md={$page?.data?.artifactCollections?.length === i + 1} class="px-2 py-1 border-r border-indigo-100">
-                    {artifact.createdAt.toLocaleString('en-PH', {timezone: 'Asia/Manila', hour12: true, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})
-                        .toUpperCase()
-                        .replaceAll(/(,)|([.])/g, '')
-                        .replaceAll(/\s+/g, ' ')
-                        .replaceAll(/\//g, '-')}
-                </div>
-            {/each}
-        </div> -->
 
         <div class="overflow-x-auto rounded-md border border-indigo-100 whitespace-nowrap">
             <table class="w-full table-auto text-left">
@@ -209,9 +155,5 @@
         </div>
 
         <!-- <Filepond allowMultiple={true} /> -->
-        <!-- <pre>
-{JSON.stringify($page?.data?.artifactCollections, null, 4)}
-        </pre> -->
-        <!-- <LamyDebugbar data={{"artifactCollections": $page?.data?.artifactCollections ?? []}} /> -->
     </section>
 </main>
