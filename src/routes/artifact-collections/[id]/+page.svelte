@@ -31,7 +31,7 @@
                                 <div>{artifact.label}</div>
                                 <div>
                                 {artifact.type === 'DOCUMENT'
-                                    ? `page ${pageIndex + 1} of ${artifact.pages}`
+                                    ? `item ${artifactIndex + 1} page ${pageIndex + 1} of ${artifact.pages}`
                                     : `item ${artifactIndex + 1}`}
                                 </div>
                             </figcaption>
