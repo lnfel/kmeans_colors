@@ -13,14 +13,14 @@ import { getFileExtension } from '$lib/aerial/hybrid/util.js'
 export const load = async ({ locals, depends }) => {
     const artifacts = await prisma.artifact.findMany()
     const artifactCollections = await prisma.artifactCollection.findMany({
-        include: {
-            artifacts: {
-                include: {
-                    kmeansColors: true,
-                    cmyk: true
-                }
-            }
-        }
+        // include: {
+        //     artifacts: {
+        //         include: {
+        //             kmeansColors: true,
+        //             cmyk: true
+        //         }
+        //     }
+        // }
     })
 
     depends('queue:artifactCollections')
