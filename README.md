@@ -41,6 +41,8 @@ The following applications must be installed in order for Aerial to run without 
 ## API
 
 ## Database
+The command samples uses npx command but we can also use pnpm equivalent which is pnpx.
+
 We are using [Prisma](https://www.prisma.io/) as database ORM. To see prisma cli commands run:
 ```sh
 npx prisma
@@ -54,4 +56,15 @@ npx prisma generate
 To create migrations from your Prisma schema, apply them to the database, generate artifacts in a single go:
 ```sh
 npx prisma migrate dev --name init
+```
+
+Reset prisma migration, useful for when changing schema and re-running seeders:
+```sh
+npx prisma migrate reset
+npx prisma migrate dev --name init
+```
+
+Prisma has their own database viewer called prisma studio that runs on the browser:
+```sh
+npx prisma studio
 ```
