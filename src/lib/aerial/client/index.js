@@ -3,7 +3,6 @@ import { createMuPdf } from "mupdf-js"
 import { fileCheck } from '$lib/aerial/hybrid/validation.js'
 
 export const error = writable()
-export const hasFile = writable(false)
 
 /**
  * Convert DOCX to base64
@@ -362,7 +361,7 @@ export const validateFileInput = async ({ target }) => {
     if (target.files.length > 5) {
         target.value = ''
         error.set(new Error('Can only upload 5 files at a time.'))
-        return hasFile.set(false)
+        return
     }
 
     const imageCount = files.filter((file) => fileCheck.isImage(file.type)).length
@@ -373,10 +372,8 @@ export const validateFileInput = async ({ target }) => {
     if (target.files.length !== acceptedFilesCount) {
         target.value = ''
         error.set(new Error('Aerial can only process png, jpeg, webp, gif, svg, tiff, docx and pdf files.'))
-        return hasFile.set(false)
+        return
     }
-
-    hasFile.set(true)
 }
 
 export default {

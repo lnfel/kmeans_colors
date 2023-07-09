@@ -1,13 +1,10 @@
 <script>
-    import { onMount } from 'svelte'
     import { page } from "$app/stores"
     import { enhance } from "$app/forms"
     import { fly, fade } from 'svelte/transition'
-	import { backOut, quintOut, sineOut } from 'svelte/easing'
-    import { invalidate, invalidateAll } from "$app/navigation"
-    // import ShortUniqueId from "short-unique-id"
-    import { validateFileInput, error, hasFile } from "$lib/aerial/client/index.js"
-    // import LamyDebugbar from "lamy-debugbar"
+	import { quintOut } from 'svelte/easing'
+    import { invalidate } from "$app/navigation"
+    import { validateFileInput, error } from "$lib/aerial/client/index.js"
 
     import Header from "$lib/component/Header.svelte"
     import Pulse from "$lib/component/Pulse.svelte"
@@ -16,12 +13,7 @@
     // import Filepond from "$lib/component/input/Filepond.svelte"
     import Button from "$lib/component/Button.svelte"
 
-    // const uid = new ShortUniqueId()
     let fileinput, submitBtn
-
-    onMount(async () => {
-
-    })
 
     async function queue({ form, data, action, cancel }) {
         await invalidate('queue:artifactCollections')
@@ -29,18 +21,8 @@
         // console.log(files)
 
         return async ({ result, update }) => {
-            hasFile.set(false)
             console.log(result)
             await update()
-
-            // const response = await fetch('/api/queue', {
-            //     method: 'POST',
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            //     body: JSON.stringify(result.data)
-            // })
-            // console.log(await response.json())
         }
     }
 
