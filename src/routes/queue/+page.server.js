@@ -11,7 +11,11 @@ import { getFileExtension } from '$lib/aerial/hybrid/util.js'
  * @type {import('@sveltejs/kit').ServerLoad} 
  */
 export const load = async ({ locals, depends }) => {
-    const artifacts = await prisma.artifact.findMany()
+    /**
+     * Do not load artifacts here and return as page data because the image urls are
+     * fetched during navigation for some reason and it slows page load.
+     */
+    // const artifacts = await prisma.artifact.findMany()
     const artifactCollections = await prisma.artifactCollection.findMany({
         // include: {
         //     artifacts: {
@@ -26,7 +30,6 @@ export const load = async ({ locals, depends }) => {
     depends('queue:artifactCollections')
 
     return {
-        artifacts,
         artifactCollections,
     }
 }
