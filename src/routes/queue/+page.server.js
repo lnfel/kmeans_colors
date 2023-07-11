@@ -3,7 +3,8 @@ import { fail, redirect } from '@sveltejs/kit'
 import sharp from 'sharp'
 import prisma, { mimetypeMapToEnum } from '$lib/prisma.js'
 import { storage_path } from "$lib/config.js"
-import { POST as quirrel } from '../quirrel/+server.js'
+// import { POST as quirrel } from '../quirrel/+server.js'
+import { POST as quirrel } from '../api/quirrel/job/color-extraction/+server.js'
 import { fileCheck, emptyFile } from '$lib/aerial/hybrid/validation.js'
 import { getFileExtension } from '$lib/aerial/hybrid/util.js'
 
