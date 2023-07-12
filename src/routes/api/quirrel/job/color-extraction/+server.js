@@ -162,6 +162,15 @@ const queue = Queue(
                     const split = 262144 // This is a sample chunk size. https://stackoverflow.com/a/73264129/12478479
                 }
             }
+
+            await prisma.artifactCollection.update({
+                where: {
+                    id: job.artifactCollectionId
+                },
+                data: {
+                    processed: true
+                }
+            })
         })
     }
 )
