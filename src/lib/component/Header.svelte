@@ -60,7 +60,6 @@
             </svg>
             <span class="sr-only">Queue</span>
         </a>
-        <GoogleClient data={$page.data} />
 
         <!-- Preferences -->
         <div class="dropdown-menu relative">
@@ -73,7 +72,7 @@
             </button>
 
             {#if preferencesToggle}
-                <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:slide|global="{{delay: 250, duration: 300, easing: quintOut, axis: 'y'}}" class="dropdown-list absolute top-full right-0 flex flex-col gap-2 bg-indigo-200 rounded whitespace-nowrap p-4 mt-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:slide|global="{{delay: 250, duration: 300, easing: quintOut, axis: 'y'}}" class="dropdown-list absolute right-0 z-10 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 px-4 py-3 mt-2 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                     <span class="text-lg font-bold font-sculpin tracking-wide text-indigo-600">Preferences</span>
 
                     <label class="relative flex items-center cursor-pointer">
@@ -84,5 +83,7 @@
                 </div>
             {/if}
         </div>
+
+        <GoogleClient data={$page.data} />
     </div>
 </header>

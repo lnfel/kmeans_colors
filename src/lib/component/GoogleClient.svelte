@@ -132,16 +132,17 @@
         {#if data.auth.user}
             <div class="relative inline-block text-left">
                 <div>
-                    <button type="button" on:click|stopPropagation={toggleAvatarDropdown} on:keydown={menuKeyboardListener} class="w-10 h-10 p-1 rounded-full bg-white text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-100 outline-none hover:bg-indigo-500 focus:bg-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
-                        <img src={data.auth.user?.picture} alt={data.auth.user?.name} referrerpolicy="no-referrer" class="rounded-full">
+                    <!-- Note: Arbitrary width and height values are needed to match the height of other navigation buttons -->
+                    <button type="button" on:click|stopPropagation={toggleAvatarDropdown} on:keydown={menuKeyboardListener} class="p-1 rounded-full bg-white text-sm font-semibold text-gray-900 shadow-sm ring-4 ring-inset ring-white outline-none border border-transparent hover:ring-indigo-500 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
+                        <img src={data.auth.user?.picture} alt={data.auth.user?.name} referrerpolicy="no-referrer" class="w-[1.565rem] h-[1.565rem] rounded-full">
                     </button>
                 </div>
 
                 {#if open}
-                    <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:slide|global="{{delay: 250, duration: 300, easing: quintOut, axis: 'y'}}" class="absolute right-0 z-10 mt-2 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-1 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                        <div class="text-sm font-medium text-gray-700 px-4 pt-2">{data.auth.user?.name}</div>
+                    <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:slide|global="{{delay: 250, duration: 300, easing: quintOut, axis: 'y'}}" class="absolute right-0 z-10 mt-2 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 px-4 py-3 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                        <div class="text-lg font-bold font-sculpin tracking-wide text-indigo-600">{data.auth.user?.name}</div>
 
-                        <div class="px-4 space-y-2">
+                        <div class="space-y-2">
                             <div class="flex justify-between">
                                 <span class="text-xs text-slate-800">Storage ({data?.storageQuota?.occupiedSpace}% full)</span>
                             </div>
@@ -150,7 +151,7 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-2 text-xs text-slate-800 px-4">
+                        <div class="flex items-center gap-2 text-xs text-slate-800">
                             <span>Aerial folder size: {data?.aerialFolder?.totalSize ?? '0 bytes'}</span>
                             <button type="button" on:click={clearAerialFolder} disabled="{data?.aerialFolder === null}" title="Clear Aerial folder" role="menuitem" class="text-indigo-600 p-1 text-left text-sm rounded-md border-2 border-transparent outline-none hover:text-indigo-500 focus:text-indigo-500 focus:border-indigo-500 disabled:text-slate-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -160,7 +161,7 @@
                             </button>
                         </div>
 
-                        <button type="button" on:click={logout} title="Sign Out" role="menuitem" class="text-gray-700 block w-full px-4 py-2 text-left text-sm rounded-md border-2 border-transparent outline-none hover:text-indigo-500 focus:text-indigo-500 focus:border-indigo-500">
+                        <button type="button" on:click={logout} title="Sign Out" role="menuitem" class="text-gray-700 block w-full py-2 text-left text-sm rounded-md border-2 border-transparent outline-none hover:text-indigo-500 focus:text-indigo-500 focus:border-indigo-500">
                             Sign Out
                         </button>
                     </div>
