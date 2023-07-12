@@ -75,6 +75,8 @@ export const actions = {
                         .toFormat('png')
                         // resize images so we don't receive huge base64 string on the client which messes up svelte transition
                         .resize({ height: 240 })
+                        // Remove transparent and replace with white background
+                        .flatten({ background: '#FFFFFF' })
                         .toBuffer()
                     const base64 = pngBuffer.toString('base64')
                     console.log('file', files[i])
