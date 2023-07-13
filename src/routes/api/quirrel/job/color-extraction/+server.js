@@ -12,6 +12,9 @@ import { getFileExtension } from '$lib/aerial/hybrid/util.js'
 import { fileCheck } from '$lib/aerial/hybrid/validation.js'
 import { kmeansColors, summary } from '$lib/aerial/server/index.js'
 import mupdf from 'mupdf'
+import { GlobalRabbitChannel } from '$lib/rabbitmq/utils.js'
+import { rabbitDefaultQueue } from '$lib/rabbitmq/index.js'
+import { airy } from '$lib/aerial/hybrid/util.js'
 
 /**
  * This route is dedicated to handling queues added in /api/queue to Quirrel Queue
@@ -148,10 +151,10 @@ const queue = Queue(
                     })
 
                     const after = performance.now()
-                    console.log(`PDF color extraction done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} s`)
+                    airy({ topic: 'quirrel', message: `PDF color extraction done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} s` })
                     // https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-218.php
-                    console.log(`${((1000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per second`)
-                    console.log(`${((30000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per 30 seconds`)
+                    airy({ topic: 'quirrel', message: `${((1000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per second` })
+                    airy({ topic: 'quirrel', message: `${((30000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per 30 seconds` })
                 })
             }
 
@@ -171,6 +174,17 @@ const queue = Queue(
                     processed: true
                 }
             })
+
+            /**
+             * @type {import('amqplib').Channel}
+             */
+            const rabbitChannel = globalThis[GlobalRabbitChannel]
+            if (rabbitChannel) {
+                rabbitChannel.sendToQueue(rabbitDefaultQueue, Buffer.from(job.artifactCollectionId))
+                airy({ topic: 'quirrel', message: `Sending notification to rabbit queue (${job.artifactCollectionId})`, action: 'executing' })
+            } else {
+                airy({ topic: 'quirrel', message: `Rabbitmq channel not detected, please make sure we are connected to Rabbitmq server and a channel is created.`, action: 'error' })
+            }
         })
     }
 )

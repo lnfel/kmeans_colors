@@ -3,6 +3,7 @@ import client_secret from '../client_secret.json'
 import { createHandler } from 'svelte-kit-bot-block'
 import { sequence } from '@sveltejs/kit/hooks'
 // import { cleanStorage, cleanLogs, cleanCronLogs } from '$lib/aerial/server/cron.js'
+import { svelteHandleRabbitmqStartup } from '$lib/rabbitmq/index.js'
 
 /**
  * On dev, code on top level in hooks gets triggered only on first request
@@ -48,6 +49,7 @@ async function svelteHandleAuth({ event, resolve }) {
  * https://dev.to/khromov/configure-cors-in-sveltekit-to-make-fetch-requests-to-your-api-routes-from-a-different-host-241k
  * 
  * @type {import('@sveltejs/kit').Handle}
+ * @returns {import('@sveltejs/kit').MaybePromise}
  */
 async function svelteHandleCors({ event, resolve }) {
     // Apply CORS header for API routes
@@ -79,4 +81,5 @@ export const handle = sequence(
     svelteHandleCors,
     svelteHandleBotBlock,
     svelteHandleAuth,
+    svelteHandleRabbitmqStartup,
 )

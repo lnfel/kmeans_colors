@@ -43,6 +43,7 @@
 	"type": "module",
 	"dependencies": {
 		"@prisma/client": "4.13.0",
+		"amqplib": "^0.10.3",
 		"chalk": "^5.2.0",
 		"dargs": "^8.1.0",
 		"dotenv": "^16.0.3",
