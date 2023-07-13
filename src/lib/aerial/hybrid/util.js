@@ -1,4 +1,5 @@
 import { fileCheck } from '$lib/aerial/hybrid/validation.js'
+import chalk from 'chalk'
 
 /**
  * Get file extension based on mimetype
@@ -27,4 +28,69 @@ export const getFileExtension = (mimetype) => {
     }
 
     return extension
+}
+
+/**
+ * @typedef {'default'|'wss'|'rabbitmq'|'quirrel'} AiryTopic
+ */
+
+/**
+ * @typedef AiryTopicEnum
+ * @property {AiryTopic} default
+ * @property {AiryTopic} wss
+ * @property {AiryTopic} rabbitmq
+ */
+
+/**
+ * @typedef {AiryTopicEnum}
+ */
+const airyTopic = {
+    default: chalk.white,
+    wss: chalk.blueBright('[wss]'),
+    rabbitmq: chalk.hex('#ff6701')('[rabbitmq]'),
+    quirrel: chalk.hex('#bb5e11')('[quirrel]')
+}
+
+/**
+ * @typedef {'default'|'success'|'executing'|'error'} AiryAction
+ */
+
+/**
+ * @typedef AiryActionEnum
+ * @property {AiryAction} default
+ * @property {AiryAction} success
+ * @property {AiryAction} executing
+ * @property {AiryAction} error
+ */
+
+/**
+ * @typedef {AiryActionEnum}
+ */
+const airyAction = {
+    default: chalk.whiteBright,
+    success: chalk.green,
+    executing: chalk.yellowBright,
+    error: chalk.redBright
+}
+
+/**
+ * AiryParams
+ * 
+ * @typedef {Object} AiryParams
+ * @property {'default'|'wss'|'rabbitmq'|'quirrel'} topic - Any particular topic related to the log output
+ * @property {String|any} message - Message to be logged
+ * @property {'default'|'success'|'executing'|'error'} action - Type of action taken
+ */
+
+/**
+ * Airy - just a cute logger
+ * 
+ * @param {AiryParams} AiryParams
+ */
+export const airy = ({ topic, message = '', action = 'default' }) => {
+    if (topic) {
+        console.log(`${airyTopic[topic]} ${airyAction[action](message)}`)
+    } else {
+        console.log(`${airyAction[action](message)}`)
+    }
 }
