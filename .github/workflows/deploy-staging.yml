@@ -96,5 +96,5 @@ jobs:
             cd ${{ secrets.DEPLOY_PATH }}
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
-            ~/.local/share/pnpm/pnpm exec dotenv quirrel ci
+            ~/.local/share/pnpm/pnpm exec ~/.local/share/pnpm/dotenv ./node_modules/.bin/quirrel ci
             ~/.local/share/pnpm/pnpm run pm2:prod
