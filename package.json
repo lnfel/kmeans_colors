@@ -10,7 +10,7 @@
 		"postbuild": "node -r dotenv/config ./scripts/postbuild.js",
 		"postinstall": "node -r dotenv/config ./scripts/postinstall.js",
 		"npm:ci": "cd ./build && npm ci --omit dev",
-		"pnpm:build:prod": "dotenv pnpx prisma generate && vite build && quirrel ci && pnpm run postbuild && pnpm run pnpm:ci",
+		"pnpm:build:prod": "pnpx prisma generate && vite build && pnpm run postbuild && pnpm run pnpm:ci",
 		"pnpm:ci": "pnpm install --frozen-lockfile",
 		"preview": "concurrently 'vite preview --open' 'DISABLE_TELEMETRY=true quirrel'",
 		"lint": "eslint .",
