@@ -6,7 +6,7 @@
 		"dev": "concurrently 'vite dev --open' 'DISABLE_TELEMETRY=true quirrel'",
 		"dev:windows": "concurrently \"vite dev --open\" \"quirrel\"",
 		"build": "vite build && quirrel ci",
-		"build:prod": "vite build && npm run postbuild && npm run npm:ci",
+		"build:prod": "vite build  && quirrel ci && npm run postbuild && npm run npm:ci",
 		"postbuild": "node -r dotenv/config ./scripts/postbuild.js",
 		"postinstall": "node -r dotenv/config ./scripts/postinstall.js",
 		"npm:ci": "cd ./build && npm ci --omit dev",
