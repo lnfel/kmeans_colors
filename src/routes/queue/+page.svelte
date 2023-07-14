@@ -13,6 +13,40 @@
     // import Filepond from "$lib/component/input/Filepond.svelte"
     import Button from "$lib/component/Button.svelte"
 
+    /**
+     * Using WebSockets with SvelteKit
+     * Step 2. Test websockets on the client
+     * https://joyofcode.xyz/using-websockets-with-sveltekit
+     */
+    // import { io } from "socket.io-client"
+
+    // const socket = io(`http://localhost:${$page.data?.env === 'development' ? '5173' : '3001'}`)
+    // socket.on('eventFromServer', (message) => {
+    //     console.log(message)
+    // })
+
+    let webSocketEstablished = false
+    /**
+     * @type {import('@types/ws').WebSocket | null}
+     */
+    let ws
+
+    const establishWebSocket = () => {
+        if (webSocketEstablished) return
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+        ws = new WebSocket(`${protocol}//${window.location.host}/websocket`)
+        ws.addEventListener('open', (event) => {
+            webSocketEstablished = true
+            console.log('[websocket] connection open', event)
+        })
+        ws.addEventListener('close', (event) => {
+            console.log('[websocket] connection closed', event)
+        })
+        ws.addEventListener('message', (event) => {
+            console.log('[websocket] message received', event)
+        })
+    }
+    
     let fileinput, submitBtn
 
     async function queue({ form, data, action, cancel }) {
@@ -53,6 +87,9 @@
 
 <main class="lg:px-[3rem]">
     <section class="py-4 space-y-8">
+        <button disabled={webSocketEstablished} on:click={() => establishWebSocket()}>
+            Establish WebSocket connection
+        </button>
         <div class="space-y-2">
             <h1 class="font-sculpin text-3xl">Aerial Queue</h1>
             <p>Extract colors of images and document files in queued batches.</p>

@@ -1,11 +1,40 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { searchForWorkspaceRoot } from 'vite'
+// import { Server } from 'socket.io'
+import { createWSSGlobalInstance, onHttpServerUpgrade } from './src/lib/websocket/utils.js'
 import { rabbitCreateGlobalConnection } from './src/lib/rabbitmq/utils.js'
+
+/**
+ * Using WebSockets with SvelteKit
+ * Step 1. Create vite plugin for websockets (for development)
+ * https://joyofcode.xyz/using-websockets-with-sveltekit
+ * 
+ * config.kit.vite is deprecated so we need to move the code in vite.config.js
+ * https://www.reddit.com/r/sveltejs/comments/vtu5ha/do_you_have_an_idea_to_install_and_create_a/
+ */
+// export const webSocketServer = {
+//     name: 'webSocketServer',
+//     // https://vitejs.dev/guide/api-plugin.html#configureserver
+//     configureServer(server) {
+//         const io = new Server(server.httpServer)
+
+//         io.on('connection', (socket) => {
+//             socket.emit('eventFromServer', 'Hello World!')
+//         })
+//     }
+// }
 
 export default defineConfig({
 	plugins: [
         sveltekit(),
+        {
+            name: 'integratedWebsocketServer',
+            configureServer(server) {
+                createWSSGlobalInstance()
+                server.httpServer?.on('upgrade', onHttpServerUpgrade)
+            }
+        },
         {
             name: 'integratedRabbitmqServer',
             configureServer(server) {

@@ -2,6 +2,7 @@ import { SvelteGoogleAuthHook } from 'svelte-google-auth/server'
 import client_secret from '../client_secret.json'
 import { createHandler } from 'svelte-kit-bot-block'
 import { sequence } from '@sveltejs/kit/hooks'
+import { svelteHandleWSSStartup } from '$lib/websocket/index.js'
 // import { cleanStorage, cleanLogs, cleanCronLogs } from '$lib/aerial/server/cron.js'
 import { svelteHandleRabbitmqStartup } from '$lib/rabbitmq/index.js'
 
@@ -81,5 +82,6 @@ export const handle = sequence(
     svelteHandleCors,
     svelteHandleBotBlock,
     svelteHandleAuth,
+    svelteHandleWSSStartup,
     svelteHandleRabbitmqStartup,
 )
