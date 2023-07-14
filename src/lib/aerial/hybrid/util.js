@@ -1,5 +1,6 @@
 import { fileCheck } from '$lib/aerial/hybrid/validation.js'
 import chalk from 'chalk'
+import { inspect } from 'node:util'
 
 /**
  * Get file extension based on mimetype
@@ -88,6 +89,11 @@ const airyAction = {
  * @param {AiryParams} AiryParams
  */
 export const airy = ({ topic, message = '', action = 'default' }) => {
+    // Use util.inspect if message is an object
+    if (typeof message === 'object' && message !== null) {
+        message = inspect(message, { colors: true })
+    }
+
     if (topic) {
         console.log(`${airyTopic[topic]} ${airyAction[action](message)}`)
     } else {
