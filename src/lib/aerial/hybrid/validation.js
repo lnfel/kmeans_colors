@@ -35,7 +35,9 @@ export const fileCheck = {
  * @returns {Boolean} Whether File is empty
  */
 export const emptyFile = (file) => {
-    return file.name === 'undefined' && file.size === 0 && file.type === 'application/octet-stream'
+    return file?.name === 'undefined' && file?.size === 0 && file?.type === 'application/octet-stream'
+        || file === undefined
+        || typeof file !== 'object' // curl, insomnia or any similar request does not do what file input does
 }
 
 export default {
