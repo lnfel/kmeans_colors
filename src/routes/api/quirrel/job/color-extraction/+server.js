@@ -50,9 +50,7 @@ const queue = Queue(
         artifacts.forEach(async (artifact) => {
             // Check mimetype and process color extraction based on type of file
 
-            console.log("Quirrel queue artifact: ", artifact)
-            // console.log("Original mimetype: ", mimetypeMapFromEnum[artifact.mimetype])
-            // console.log("File extension: ", getFileExtension(mimetypeMapFromEnum[artifact.mimetype]))
+            airy({ topic: 'quirrel', message: artifact, label: 'Artifact:' })
 
             const filepath = `${storage_path}/aerial/${artifactCollection.id}/${artifact.id}_1${getFileExtension(mimetypeMapFromEnum[artifact.mimetype])}`
             const kmeans_colors = []
@@ -61,7 +59,6 @@ const queue = Queue(
                 // If we are working with image file, extract colors right away
                 const color = await kmeansColors(filepath)
                 kmeans_colors.push(color)
-                // await writeFile(`${storage_path}/aerial/${artifactCollection.id}/kmeans.json`, JSON.stringify(colors, null, 4))
 
                 const kmeansColor = await prisma.kmeansColors.create({
                     data: {
