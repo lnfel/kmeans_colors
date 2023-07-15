@@ -80,6 +80,7 @@ const airyAction = {
  * @typedef {Object} AiryParams
  * @property {'default'|'wss'|'rabbitmq'|'quirrel'} topic - Any particular topic related to the log output
  * @property {String|any} message - Message to be logged
+ * @property {String} label - Label for this log
  * @property {'default'|'success'|'executing'|'error'} action - Type of action taken
  */
 
@@ -88,15 +89,19 @@ const airyAction = {
  * 
  * @param {AiryParams} AiryParams
  */
-export const airy = ({ topic, message = '', action = 'default' }) => {
+export const airy = ({ topic, message = '', label = '', action = 'default' }) => {
     // Use util.inspect if message is an object
     if (typeof message === 'object' && message !== null) {
         message = inspect(message, { colors: true })
     }
 
+    if (label) {
+        label = `${label} `
+    }
+
     if (topic) {
-        console.log(`${airyTopic[topic]} ${airyAction[action](message)}`)
+        console.log(`${airyTopic[topic]} ${label}${airyAction[action](message)}`)
     } else {
-        console.log(`${airyAction[action](message)}`)
+        console.log(`${label}${airyAction[action](message)}`)
     }
 }
