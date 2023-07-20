@@ -48,14 +48,16 @@ We are using [Prisma](https://www.prisma.io/) as database ORM. To see prisma cli
 npx prisma
 ```
 
-To generate new artifacts or simply update Prisma Client run:
+To generate artifacts the first time or update Prisma Client run:
 ```sh
 npx prisma generate
 ```
 
-To create migrations from your Prisma schema, apply them to the database, generate artifacts in a single go:
+To run migrations from your Prisma schema and apply them to the database do:
 ```sh
 npx prisma migrate dev --name init
+# Do not forget to generate prisma client afterwards
+npx prisma generate
 ```
 
 Reset prisma migration, useful for when changing schema and re-running seeders:
