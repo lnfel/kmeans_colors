@@ -118,3 +118,42 @@ model CMYK {
 //     cmyk CMYK @relation(fields: [cmykId], references: [id])
 //     cmykId String
 // }
+
+// Lucia Models
+// Model name are explicitly to be named as AuthUser, AuthSession and AuthKey, since this is called by lucia under the hood.
+// Source code: @lucia-auth/adapter-prisma/index.js:146:54
+// Table names can be customized using @@map, this will map the Schema to the table name defined in @@map
+// https://lucia-auth.com/adapters/prisma?sveltekit#models
+
+model AuthUser {
+    id String @id @unique
+    name String?
+    picture String?
+    auth_session AuthSession[]
+    auth_key AuthKey[]
+
+    @@map("LuciaUser")
+}
+
+model AuthSession {
+    id String @id @unique
+    user_id String
+    active_expires BigInt
+    idle_expires BigInt
+    auth_user AuthUser @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+    @@index([user_id])
+    @@map("LuciaSession")
+}
+
+model AuthKey {
+    id String @id @unique
+    hashed_password String?
+    user_id String
+    primary_key Boolean
+    expires BigInt?
+    auth_user AuthUser? @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+    @@index([user_id])
+    @@map("LuciaKey")
+}
