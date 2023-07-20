@@ -5,6 +5,12 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@lucia-auth/adapter-prisma':
+    specifier: ^2.0.0
+    version: 2.0.0(@prisma/client@4.13.0)(lucia-auth@1.8.0)
+  '@lucia-auth/oauth':
+    specifier: ^1.2.1
+    version: 1.2.1(lucia-auth@1.8.0)
   '@prisma/client':
     specifier: 4.13.0
     version: 4.13.0(prisma@4.13.0)
@@ -26,9 +32,15 @@ dependencies:
   geotiff:
     specifier: ^2.0.7
     version: 2.0.7
+  google-auth-library:
+    specifier: ^8.9.0
+    version: 8.9.0
   googleapis:
     specifier: ^114.0.0
     version: 114.0.0
+  lucia-auth:
+    specifier: ^1.8.0
+    version: 1.8.0
   mupdf:
     specifier: ^0.0.5
     version: 0.0.5
@@ -684,6 +696,24 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
+
+  /@lucia-auth/adapter-prisma@2.0.0(@prisma/client@4.13.0)(lucia-auth@1.8.0):
+    resolution: {integrity: sha512-8qxEcoVNJDbK8zXzyMK/4SHnLTaih0oNjTfp7l4ndRg5WI+eMgP3N0OUGQVaq3C5N0iIfkXxgj/ZGH8ZidwVeQ==}
+    peerDependencies:
+      '@prisma/client': ^4.2.0
+      lucia-auth: ^1.3.0
+    dependencies:
+      '@prisma/client': 4.13.0(prisma@4.13.0)
+      lucia-auth: 1.8.0
+    dev: false
+
+  /@lucia-auth/oauth@1.2.1(lucia-auth@1.8.0):
+    resolution: {integrity: sha512-z6LOdDmh9Bmu1Jv1RkcSiGes8Qjk3uNZc/7S08wCMICtZ31m8KXnkhQjsV1HvSZXv6tkmG4Y9NLjpH2V/su38w==}
+    peerDependencies:
+      lucia-auth: 1.x
+    dependencies:
+      lucia-auth: 1.8.0
+    dev: false
 
   /@lukeed/ms@2.0.1:
     resolution: {integrity: sha512-Xs/4RZltsAL7pkvaNStUQt7netTkyxrS0K+RILcVr3TRMS/ToOg4I6uNfhB9SlGsnWBym4U+EaXq0f0cEMNkHA==}
@@ -2345,14 +2375,14 @@ packages:
       extend: 3.0.2
       https-proxy-agent: 5.0.1
       is-stream: 2.0.1
-      node-fetch: 2.6.9
+      node-fetch: 2.6.12
     transitivePeerDependencies:
       - encoding
       - supports-color
     dev: false
 
-  /gcp-metadata@5.2.0:
-    resolution: {integrity: sha512-aFhhvvNycky2QyhG+dcfEdHBF0FRbYcf39s6WNHUDysKSrbJ5vuFbjydxBcmewtXeV248GP8dWT3ByPNxsyHCw==}
+  /gcp-metadata@5.3.0:
+    resolution: {integrity: sha512-FNTkdNEnBdlqF2oatizolQqNANMrcqJt6AAYt99B3y1aLLC8Hc5IOBb+ZnnzllodEEf6xMBp6wRcBbc16fa65w==}
     engines: {node: '>=12'}
     dependencies:
       gaxios: 5.1.0
@@ -2443,8 +2473,8 @@ packages:
       type-fest: 0.20.2
     dev: true
 
-  /google-auth-library@8.7.0:
-    resolution: {integrity: sha512-1M0NG5VDIvJZEnstHbRdckLZESoJwguinwN8Dhae0j2ZKIQFIV63zxm6Fo6nM4xkgqUr2bbMtV5Dgo+Hy6oo0Q==}
+  /google-auth-library@8.9.0:
+    resolution: {integrity: sha512-f7aQCJODJFmYWN6PeNKzgvy9LI2tYmXnzpNDHEjG5sDNPgGb2FXQyTBnXeSH+PAtpKESFD+LmHw3Ox3mN7e1Fg==}
     engines: {node: '>=12'}
     dependencies:
       arrify: 2.0.1
@@ -2452,7 +2482,7 @@ packages:
       ecdsa-sig-formatter: 1.0.11
       fast-text-encoding: 1.0.6
       gaxios: 5.1.0
-      gcp-metadata: 5.2.0
+      gcp-metadata: 5.3.0
       gtoken: 6.1.2
       jws: 4.0.0
       lru-cache: 6.0.0
@@ -2475,7 +2505,7 @@ packages:
     dependencies:
       extend: 3.0.2
       gaxios: 5.1.0
-      google-auth-library: 8.7.0
+      google-auth-library: 8.9.0
       qs: 6.11.1
       url-template: 2.0.8
       uuid: 9.0.0
@@ -2488,7 +2518,7 @@ packages:
     resolution: {integrity: sha512-k6de3PGsdFEBULMiFwPYCKOBljDTDvHD3YGe/OFqe8Ot0lYQPL8QV1qjxjrPWiE/Ftf0Ar2v4DNES66jLfSO7w==}
     engines: {node: '>=12.0.0'}
     dependencies:
-      google-auth-library: 8.7.0
+      google-auth-library: 8.9.0
       googleapis-common: 6.0.4
     transitivePeerDependencies:
       - encoding
@@ -2499,7 +2529,7 @@ packages:
     resolution: {integrity: sha512-PbOSZXR0zkEfiX3P2mMW5CX9Kp981Te1bDJfm7Nei0ie9J5J0BscTsljro3POd0RsIQIDvNklJSAlQb6O84PtQ==}
     engines: {node: '>=12.0.0'}
     dependencies:
-      google-auth-library: 8.7.0
+      google-auth-library: 8.9.0
       googleapis-common: 6.0.4
     transitivePeerDependencies:
       - encoding
@@ -2980,6 +3010,10 @@ packages:
     resolution: {integrity: sha512-Pn9cox5CsMYngeDbmChANltQl+5pi6XmTrraMSzhPmMBbmgcxmqWry0U3PGapCU1yB4/LqCcom7qhHZiF/jGfQ==}
     dev: false
 
+  /lucia-auth@1.8.0:
+    resolution: {integrity: sha512-zI8gT2AOpxTPIxYzToEdgoht+GOflrduZiHPsOEmg4/2pThOyCW3o3lXh+Uwh20tJ9QoXwQe9/Omn6PlUG6efw==}
+    dev: false
+
   /luxon@3.3.0:
     resolution: {integrity: sha512-An0UCfG/rSiqtAIiBPO0Y9/zAnHUZxAMiCpTd5h2smgsj7GGmcenvrvww2cqNA8/4A5ZrD1gJpHN2mIHZQF+Mg==}
     engines: {node: '>=12'}
@@ -3222,18 +3256,6 @@ packages:
 
   /node-fetch@2.6.7:
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
-    engines: {node: 4.x || >=6.0.0}
-    peerDependencies:
-      encoding: ^0.1.0
-    peerDependenciesMeta:
-      encoding:
-        optional: true
-    dependencies:
-      whatwg-url: 5.0.0
-    dev: false
-
-  /node-fetch@2.6.9:
-    resolution: {integrity: sha512-DJm/CJkZkRjKKj4Zi4BsKVZh3ValV5IR5s7LVZnW+6YMh0W1BfNA8XSs6DLMGYlId5F3KnA70uu2qepcR08Qqg==}
     engines: {node: 4.x || >=6.0.0}
     peerDependencies:
       encoding: ^0.1.0
