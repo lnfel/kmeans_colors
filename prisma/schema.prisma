@@ -49,7 +49,7 @@ model ArtifactCollection {
     // id String @id @default(uuid())
     // We are generating id using prisma middleware
     // see /src/lib/prisma.js generateShortUniqueId function
-    id String @id 
+    id String @id @unique
     label String?
     artifacts Artifact[]
     processed Boolean @default(false)
@@ -61,7 +61,7 @@ model Artifact {
     // id String @id @default(uuid())
     // We are generating id using prisma middleware
     // see /src/lib/prisma.js generateShortUniqueId function
-    id String @id 
+    id String @id @unique
     label String?
     type ArtifactType
     mimetype Mimetype
@@ -78,7 +78,7 @@ model Artifact {
 }
 
 model KmeansColors {
-    id String @id
+    id String @id @unique
     artifact Artifact? @relation(fields: [artifactId], references: [id], onDelete: Cascade)
     artifactId String? @unique
     colors Json
@@ -100,7 +100,7 @@ model KmeansColors {
 // }
 
 model CMYK {
-    id String @id
+    id String @id @unique
     artifact Artifact? @relation(fields: [artifactId], references: [id], onDelete: Cascade)
     artifactId String? @unique
     // total String
