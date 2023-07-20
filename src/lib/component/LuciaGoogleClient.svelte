@@ -30,6 +30,8 @@
     }
 
     /**
+     * @template {Record<string, unknown> | undefined} Success
+     * @template {Record<string, unknown> | undefined} Failure
      * @type {import('@sveltejs/kit').SubmitFunction<Success, Failure>}
      */
     async function logout({ cancel }) {

@@ -3,13 +3,15 @@
     import '../tailwind.css'
     import { pageTransitionsEnabled } from "$lib/aerial/stores/index.js"
 
+    import Header from "$lib/component/Header.svelte"
+
     export let data
 
     /**
      * Toggleable page transition
      * 
      * @param {Element} node
-     * @param {import('svelte/transition').FlyParams} options
+     * @param {import('svelte/transition').FlyParams & { fn: Function }} options
      * @returns {import('svelte/transition').TransitionConfig} TransitionConfig
      */
     function maybeFly(node, options) {
@@ -18,6 +20,8 @@
         }
     }
 </script>
+
+<Header />
 
 {#key data.url}
     <!-- <div in:fly={{ y: -200, duration: 300, delay: 300 }} out:fly={{ y: 200, duration: 300 }}> -->

@@ -1,8 +1,6 @@
 <script>
     import { page } from "$app/stores"
 
-    import Header from "$lib/component/Header.svelte"
-
     /**
      * Paginate algorithm to generate pagination UI
      * 
@@ -54,8 +52,6 @@
     <link rel="alternate" hreflang="en" href="https://www-staging.pingsailor.com/artifact-collections/{$page.data?.artifactCollection?.id}" />
     <link rel="canonical" href="https://www-staging.pingsailor.com/artifact-collections/{$page.data?.artifactCollection?.id}"/>
 </svelte:head>
-
-<Header />
 
 <main class="lg:px-[3rem]">
     <section class="py-4 space-y-8">

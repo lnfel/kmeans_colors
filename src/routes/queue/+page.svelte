@@ -6,7 +6,6 @@
     import { invalidate } from "$app/navigation"
     import { validateFileInput, error } from "$lib/aerial/client/index.js"
 
-    import Header from "$lib/component/Header.svelte"
     import Pulse from "$lib/component/Pulse.svelte"
     import FileInput from "$lib/component/input/File.svelte"
     import TextInput from "$lib/component/input/Text.svelte"
@@ -49,7 +48,14 @@
     
     let fileinput, submitBtn
 
-    async function queue({ form, data, action, cancel }) {
+    /**
+     * use:enhance submit function
+     * 
+     * @template {Record<string, unknown> | undefined} Success
+     * @template {Record<string, unknown> | undefined} Failure
+     * @type {import('@sveltejs/kit').SubmitFunction<Success, Failure>}
+     */
+    async function queue({ formElement, formData, action, cancel }) {
         await invalidate('queue:artifactCollections')
         // let files = data.getAll('file')
         // console.log(files)
@@ -82,8 +88,6 @@
     <link rel="alternate" hreflang="en" href="https://www-staging.pingsailor.com/queue" />
     <link rel="canonical" href="https://www-staging.pingsailor.com/queue"/>
 </svelte:head>
-
-<Header />
 
 <main class="lg:px-[3rem]">
     <section class="py-4 space-y-8">

@@ -3,10 +3,9 @@
     import { enhance } from "$app/forms"
     import { page } from "$app/stores"
     import { invalidateAll } from "$app/navigation"
-    import { googleDrivePreview, mupdfPreview, libreofficePreview, pdf24Preview, imagePreview } from "$lib/aerial/client/index.js"
+    import { googleDrivePreview, mupdfPreview } from "$lib/aerial/client/index.js"
     import { fromArrayBuffer } from 'geotiff'
 
-    import Header from "$lib/component/Header.svelte"
     import Pulse from "$lib/component/Pulse.svelte"
     import FileInput from "$lib/component/input/File.svelte"
     import Button from "$lib/component/Button.svelte"
@@ -173,6 +172,13 @@
         }
     }
 
+    /**
+     * use:enhance submit function
+     * 
+     * @template {Record<string, unknown> | undefined} Success
+     * @template {Record<string, unknown> | undefined} Failure
+     * @type {import('@sveltejs/kit').SubmitFunction<Success, Failure>}
+     */
     async function upload({ form, data, action, cancel }) {
         await invalidateAll()
 
@@ -205,8 +211,6 @@
     <link rel="alternate" hreflang="en" href="https://www-staging.pingsailor.com" />
     <link rel="canonical" href="https://www-staging.pingsailor.com"/>
 </svelte:head>
-
-<Header />
 
 <main class="lg:px-[3rem]">
     <section>
