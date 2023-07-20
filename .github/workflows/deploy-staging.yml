@@ -17,13 +17,16 @@ jobs:
       - name: Create .env
         uses: SpicyPizza/create-envfile@v1.3
         with:
+          envkey_AERIAL_API_URL: ${{ secrets.AERIAL_API_URL }}
+          envkey_PUBLIC_APP_URL: ${{ secrets.PUBLIC_APP_URL }}
           envkey_STORAGE_PATH: ${{ secrets.STORAGE_PATH }}
-          envkey_BUILD_ENVIRONMENT: ${{ secrets.BUILD_ENVIRONMENT }}
           envkey_DATABASE_URL: ${{ secrets.DATABASE_URL }}
           envkey_QUIRREL_TOKEN: ${{ secrets.QUIRREL_TOKEN }}
           envkey_QUIRREL_BASE_URL: ${{ secrets.QUIRREL_BASE_URL }}
           envkey_QUIRREL_ENCRYPTION_SECRET: ${{ secrets.QUIRREL_ENCRYPTION_SECRET }}
           envkey_QUIRREL_API_URL: ${{ secrets.QUIRREL_API_URL }}
+          envkey_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.PUBLIC_GOOGLE_CLIENT_ID }}
+          envkey_PUBLIC_GOOGLE_OAUTH_CALLBACK_PATH: ${{ secrets.PUBLIC_GOOGLE_OAUTH_CALLBACK_PATH }}
       
       - name: Create client_secret.json
         uses: DamianReeves/write-file-action@master
