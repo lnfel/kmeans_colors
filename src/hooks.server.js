@@ -5,6 +5,7 @@ import { sequence } from '@sveltejs/kit/hooks'
 import { svelteHandleWSSStartup } from '$lib/websocket/index.js'
 // import { cleanStorage, cleanLogs, cleanCronLogs } from '$lib/aerial/server/cron.js'
 import { svelteHandleRabbitmqStartup } from '$lib/rabbitmq/index.js'
+import { luciaAuth } from '$lib/aerial/server/lucia.js'
 
 /**
  * On dev, code on top level in hooks gets triggered only on first request
@@ -22,8 +23,7 @@ import { svelteHandleRabbitmqStartup } from '$lib/rabbitmq/index.js'
  * https://support.google.com/workspacemigrate/answer/9222992?hl=en
  * After creating one, download the json file of the client_secret
  */
-
-const auth = new SvelteGoogleAuthHook(client_secret.web)
+const svelteGoogleAuth = new SvelteGoogleAuthHook(client_secret.web)
 
 /**
  * Handle bot requests
@@ -41,7 +41,7 @@ const svelteHandleBotBlock = createHandler({
  * @type {import('@sveltejs/kit').Handle}
  */
 async function svelteHandleAuth({ event, resolve }) {
-    return await auth.handleAuth({ event, resolve })
+    return await svelteGoogleAuth.handleAuth({ event, resolve })
 }
 
 /**
@@ -78,10 +78,25 @@ async function svelteHandleCors({ event, resolve }) {
     return response
 }
 
+/**
+ * Handle Lucia auth
+ * 
+ * @type {import('@sveltejs/kit').Handle}
+ * @returns {import('@sveltejs/kit').MaybePromise}
+ */
+async function svelteHandleLuciaAuth({ event, resolve }) {
+    /**
+     * @type {import('lucia-auth').AuthRequest}
+     */
+    event.locals.luciaAuth = luciaAuth.handleRequest(event)
+    return await resolve(event)
+}
+
 export const handle = sequence(
     svelteHandleCors,
     svelteHandleBotBlock,
-    svelteHandleAuth,
+    // svelteHandleAuth,
     svelteHandleWSSStartup,
     svelteHandleRabbitmqStartup,
+    svelteHandleLuciaAuth
 )

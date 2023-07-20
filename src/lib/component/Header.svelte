@@ -1,18 +1,19 @@
 <script>
-    import { page } from "$app/stores"
-    
-    import Logo from "$lib/component/Logo.svelte"
-    import GoogleClient from "$lib/component/GoogleClient.svelte"
     import { slide } from "svelte/transition"
     import { quintOut } from "svelte/easing"
-    import { browser } from "$app/environment"
-    import { pageTransitionsEnabled } from "$lib/aerial/stores/index.js"
+    import { browser, dev } from "$app/environment"
+    import { pageTransitionsEnabled, devLayoutTestEnabled } from "$lib/aerial/stores/index.js"
+
+    import Logo from "$lib/component/Logo.svelte"
+    import GoogleClient from "$lib/component/GoogleClient.svelte"
+    import LuciaGoogleClient from "$lib/component/LuciaGoogleClient.svelte"
 
     let preferencesToggle = false
 
     if (browser) {
         document.addEventListener('click', closePreferencesDropdown)
         pageTransitionsEnabled.set(localStorage.getItem("aerial:preferences:pageTransitionsEnabled"))
+        devLayoutTestEnabled.set(localStorage.getItem("aerial:preferences:devLayoutTestEnabled"))
     }
 
     function togglePreferencesDropdown() {
@@ -34,27 +35,42 @@
 
     /**
      * @param {Event & { target: HTMLInputElement }} event
+     * @param {import('svelte/store').Writable<?Boolean>} store
      */
-    function togglePageTransitions({ target }) {
+    function togglePreference({ target }, store) {
         if (target.checked) {
-            localStorage.setItem("aerial:preferences:pageTransitionsEnabled", true)
+            localStorage.setItem(`aerial:preferences:${target.value}`, true)
         } else {
-            localStorage.removeItem("aerial:preferences:pageTransitionsEnabled")
+            localStorage.removeItem(`aerial:preferences:${target.value}`)
         }
-        pageTransitionsEnabled.set(localStorage.getItem("aerial:preferences:pageTransitionsEnabled"))
+        store.update(localStorage.getItem(`aerial:preferences:${target.value}`))
+    }
+
+    /**
+     * Toggleable slide transition
+     * 
+     * @param {Element} node
+     * @param {import('svelte/transition').FlyParams & { fn: Function }} options
+     * @returns {import('svelte/transition').TransitionConfig} TransitionConfig
+     */
+    function maybeSlide(node, options) {
+        if ($pageTransitionsEnabled) {
+            return options.fn(node, options)
+        }
     }
 </script>
 
 <header class="flex items-center justify-between lg:px-[3rem]">
     <Logo />
-    <div class="flex items-center gap-2">
-        <a href="/" class="text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500">
+
+    <div class="inline-grid gap-2" style="grid-template-columns: auto auto auto auto;">
+        <a href="/" class="max-w-fit text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
             </svg>
             <span class="sr-only">Home</span>
         </a>
-        <a href="/queue" class="text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500">
+        <a href="/queue" class="max-w-fit text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
             </svg>
@@ -72,18 +88,27 @@
             </button>
 
             {#if preferencesToggle}
-                <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:slide|global="{{delay: 250, duration: 300, easing: quintOut, axis: 'y'}}" class="dropdown-list absolute right-0 z-10 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 px-4 py-3 mt-2 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:maybeSlide|global={{ fn: slide, delay: 250, duration: 300, easing: quintOut, axis: 'y' }} class="dropdown-list absolute right-0 z-10 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 px-4 py-3 mt-2 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                     <span class="text-lg font-bold font-sculpin tracking-wide text-indigo-600">Preferences</span>
 
                     <label class="relative flex items-center cursor-pointer">
-                        <input type="checkbox" bind:checked={$pageTransitionsEnabled} on:change={togglePageTransitions} value="" class="sr-only peer">
+                        <input type="checkbox" bind:checked={$pageTransitionsEnabled} on:change={(event) => togglePreference(event, pageTransitionsEnabled)} value="pageTransitionsEnabled" class="sr-only peer">
                         <div class="w-11 h-6 bg-indigo-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-400 dark:peer-focus:ring-indigo-300 rounded-full peer dark:bg-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                         <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-800">Page transitions</span>
                     </label>
+
+                    {#if dev}
+                        <label class="relative flex items-center cursor-pointer">
+                            <input type="checkbox" bind:checked={$devLayoutTestEnabled} on:change={(event) => togglePreference(event, devLayoutTestEnabled)} value="devLayoutTestEnabled" class="sr-only peer">
+                            <div class="w-11 h-6 bg-indigo-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-400 dark:peer-focus:ring-indigo-300 rounded-full peer dark:bg-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                            <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-800">Layout test</span>
+                        </label>
+                    {/if}
                 </div>
             {/if}
         </div>
 
-        <GoogleClient data={$page.data} />
+        <!-- <GoogleClient /> -->
+        <LuciaGoogleClient />
     </div>
 </header>

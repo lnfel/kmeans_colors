@@ -49,10 +49,23 @@ export const mimetypeMapToEnum = {
  * @returns {Promise<any>} Promise<any>
  */
 export const generateShortUniqueId = async (params, next) => {
-    // console.log('generateShortUniqueId middleware params: ', params)
+    console.log('generateShortUniqueId middleware params: ', params)
+
+    /**
+     * Skip handling of Lucia models, prevents the following error:
+     * 
+     * PrismaClientKnownRequestError
+     * Invalid `prisma.authKey.create()` invocation
+     * code: 'P2003'
+     * clientVersion: '4.13.0'
+     * meta: { field_name: 'user_id' }
+     */
+    if (params.model === 'AuthUser' || params.model === 'AuthSession' || params.model === 'AuthKey') {
+        return await next(params)
+    }
     
     if (params.action === 'create') {
-        let prefix = prefixMap[params.model] ?? ''
+        let prefix = prefixMap?.[params.model] ?? ''
         /**
          * stamp requires to have final length of 11 characters which
          * is kinda too much in aerial's use case

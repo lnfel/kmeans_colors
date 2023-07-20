@@ -18,6 +18,36 @@ const config = {
             // checkOrigin: process.env.NODE_ENV === 'development' ? false : true
             checkOrigin: false
         },
+        csp: {
+            directives: {
+                "default-src": [
+                    'self'
+                ],
+                "connect-src": [
+                    'self',
+                    'https://apis.google.com/',
+                    'https://accounts.google.com/gsi/',
+                ],
+                "frame-src": [
+                    'self',
+                    'https://accounts.google.com/gsi/',
+                ],
+                "script-src": [
+                    'self',
+                    'https://accounts.google.com/gsi/client'
+                ],
+                "style-src": [
+                    'self',
+                    'unsafe-inline',
+                    'https://accounts.google.com/gsi/style',
+                ],
+                "img-src": [
+                    'self',
+                    'data:',
+                    'https://lh3.googleusercontent.com'
+                ]
+            }
+        }
 	},
     preprocess: vitePreprocess()
 };
