@@ -44,7 +44,7 @@ module.exports = {
         },
         {
             name: "quirrel",
-            script: "DISABLE_TELEMETRY=true quirrel",
+            script: "DISABLE_TELEMETRY=true ./node_modules/.bin/quirrel",
             error_file: "./storage/log/error.log",
             out_file: "./storage/log/app.log",
         },
