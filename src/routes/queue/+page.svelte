@@ -99,7 +99,7 @@
             <p>Extract colors of images and document files in queued batches.</p>
         </div>
 
-        <form method="POST" use:enhance={queue} class="flex flex-wrap gap-4" enctype="multipart/form-data">
+        <form id="aerialQueue" method="POST" use:enhance={queue} class="flex flex-wrap gap-4" enctype="multipart/form-data">
             <TextInput label="Label" id="label" name="label" placeholder="Optional label for this collection">
                 <svg slot="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />

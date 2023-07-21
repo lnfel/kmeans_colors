@@ -214,7 +214,7 @@
 
 <main class="lg:px-[3rem]">
     <section>
-        <form method="POST" use:enhance={upload} class="flex flex-wrap gap-4 py-4" enctype="multipart/form-data">
+        <form id="aerialPrototype" method="POST" use:enhance={upload} class="flex flex-wrap gap-4 py-4" enctype="multipart/form-data">
             <FileInput bind:ref={fileinput} on:change={onChange} label="Upload" id="file" name="file" multiple accept="image/*,.pdf,.docx,.doc" />
 
             <div class="flex items-end gap-2">

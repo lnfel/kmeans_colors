@@ -114,7 +114,7 @@
                     <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:maybeSlide|global={{ fn: slide, duration: 300, easing: quintOut, axis: 'y' }} class="absolute right-0 z-10 mt-2 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 px-4 py-3 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                         <div class="text-lg font-bold font-sculpin tracking-wide text-indigo-600">{user?.name}</div>
 
-                        <form action="/api/oauth/google/logout" method="post" use:enhance={logout}>
+                        <form id="googleLogout" action="/api/oauth/google/logout" method="post" use:enhance={logout}>
                             <button type="submit" title="Sign Out" role="menuitem" class="text-gray-700 block w-full px-2 py-1 text-left text-sm rounded-md border-2 border-slate-300 outline-none hover:text-indigo-500 hover:border-indigo-300 focus:text-indigo-500 focus:border-indigo-500">
                                 Sign Out
                             </button>
