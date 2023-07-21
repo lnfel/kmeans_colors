@@ -15,8 +15,8 @@ export const load = async ({ locals, url, depends }) => {
         aerialFolder = await listAerialFolderDetails(client)
     }
 
-    const session = await locals.luciaAuth.validate()
-    const user = await locals.luciaAuth.validateUser()
+    // const session = await locals.luciaAuth.validate()
+    const { user, session } = await locals.luciaAuth.validateUser()
     // airy({ message: locals.luciaAuth, label: '[Layout load] Lucia Auth:' })
     airy({ message: session, label: '[Layout load] Session:' })
     airy({ message: user, label: '[Layout load] User:' })
@@ -26,13 +26,12 @@ export const load = async ({ locals, url, depends }) => {
     return {
         // By calling hydateAuth, certain variables from locals are parsed to the client
         // allowing the client to access the user information and the client_id for login
-        ...hydrateAuth(locals),
+        // ...hydrateAuth(locals),
         driveFiles,
         storageQuota,
         aerialFolder,
         // We must know the pathname change beforehand for the page transition to be accurate
         url: url.pathname,
-        user: user?.user ?? null,
-        // session: user?.session,
+        user
     }
 }
