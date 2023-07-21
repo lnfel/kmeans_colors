@@ -68,13 +68,15 @@ model Artifact {
     url String?
     collection ArtifactCollection? @relation(fields: [collectionId], references: [id], onDelete: Cascade)
     collectionId String?
-    kmeansColors KmeansColors? //@relation(fields: [kmeansColorsId], references: [id])
+    kmeansColors KmeansColors?
     kmeansColorsId String? @unique
-    cmyk CMYK? //@relation(fields: [cmykId], references: [id])
+    cmyk CMYK?
     cmykId String? @unique
     pages Int? @default(0)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([collectionId, kmeansColorsId, cmykId])
 }
 
 model KmeansColors {
@@ -82,42 +84,22 @@ model KmeansColors {
     artifact Artifact? @relation(fields: [artifactId], references: [id], onDelete: Cascade)
     artifactId String? @unique
     colors Json
-    // colors Color[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-}
 
-// model Color {
-//     id String @id
-//     hex String
-//     rgb String
-//     cmyk String
-//     percentage Float
-//     cluster KmeansColors? @relation(fields: [clusterId], references: [id])
-//     clusterId String
-//     createdAt DateTime @default(now())
-//     updatedAt DateTime @updatedAt
-// }
+    @@index([artifactId])
+}
 
 model CMYK {
     id String @id @unique
     artifact Artifact? @relation(fields: [artifactId], references: [id], onDelete: Cascade)
     artifactId String? @unique
-    // total String
-    // whiteSpace Float
-    // coloredSpace Float
-    // summary Json
     info Json
-    // summary CMYKSummary[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-}
 
-// model CMYKSummary {
-//     id String @id
-//     cmyk CMYK @relation(fields: [cmykId], references: [id])
-//     cmykId String
-// }
+    @@index([artifactId])
+}
 
 // Lucia Models
 // Model name are explicitly to be named as AuthUser, AuthSession and AuthKey, since this is called by lucia under the hood.
