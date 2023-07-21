@@ -27,6 +27,7 @@ const config = {
                     'self',
                     'https://apis.google.com/',
                     'https://accounts.google.com/gsi/',
+                    'https://filetools2.pdf24.org/'
                 ],
                 "frame-src": [
                     'self',
@@ -34,6 +35,7 @@ const config = {
                 ],
                 "script-src": [
                     'self',
+                    'unsafe-eval',
                     'https://accounts.google.com/gsi/client'
                 ],
                 "style-src": [
