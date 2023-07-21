@@ -4,6 +4,7 @@ import prismaAdapter from '@lucia-auth/adapter-prisma'
 import { dev } from '$app/environment'
 import { provider } from '@lucia-auth/oauth'
 import { google } from '@lucia-auth/oauth/providers'
+import ShortUniqueId from 'short-unique-id'
 import PrismaClient from '$lib/prisma.js'
 import { google_client_secret, google_oauth_callback_path, app_url } from '$lib/config.js'
 import { getTokens, getProviderUser } from '$lib/aerial/server/oauth/google/index.js'
@@ -21,6 +22,9 @@ export const luciaAuth = lucia({
             name: user.name,
             picture: user.picture
         }
+    },
+    generateCustomUserId: async () => {
+        return `au_${new ShortUniqueId()()}`
     }
 })
 

@@ -135,7 +135,20 @@ model AuthKey {
     primary_key Boolean
     expires BigInt?
     auth_user AuthUser? @relation(references: [id], fields: [user_id], onDelete: Cascade)
+    auth_token AuthToken?
 
     @@index([user_id])
     @@map("LuciaKey")
+}
+
+model AuthToken {
+    id String @id @unique
+    key_id String @unique
+    access_token String @db.Text
+    refersh_token String @db.Text
+    expiry_date BigInt
+    auth_key AuthKey @relation(references: [id], fields: [key_id], onDelete: Cascade)
+
+    @@index([key_id])
+    @@map("LuciaToken")
 }

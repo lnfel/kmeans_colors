@@ -1,16 +1,20 @@
 import Prisma from '@prisma/client'
-import ShortUniqueId from "short-unique-id"
+import ShortUniqueId from 'short-unique-id'
 
 const { PrismaClient } = Prisma
 const prisma = new PrismaClient()
 
+/**
+ * Custom prefix for ids
+ * 
+ * Note: For AuthUser, please see src/lib/aerial/server/lucia.js luciaAuth
+ */
 const prefixMap = {
     ArtifactCollection: 'artc_',
     Artifact: 'art_',
     KmeansColors: 'kc_',
-    // Color: 'c_',
     CMYK: 'cmyk_',
-    // CMYKSummary: 'cmyks_',
+    AuthToken: 'at_',
 }
 
 export const mimetypeMapFromEnum = {
