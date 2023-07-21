@@ -2,8 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { fail, redirect } from '@sveltejs/kit'
 import sharp from 'sharp'
 import prisma, { mimetypeMapToEnum } from '$lib/prisma.js'
-import { storage_path } from "$lib/config.js"
-// import { POST as quirrel } from '../quirrel/+server.js'
+import { storage_path, GlobalLocals } from "$lib/config.js"
 import { POST as quirrel } from '../api/quirrel/job/color-extraction/+server.js'
 import { fileCheck, emptyFile } from '$lib/aerial/hybrid/validation.js'
 import { getFileExtension } from '$lib/aerial/hybrid/util.js'
@@ -17,18 +16,9 @@ export const load = async ({ locals, depends }) => {
      * fetched during navigation for some reason and it slows page load.
      */
     // const artifacts = await prisma.artifact.findMany()
-    const artifactCollections = await prisma.artifactCollection.findMany({
-        // include: {
-        //     artifacts: {
-        //         include: {
-        //             kmeansColors: true,
-        //             cmyk: true
-        //         }
-        //     }
-        // }
-    })
+    const artifactCollections = await prisma.artifactCollection.findMany()
 
-    depends('queue:artifactCollections')
+    depends('page:queue')
 
     return {
         artifactCollections,
@@ -146,12 +136,14 @@ export const actions = {
                 // }
             }
 
+            globalThis[GlobalLocals] = locals
+
             /**
              * Queue the created collection, no need to queue each artifacts
              * as they hold many information that may lead to out of ram if we
              * have many pending queues
              */
-            await quirrel.enqueue({ artifactCollectionId: collection.id, locals }, {
+            await quirrel.enqueue({ artifactCollectionId: collection.id }, {
                 // delay: '1h' // if delay if not specified, quirrel runs the job ASAP
             })
 

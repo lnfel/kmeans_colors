@@ -56,7 +56,7 @@
      * @type {import('@sveltejs/kit').SubmitFunction<Success, Failure>}
      */
     async function queue({ formElement, formData, action, cancel }) {
-        await invalidate('queue:artifactCollections')
+        await invalidate('page:queue')
         // let files = data.getAll('file')
         // console.log(files)
 
@@ -67,7 +67,7 @@
     }
 
     async function reset() {
-        await invalidate('queue:artifactCollections')
+        await invalidate('page:queue')
         error.set(null)
     }
 
@@ -79,7 +79,7 @@
                 "Accept": "application/json",
             }
         })
-        await invalidate('queue:artifactCollections')
+        await invalidate('page:queue')
     }
 </script>
 
