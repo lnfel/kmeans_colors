@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit'
 // import { OAuth2Client } from 'google-auth-library'
 import { luciaAuth, googleAuth, aerialGoogleAuth } from '$lib/aerial/server/lucia.js'
 import { google_client_secret, app_url, google_oauth_callback_path } from '$lib/config.js'
-// import { validateCallback } from '$lib/aerial/server/oauth/google/index.js'
+import prisma from '$lib/prisma.js'
 import { airy } from '$lib/aerial/hybrid/util.js'
 
 /**
@@ -128,8 +128,6 @@ export const POST = async ({ cookies, locals, request }) => {
 
     try {
         const { existingUser, providerUser, createUser, createPersistentKey, tokens } = await aerialGoogleAuth.validateCallback(code)
-        // const { existingUser, providerUser, createUser, createPersistentKey, tokens } = await validateCallback(code)
-        // const { existingUser, providerUser, createUser, createPersistentKey, tokens } = await googleAuth.validateCallback(code)
         airy({ message: existingUser, label: '[Google OAuth Callback] Existing user:' })
         airy({ message: providerUser, label: '[Google OAuth Callback] Google user:' })
         const getUser = async () => {
@@ -140,12 +138,6 @@ export const POST = async ({ cookies, locals, request }) => {
                 name: providerUser.name,
                 picture: providerUser.picture
             })
-            /**
-             * Add provider to existing user
-             * 
-             * https://lucia-auth.com/oauth/start-here/getting-started?sveltekit#add-provider-to-existing-user
-             */
-            // await createPersistentKey(user.id)
             return user
         }
 
@@ -153,7 +145,16 @@ export const POST = async ({ cookies, locals, request }) => {
         const session = await luciaAuth.createSession(user.id)
         airy({ message: session, label: '[Google OAuth Callback] createSession Session:' })
         locals.luciaAuth.setSession(session)
-        // airy({ message: locals, label: '[Google OAuth Callback] Locals:' })
+        airy({ message: tokens, label: '[Google OAuth Callback] Tokens:' })
+        const authToken = await prisma.authToken.create({
+            data: {
+                key_id: `google:${providerUser.sub}`,
+                access_token: tokens.accessToken,
+                refersh_token: tokens.refreshToken,
+                expiry_date: tokens.accessTokenExpiresIn
+            }
+        })
+        airy({ message: authToken, label: '[Google OAuth Callback] AuthToken:' })
     } catch (error) {
         console.log(error.message ?? error)
         return new Response(null, {
