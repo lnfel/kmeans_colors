@@ -114,7 +114,7 @@ export const POST = async ({ cookies, locals, request }) => {
         airy({ message: existingUser, label: '[Google OAuth Callback] Existing user:' })
         airy({ message: providerUser, label: '[Google OAuth Callback] Google user:' })
         const getUser = async () => {
-            if (existingUser) return existingUser
+            if (existingUser) return existingUser;
             // create a new user if the user does not exist
             const user = await createUser({
                 // attributes
