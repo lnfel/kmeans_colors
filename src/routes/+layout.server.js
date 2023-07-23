@@ -1,6 +1,4 @@
-import { hydrateAuth } from 'svelte-google-auth/server'
-import { getOAuth2Client, isSignedIn } from 'svelte-google-auth'
-import { listDriveFiles, listStorageQuota, listAerialFolderDetails } from '$lib/aerial/server/google/drive.js'
+import { listStorageQuota, listAerialFolderDetails } from '$lib/aerial/server/google/drive.js'
 import { airy } from '$lib/aerial/hybrid/util.js'
 
 /**
@@ -21,6 +19,8 @@ export const load = async ({ locals, url, depends }) => {
         // driveFiles = listDriveFiles(googleOauthClient)
         storageQuota = listStorageQuota(googleOauthClient)
         aerialFolder = listAerialFolderDetails(googleOauthClient)
+    }
+    
     depends('layout:data')
 
     return {
