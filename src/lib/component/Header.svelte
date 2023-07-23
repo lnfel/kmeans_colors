@@ -5,7 +5,7 @@
     import { pageTransitionsEnabled, devLayoutTestEnabled } from "$lib/aerial/stores/index.js"
 
     import Logo from "$lib/component/Logo.svelte"
-    import GoogleClient from "$lib/component/GoogleClient.svelte"
+    // import GoogleClient from "$lib/component/GoogleClient.svelte"
     import LuciaGoogleClient from "$lib/component/LuciaGoogleClient.svelte"
 
     let preferencesToggle = false
@@ -43,20 +43,34 @@
         } else {
             localStorage.removeItem(`aerial:preferences:${target.value}`)
         }
-        store.update(localStorage.getItem(`aerial:preferences:${target.value}`))
+        store.update(() => localStorage.getItem(`aerial:preferences:${target.value}`))
+        if (target.value === 'pageTransitionsEnabled') {
+            closePreferencesDropdown()
+        }
     }
 
     /**
      * Toggleable slide transition
      * 
+     * NOTE: TransitionConfig is only returned upon appending the element on the DOM.
+     * The out transition will use the same TransitionConfig set upon during creation/appending of element to DOM.
+     * New TransitionConfig will be returned on the next cycle of in transition (during creation/appending of element to DOM).
+     * Even if we make this reactive, the change will not take effect until the second in transition.
+     * The solution it to close the dropdown after changing preference.
+     * 
      * @param {Element} node
      * @param {import('svelte/transition').FlyParams & { fn: Function }} options
      * @returns {import('svelte/transition').TransitionConfig} TransitionConfig
      */
-    function maybeSlide(node, options) {
-        if ($pageTransitionsEnabled) {
-            return options.fn(node, options)
+    $: maybeSlide = (node, options) => {
+        options = {
+            fn: slide,
+            delay: $pageTransitionsEnabled ? 250 : 0,
+            duration: $pageTransitionsEnabled ? 300 : 0,
+            easing: quintOut,
+            axis: 'y'
         }
+        return options.fn(node, options)
     }
 </script>
 
@@ -88,7 +102,7 @@
             </button>
 
             {#if preferencesToggle}
-                <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:maybeSlide|global={{ fn: slide, delay: 250, duration: 300, easing: quintOut, axis: 'y' }} class="dropdown-list absolute right-0 z-10 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 px-4 py-3 mt-2 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:maybeSlide|global class="dropdown-list absolute right-0 z-10 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 px-4 py-3 mt-2 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                     <span class="text-lg font-bold font-sculpin tracking-wide text-indigo-600">Preferences</span>
 
                     <label class="relative flex items-center cursor-pointer">
