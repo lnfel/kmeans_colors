@@ -1,5 +1,4 @@
-import { luciaAuth, googleAuth } from '$lib/aerial/server/lucia.js'
-import { localservices } from 'googleapis/build/src/apis/localservices'
+import { googleAuth } from '$lib/aerial/server/lucia.js'
 import { dev } from '$app/environment'
 import { google_oauth_callback_path } from '$lib/config.js'
 
