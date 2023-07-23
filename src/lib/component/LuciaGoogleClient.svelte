@@ -204,7 +204,7 @@
                         </div>
 
                         <form id="googleLogout" action="/api/oauth/google/logout" method="post" use:enhance={logout}>
-                            <button type="submit" title="Sign Out" role="menuitem" class="text-gray-700 block w-full px-2 py-1 text-left text-sm rounded-md border-2 border-slate-300 outline-none hover:text-indigo-500 hover:border-indigo-300 focus:text-indigo-500 focus:border-indigo-500">
+                            <button type="submit" title="Sign Out" role="menuitem" class="text-gray-700 px-2 py-1 text-left text-sm rounded-md border-2 border-slate-300 outline-none hover:text-indigo-500 hover:border-indigo-300 focus:text-indigo-500 focus:border-indigo-500">
                                 Sign Out
                             </button>
                         </form>
