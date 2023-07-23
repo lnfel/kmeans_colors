@@ -37,7 +37,8 @@ const config = {
                 "script-src": [
                     'self',
                     'unsafe-eval',
-                    'https://accounts.google.com/gsi/client'
+                    'https://accounts.google.com/gsi/client',
+                    'https://apis.google.com'
                 ],
                 "style-src": [
                     'self',
