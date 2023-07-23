@@ -14,7 +14,7 @@ export const pageTransitionsEnabled = writable(true)
  * @see ../component/Header.svelte for implementation
  * @type {import('svelte/store').Writable<?Boolean>} nullable
  */
-export const devLayoutTestEnabled = writable(true)
+export const devLayoutTestEnabled = writable(false)
 
 export default {
     pageTransitionsEnabled
