@@ -13,13 +13,24 @@
     })
 
     let open = false
-    $: user = $page.data?.user
+    /**
+     * Tween animation for storage occupiedSpace
+     */
+    $: occupiedSpace = tweened(0, {
+        delay: $pageTransitionsEnabled ? 300 : 0,
+        duration: $pageTransitionsEnabled ? 400 : 0,
+        easing: quintOut
+    })
 
     function toggleAvatarDropdown() {
         open = !open
+        if (open === false) {
+            occupiedSpace.set(0)
+        }
     }
 
     function closeAvatarDropdown() {
+        occupiedSpace.set(0)
         open = false
     }
 
@@ -113,6 +124,46 @@
                 {#if open}
                     <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:maybeSlide|global={{ fn: slide, duration: 300, easing: quintOut, axis: 'y' }} class="absolute right-0 z-10 mt-2 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 px-4 py-3 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                         <div class="text-lg font-bold font-sculpin tracking-wide text-indigo-600">{user?.name}</div>
+
+                        <div class="space-y-2">
+                            {#await $page.data?.streamed?.storageQuota}
+                                <div class="flex justify-between">
+                                    <span class="text-xs text-slate-800">Storage (0% full)</span>
+                                </div>
+                                <div class="min-w-[160px] w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-400">
+                                    <div class="bg-indigo-600 h-2.5 rounded-full" style={`width: 0%; transition: width .25s easeinout;`}></div>
+                                </div>
+                            {:then storageQuota}
+                                <div class="hidden">{occupiedSpace.set(storageQuota?.occupiedSpace ?? 50)}</div>
+                                <div class="flex justify-between">
+                                    <span class="text-xs text-slate-800">Storage ({storageQuota?.occupiedSpace ?? 50}% full)</span>
+                                </div>
+                                <div class="min-w-[160px] w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-400">
+                                    <div class="bg-indigo-600 h-2.5 rounded-full" style={`width: ${$occupiedSpace}%; transition: width .25s easeinout;`}></div>
+                                </div>
+                            {/await}
+                        </div>
+                        
+
+                        <div class="flex items-center gap-2 text-xs text-slate-800">
+                            {#await $page.data?.streamed?.aerialFolder}
+                                <span>Aerial folder size: 0 bytes</span>
+                                <button type="button" disabled="{true}" title="Clear Aerial folder" role="menuitem" class="text-indigo-600 p-1 text-left text-sm rounded-md border-2 border-transparent outline-none hover:text-indigo-500 focus:text-indigo-500 focus:border-indigo-500 disabled:text-slate-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                    </svg>
+                                    <span class="sr-only">Clear Aerial folder</span>
+                                </button>
+                            {:then aerialFolder}
+                                <span>Aerial folder size: {aerialFolder?.totalSize ?? '0 bytes'}</span>
+                                <button type="button" on:click={async () => {await clearAerialFolder(aerialFolder?.id)}} disabled="{aerialFolder === null}" title="Clear Aerial folder" role="menuitem" class="text-indigo-600 p-1 text-left text-sm rounded-md border-2 border-transparent outline-none hover:text-indigo-500 focus:text-indigo-500 focus:border-indigo-500 disabled:text-slate-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                    </svg>
+                                    <span class="sr-only">Clear Aerial folder</span>
+                                </button>
+                            {/await}
+                        </div>
 
                         <form id="googleLogout" action="/api/oauth/google/logout" method="post" use:enhance={logout}>
                             <button type="submit" title="Sign Out" role="menuitem" class="text-gray-700 block w-full px-2 py-1 text-left text-sm rounded-md border-2 border-slate-300 outline-none hover:text-indigo-500 hover:border-indigo-300 focus:text-indigo-500 focus:border-indigo-500">
