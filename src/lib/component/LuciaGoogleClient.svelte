@@ -12,6 +12,7 @@
         document.addEventListener('click', closeAvatarDropdown)
     })
 
+    let GapiClient
     let open = false
     /**
      * Tween animation for storage occupiedSpace
@@ -90,6 +91,31 @@
         setTimeout(async () => {
             user = false
         }, timeout)
+    }
+
+    /**
+     * Deletes Aerial folder in user's google drive
+     * 
+     * Note: Will only delete the folder if Aerial folder is created using Aerial app.
+     * Modifying user created files requires another scope which is too much for our use case.
+     * 
+     * @param {String} aerialFolderId - Aerial folder id
+     * @results {Promise<void>}
+     */
+    async function clearAerialFolder(aerialFolderId) {
+        GapiClient = await getGapiClient(
+            $page.data?.access_token,
+            {
+                discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
+            }
+        )
+
+        if (aerialFolderId) {
+            await GapiClient.drive.files.delete({
+                fileId: aerialFolderId
+            })
+            await invalidate('layout:data')
+        }
     }
 
     /**
