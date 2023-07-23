@@ -6,7 +6,7 @@ import { google } from 'googleapis'
  * https://developers.google.com/drive/api/v3/reference/files/list
  * use the trashed=false query parameter to filter trashed files from the results.
  * 
- * @param {import('googleapis').Auth.OAuth2Client} auth
+ * @param {import('googleapis').Auth.OAuth2Client} auth - Google OAuth2Client with credentials set
  * @returns {Promise<import('googleapis').drive_v3.Schema$File[]>} Drive files
  */
 export async function listDriveFiles(auth) {
@@ -37,7 +37,7 @@ export async function listStorageQuota(auth) {
         const response = await drive.about.get({
             fields: 'storageQuota'
         })
-        // return response.data.storageQuota
+
         const formattedStorageQuota = Object.fromEntries(Object.entries(response.data.storageQuota).map(([key, value]) => [key, formatBytes(value)]))
         formattedStorageQuota['occupiedSpace'] = occupiedStorageSpaceToPercentile(response.data.storageQuota.limit, response.data.storageQuota.usageInDrive)
 
@@ -87,7 +87,7 @@ function occupiedStorageSpaceToPercentile(totalSpace, occupiedSpace) {
  * https://stackoverflow.com/questions/24720075/how-to-get-list-of-files-by-folder-on-google-drive-api
  * 
  * @param {Auth.OAuth2Client} auth 
- * @returns {Promise<Object>}
+ * @returns {Promise<import('googleapis').drive_v3.Schema$FileList & { totalSizeInBytes: Number, totalSize: String }>} Drive FileList
  */
 export async function listAerialFolderDetails(auth) {
     const drive = google.drive({ version: 'v3', auth })
