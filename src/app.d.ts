@@ -8,7 +8,25 @@ declare global {
         }
 
         interface PageData {
+            url: URL|string;
             user?: import('lucia-auth').UserSchema;
+            client_id?: string;
+            access_token?: string;
+            streamed: {
+                aerialFolder?: Promise<{
+                    files: import('googleapis').drive_v3.Schema$File[],
+                    totalSizeInBytes: number;
+                    totalSize: string;
+                    id: string;
+                }>;
+                storageQuota?: Promise<{
+                    limit: string;
+                    usage: string;
+                    usageInDrive: string;
+                    usageInDriveTrash: string;
+                    occupiedSpace: number;
+                }>;
+            }
         }
 
         interface Platform {}
