@@ -145,7 +145,8 @@ model AuthToken {
     id String @id @unique
     key_id String @unique
     access_token String @db.Text
-    refersh_token String @db.Text
+    refresh_token String @db.Text
+    // id_token String @db.Text
     expiry_date BigInt
     auth_key AuthKey @relation(references: [id], fields: [key_id], onDelete: Cascade)
 

@@ -31,7 +31,8 @@ export async function getTokens(code, redirect_uri = 'postmessage') {
     return {
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,
-        accessTokenExpiresIn: tokens.expiry_date
+        accessTokenExpiresIn: tokens.expiry_date,
+        // idToken: tokens.id_token
     }
 }
 
