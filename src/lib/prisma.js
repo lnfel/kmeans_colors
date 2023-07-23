@@ -68,14 +68,19 @@ export const generateShortUniqueId = async (params, next) => {
         return await next(params)
     }
     
+    const prefix = prefixMap?.[params.model] ?? ''
+
     if (params.action === 'create') {
-        let prefix = prefixMap?.[params.model] ?? ''
         /**
          * stamp requires to have final length of 11 characters which
          * is kinda too much in aerial's use case
          */
         // params.args.data.id = `${prefix}${new ShortUniqueId().stamp(11)}`
         params.args.data.id = `${prefix}${new ShortUniqueId()()}`
+    }
+
+    if (params.action === 'upsert') {
+        params.args.create.id = `${prefix}${new ShortUniqueId()()}`
     }
 
     return await next(params)

@@ -44,17 +44,6 @@ import { airy } from '$lib/aerial/hybrid/util.js'
  * @type {import('@sveltejs/kit').RequestHandler}
  */
 export const GET = async ({ cookies, url, locals }) => {
-    // check if we already has a session going
-    // const session = await locals?.luciaAuth?.validate()
-    // airy({ message: session, label: '[Google OAuth Callback] Session:' })
-    // if (session) {
-    //     return new Response(null, {
-    //         status: 302,
-    //         headers: {
-    //             Location: '/'
-    //         }
-    //     })
-    // }
     // get code and state params from url
     const code = url.searchParams.get("code")
     const state = url.searchParams.get("state")
@@ -82,12 +71,6 @@ export const GET = async ({ cookies, url, locals }) => {
                 name: providerUser.name,
                 picture: providerUser.picture
             })
-            /**
-             * Add provider to existing user
-             * 
-             * https://lucia-auth.com/oauth/start-here/getting-started?sveltekit#add-provider-to-existing-user
-             */
-            // await createPersistentKey(user.id)
             return user
         }
 
@@ -146,12 +129,17 @@ export const POST = async ({ cookies, locals, request }) => {
         airy({ message: session, label: '[Google OAuth Callback] createSession Session:' })
         locals.luciaAuth.setSession(session)
         airy({ message: tokens, label: '[Google OAuth Callback] Tokens:' })
-        const authToken = await prisma.authToken.create({
-            data: {
+        const authToken = await prisma.authToken.upsert({
+            where: {
+                key_id: `google:${providerUser.sub}`,
+            },
+            update: {},
+            create: {
                 key_id: `google:${providerUser.sub}`,
                 access_token: tokens.accessToken,
-                refersh_token: tokens.refreshToken,
-                expiry_date: tokens.accessTokenExpiresIn
+                refresh_token: tokens.refreshToken,
+                expiry_date: tokens.accessTokenExpiresIn,
+                // id_token: tokens.idToken
             }
         })
         airy({ message: authToken, label: '[Google OAuth Callback] AuthToken:' })
