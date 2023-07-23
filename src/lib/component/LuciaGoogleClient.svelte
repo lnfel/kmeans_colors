@@ -98,7 +98,7 @@
      * @param {import('svelte/transition').FlyParams & { fn: Function }} options
      * @returns {import('svelte/transition').TransitionConfig} TransitionConfig
      */
-     function maybeSlide(node, options) {
+    function maybeSlide(node, options) {
         if ($pageTransitionsEnabled) {
             return options.fn(node, options)
         }
