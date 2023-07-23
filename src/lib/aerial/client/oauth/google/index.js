@@ -87,6 +87,30 @@ export async function signInWithGoogle(scopes = ['openid', 'profile', 'email']) 
     })
 }
 
+let gapiClientInitialized = false
+/**
+ * 
+ * @param {String} access_token - Token granted to the user during oauth process
+ * @see {@link https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md#----gapiclientsettokentokenobject-- | gapi.client.setToken}
+ * 
+ * @param {{ apiKey?: String, discoveryDocs?: String[], clientId?: String, scope?: String }} options - GAPI client init argument options
+ * @see {@link https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md#----gapiclientinitargs-- | gapi.client.init}
+ * 
+ * @returns {Object} GAPI Client
+ */
+export async function getGapiClient(access_token, options = {}) {
+    if (!gapiClientInitialized) {
+        await loadGAPI()
+        await new Promise((resolve, reject) => {
+            window.gapi.load('client', { callback: resolve, onerror: reject })
+        })
+        await window.gapi.client.init({ ...options })
+        gapiClientInitialized = true
+    }
+    window.gapi.client.setToken({ access_token })
+    return window.gapi.client
+}
+
 export default {
     loadGIS,
     loadGAPI,

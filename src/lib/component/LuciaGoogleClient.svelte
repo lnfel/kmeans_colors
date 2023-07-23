@@ -5,7 +5,7 @@
     import { quintOut } from "svelte/easing"
     import { enhance } from "$app/forms"
     import { invalidate } from "$app/navigation"
-    import { signInWithGoogle } from '$lib/aerial/client/oauth/google/index.js'
+    import { signInWithGoogle, getGapiClient } from '$lib/aerial/client/oauth/google/index.js'
     import { pageTransitionsEnabled, devLayoutTestEnabled } from "$lib/aerial/stores/index.js"
 
     onMount(async () => {
@@ -71,7 +71,8 @@
             'openid',
             'https://www.googleapis.com/auth/userinfo.profile',
             'https://www.googleapis.com/auth/userinfo.email', 
-            'https://www.googleapis.com/auth/drive.file'
+            'https://www.googleapis.com/auth/drive.file',
+            'https://www.googleapis.com/auth/drive.metadata.readonly'
         ]
         await signInWithGoogle(scopes)
         await invalidate('layout:data')

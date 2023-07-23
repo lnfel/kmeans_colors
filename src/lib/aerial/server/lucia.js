@@ -39,7 +39,7 @@ export const luciaAuth = lucia({
 /**
  * @type {OAuthConfig & { redirectUri: String, accessType?: 'online'|'offline' }}
  */
-const googleAuthConfig = {
+export const googleAuthConfig = {
     clientId: google_client_secret.web.client_id,
     clientSecret: google_client_secret.web.client_secret,
     redirectUri: `${app_url}${google_oauth_callback_path}`,
@@ -47,7 +47,8 @@ const googleAuthConfig = {
         'openid',
         'https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/userinfo.email', 
-        'https://www.googleapis.com/auth/drive.file'
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive.metadata.readonly',
     ],
     accessType: 'offline',
 }
@@ -77,5 +78,6 @@ export const aerialGoogleAuth = provider(luciaAuth, aerialGoogleAuthConfig)
 export default {
     luciaAuth,
     googleAuth,
-    aerialGoogleAuth
+    aerialGoogleAuth,
+    googleAuthConfig
 }
