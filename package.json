@@ -13,7 +13,7 @@
 		"pnpm:build:prod": "pnpx prisma generate && vite build && pnpm run postbuild && pnpm run pnpm:ci",
 		"pnpm:ci": "pnpm install --frozen-lockfile",
 		"preview": "concurrently 'vite preview --open' 'DISABLE_TELEMETRY=true quirrel'",
-        "prepare": "svelte-kit sync",
+		"prepare": "svelte-kit sync",
 		"lint": "eslint .",
 		"image:bin:kmeans": "./src/lib/bin/kmeans_colors",
 		"image:execa:kmeans": "node ./src/lib/execa/kmeans-colors.js",
