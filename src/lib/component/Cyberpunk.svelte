@@ -111,21 +111,30 @@
             <path id="long-arc" d="M239 1433 c-47 -122 -73 -304 -66 -457 17 -342 176 -653 446 -869 l64 -51 39 44 c21 25 38 50 38 55 0 6 -16 21 -36 34 -58 40 -176 160 -227 232 -95 134 -164 305 -188 469 -15 104 -6 287 19 385 l17 70 -44 58 c-24 31 -46 57 -48 57 -2 0 -8 -12 -14 -27z"/>
         </g>
     </svg>
-    <h1 class="logo-text text-3xl font-extrabold tracking-wide">Aerial</h1>
+    <h1 class="logo-text text-3xl font-extrabold tracking-wide"><span class="logo-text-inner block">Aerial</span></h1>
 </a>
 
 <style>
     /* Cyberpunk glitch effect */
     @media (prefers-reduced-motion: no-preference) {
-        .logo:hover > .logo-text,
-        .logo:focus > .logo-text,
+        .logo:hover > .logo-text::after,
+        .logo:focus > .logo-text::after,
         .logo:hover > .logo-image,
         .logo:focus > .logo-image {
+            content: '';
             animation:
+                cyberpunk-glitch 7s step-end 7.1s infinite,
+                skew-glitch 7s step-end 7.1s infinite,
+                change-text 7s step-end 7.1s infinite;
+        }
+
+        .logo:hover .logo-text-inner,
+        .logo:focus .logo-text-inner {
+            transform: scale(1);
+            animation: 
                 cyberpunk-glitch 2s step-end 5s forwards,
                 skew-span 2s step-end 5s forwards,
-                cyberpunk-glitch 7s step-end 7s infinite,
-                skew-glitch 7s step-end 7s infinite;
+                hide-after-glitch 100ms ease 7s forwards;
         }
 
         @keyframes skew-glitch {
@@ -150,6 +159,11 @@
             }
         }
 
+        @keyframes change-text {
+            0% { content: 'Cyberpunk'; }
+            100% { content: 'Cyberpunk'; }
+        }
+
         @keyframes skew-span {
             0% { color: #e4b124; transform: skew(83deg, 2deg) scale(.25); }
             27% { transform: skew(-83deg, 2deg) scale(.25); }
@@ -157,6 +171,11 @@
             91% { transform: skew(83deg, 2deg) scale(.25); }
 
             1%, 28%, 67%, 92% { transform: none; }
+        }
+
+        @keyframes hide-after-glitch {
+            0% { opacity: 0; transform: scale(1); position: absolute; }
+            100% { opacity: 0; transform: scale(0); position: absolute; }
         }
     }
 </style>

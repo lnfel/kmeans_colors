@@ -20,3 +20,12 @@
     font-weight: 500;
     font-stretch: normal;
 }
+/* Cyberpunk font */
+@font-face {
+    font-family: "cyberpunk";
+    src: url("/font/Cyberpunk-Regular.ttf") format("truetype");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 500;
+    font-stretch: normal;
+}
