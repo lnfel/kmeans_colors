@@ -1,6 +1,5 @@
 import { fileCheck } from '$lib/aerial/hybrid/validation.js'
 import chalk from 'chalk'
-import { inspect } from 'node:util'
 
 /**
  * Get file extension based on mimetype
@@ -49,7 +48,8 @@ const airyTopic = {
     default: chalk.white,
     wss: chalk.blueBright('[wss]'),
     rabbitmq: chalk.hex('#ff6701')('[rabbitmq]'),
-    quirrel: chalk.hex('#bb5e11')('[quirrel]')
+    quirrel: chalk.hex('#bb5e11')('[quirrel]'),
+    prisma: chalk.hex('')
 }
 
 /**
@@ -87,21 +87,35 @@ const airyAction = {
 /**
  * Airy - just a cute logger
  * 
+ * Using inspect limits airy for server use only
+ * https://nodejs.org/api/util.html#utilinspectobject-showhidden-depth-colors
+ * 
+ * With dynamic imports we can now load inspect on demand when checking for browser environment
+ * 
  * @param {AiryParams} AiryParams
  */
-export const airy = ({ topic, message = '', label = '', action = 'default' }) => {
-    // Use util.inspect if message is an object
-    if (typeof message === 'object' && message !== null) {
-        message = inspect(message, { colors: true })
-    }
-
+export const airy = async ({ topic, message = '', label = '', action = 'default' }) => {
     if (label) {
         label = `${label} `
     }
 
-    if (topic) {
-        console.log(`${airyTopic[topic]} ${label}${airyAction[action](message)}`)
+    if (typeof window === "undefined") {
+        // Use util.inspect if message is an object
+        if (typeof message === 'object' && message !== null) {
+            const { inspect } = (await import('node:util')).default
+            message = inspect(message, { colors: true, showHidden: true, depth: 5 })
+        }
+
+        if (topic) {
+            console.log(`${airyTopic[topic]} ${label}${airyAction[action](message)}`)
+        } else {
+            console.log(`${label}${airyAction[action](message)}`)
+        }
     } else {
-        console.log(`${label}${airyAction[action](message)}`)
+        if (topic) {
+            console.log(topic + ' ' + label, message)
+        } else {
+            console.log(label, message)
+        }
     }
 }
