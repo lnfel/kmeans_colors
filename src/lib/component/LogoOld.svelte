@@ -53,8 +53,7 @@
 <a href="/" class="logo group flex items-center text-indigo-500 dark:text-indigo-200 outline-none">
     <!-- generated using https://picsvg.com/ -->
     <!-- https://stackoverflow.com/questions/43744050/animated-light-reflection-on-image-in-css-or-jquery -->
-    <!-- Previous viewBox="0 0 300 223" -->
-    <svg class="logo-image group-hover:text-[#e4b124] group-focus:text-[#e4b124]" version="1.0" xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 300 300" preserveAspectRatio="xMidYMid meet">
+    <svg class="logo-image group-hover:text-[#e4b124] group-focus:text-[#e4b124]" version="1.0" xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 300 223" preserveAspectRatio="xMidYMid meet">
         <defs>
             <!-- 
                 This is the base linearGradient, tried applying it on the <g> element
@@ -105,17 +104,11 @@
                 <animateTransform id="lightReflection" attributeName="gradientTransform" type="translate" values="1,0; -1,0; -1,0; -1,0; -1,0; -1,0; -1,0; -1,0; -1,0;" dur="3s" begin="0.3s" fill="freeze" repeatCount="indefinite" />
             </linearGradient>
         </defs>
-        <!-- <g fill="currentColor" transform="translate(0,223) scale(0.1,-0.1)" stroke="none">
+        <g fill="currentColor" transform="translate(0,223) scale(0.1,-0.1)" stroke="none">
             <path id="upper-right" d="M2474 1887 l-329 -263 -85 86 c-192 195 -402 283 -675 283 -107 0 -147 -5 -227 -26 -159 -42 -345 -152 -452 -266 l-30 -31 172 0 173 0 60 31 c91 45 196 69 309 69 194 0 358 -68 495 -205 l80 -80 -300 -5 -299 -5 -219 -280 c-120 -154 -220 -285 -223 -292 -5 -10 440 -593 451 -593 2 0 113 141 247 312 133 172 455 586 715 921 260 334 471 607 469 607 -2 0 -152 -118 -332 -263z"/>
             <path id="mid-trapezoid" d="M570 1430 c-22 -35 -29 -54 -22 -63 5 -6 59 -76 119 -153 l110 -142 144 185 c79 102 150 194 157 204 13 18 5 19 -231 19 l-245 0 -32 -50z"/>
             <path id="short-arc" d="M430 877 c0 -36 38 -163 70 -233 60 -133 188 -290 297 -365 l42 -30 61 76 c33 42 60 80 60 85 0 5 -15 18 -34 29 -54 34 -171 163 -209 232 -20 35 -48 101 -63 147 l-27 82 -99 0 c-95 0 -98 -1 -98 -23z"/>
             <path id="long-arc" d="M239 1433 c-47 -122 -73 -304 -66 -457 17 -342 176 -653 446 -869 l64 -51 39 44 c21 25 38 50 38 55 0 6 -16 21 -36 34 -58 40 -176 160 -227 232 -95 134 -164 305 -188 469 -15 104 -6 287 19 385 l17 70 -44 58 c-24 31 -46 57 -48 57 -2 0 -8 -12 -14 -27z"/>
-        </g> -->
-        <g fill="currentColor" transform="translate(0,300) scale(0.05,-0.05)" stroke="none">
-            <path id="upper-right" d="M5480 4857 c-225 -155 -569 -390 -764 -522 l-354 -240 -138 127 c-664 614 -1760 611 -2412 -6 l-142 -134 281 -1 280 -1 133 70 c481 256 1126 189 1561 -161 133 -107 134 -109 57 -155 -50 -29 -120 -34 -515 -35 l-457 0 -455 -568 -454 -569 452 -561 c248 -308 457 -561 464 -561 7 1 187 219 400 485 l386 485 -404 10 -405 10 55 65 55 65 413 1 413 1 200 253 c110 140 203 261 207 269 3 9 -123 16 -280 16 l-287 0 -50 -61 c-47 -57 -59 -61 -164 -55 l-113 6 102 125 102 125 412 0 411 1 690 863 c682 853 748 937 736 935 -3 0 -190 -127 -416 -282z"/>
-            <path id="mid-trapezoid" d="M1559 3760 c-97 -51 -213 -182 -271 -307 -48 -105 -63 -185 -30 -164 158 97 312 45 473 -161 72 -92 135 -168 139 -168 9 0 632 773 657 815 28 47 -879 33 -968 -15z"/>
-            <path id="short-arc" d="M1220 2613 c0 -312 307 -873 617 -1126 134 -109 116 -113 249 55 l112 141 -174 174 c-218 216 -347 450 -413 748 l-12 55 -189 0 c-186 0 -190 -1 -190 -47z"/>
-            <path id="long-arc" d="M883 3644 c-334 -837 -48 -1916 664 -2508 135 -113 129 -113 219 1 l68 87 -222 223 c-502 504 -716 1217 -557 1856 l38 153 -94 121 -95 122 -21 -55z"/>
         </g>
     </svg>
     <h1 class="logo-text text-3xl font-extrabold tracking-wide">Aerial</h1>
