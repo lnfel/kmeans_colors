@@ -221,33 +221,35 @@ export async function svelteHandleLuciaAuth({ event, resolve }) {
     airy({ topic: 'hooks', message: googleOauthClient, label: 'Before tokenInfo:' })
 
     let tokenInfo, newAccessToken
-    try {
-        // Check if token is still valid
-        tokenInfo = await googleOauthClient.getTokenInfo(googleOauthClient.credentials.access_token)
-        airy({ topic: 'hooks', message: tokenInfo.sub, label: 'token_info' })
-    } catch (error) {
-        airy({ topic: 'hooks', message: error.response.data, label: 'tokenInfo Error:' })
-        // throw new Error(error.response.data, 400)
+    if (googleOauthClient.credentials.hasOwnProperty('access_token') && googleOauthClient.credentials.hasOwnProperty('refresh_token')) {
+        try {
+            // Check if token is still valid
+            tokenInfo = await googleOauthClient.getTokenInfo(googleOauthClient.credentials.access_token)
+            airy({ topic: 'hooks', message: tokenInfo.sub, label: 'token_info' })
+        } catch (error) {
+            airy({ topic: 'hooks', message: error.response.data, label: 'tokenInfo Error:' })
+            // throw new Error(error.response.data, 400)
 
-        // Refresh access_token using refresh_token
-        newAccessToken = await googleOauthClient.refreshAccessToken()
+            // Refresh access_token using refresh_token
+            newAccessToken = await googleOauthClient.refreshAccessToken()
 
-        // Used for testing curl requests
-        // googleOauthClient.credentials.access_token = 'Test curl request 3'
-        // newAccessToken = googleOauthClient
+            // Used for testing curl requests
+            // googleOauthClient.credentials.access_token = 'Test curl request 3'
+            // newAccessToken = googleOauthClient
 
-        const { token_type, scope, id_token, ...newAccessTokenCredentials } = newAccessToken.credentials
+            const { token_type, scope, id_token, ...newAccessTokenCredentials } = newAccessToken.credentials
 
-        // Save new active token to database
-        if (authToken) {
-            await prisma.authToken.update({
-                where: {
-                    key_id: authToken.key_id
-                },
-                data: {
-                    ...newAccessTokenCredentials
-                }
-            })
+            // Save new active token to database
+            if (authToken) {
+                await prisma.authToken.update({
+                    where: {
+                        key_id: authToken.key_id
+                    },
+                    data: {
+                        ...newAccessTokenCredentials
+                    }
+                })
+            }
         }
     }
 
