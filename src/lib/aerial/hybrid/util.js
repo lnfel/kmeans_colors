@@ -31,7 +31,7 @@ export const getFileExtension = (mimetype) => {
 }
 
 /**
- * @typedef {'default'|'wss'|'rabbitmq'|'quirrel'} AiryTopic
+ * @typedef {'default'|'wss'|'rabbitmq'|'quirrel'|'prisma'|'hooks'} AiryTopic
  */
 
 /**
@@ -39,6 +39,8 @@ export const getFileExtension = (mimetype) => {
  * @property {AiryTopic} default
  * @property {AiryTopic} wss
  * @property {AiryTopic} rabbitmq
+ * @property {AiryTopic} prisma
+ * @property {AiryTopic} hooks
  */
 
 /**
@@ -49,7 +51,8 @@ const airyTopic = {
     wss: chalk.blueBright('[wss]'),
     rabbitmq: chalk.hex('#ff6701')('[rabbitmq]'),
     quirrel: chalk.hex('#bb5e11')('[quirrel]'),
-    prisma: chalk.hex('')
+    prisma: chalk.hex('#8b8ee3')('[prisma]'),
+    hooks: chalk.hex('#f96743')('[kit:hooks]')
 }
 
 /**
@@ -78,7 +81,7 @@ const airyAction = {
  * AiryParams
  * 
  * @typedef {Object} AiryParams
- * @property {'default'|'wss'|'rabbitmq'|'quirrel'} topic - Any particular topic related to the log output
+ * @property {'default'|'wss'|'rabbitmq'|'quirrel'|'prisma'|'hooks'} topic - Any particular topic related to the log output
  * @property {String|any} message - Message to be logged
  * @property {String} label - Label for this log
  * @property {'default'|'success'|'executing'|'error'} action - Type of action taken
