@@ -1,3 +1,4 @@
+import { readFile } from 'fs/promises'
 import { SvelteGoogleAuthHook } from 'svelte-google-auth/server'
 import client_secret from '../client_secret.json'
 import { createHandler } from 'svelte-kit-bot-block'
@@ -50,7 +51,7 @@ async function svelteHandleAuth({ event, resolve }) {
  * https://dev.to/khromov/configure-cors-in-sveltekit-to-make-fetch-requests-to-your-api-routes-from-a-different-host-241k
  * 
  * @type {import('@sveltejs/kit').Handle}
- * @returns {import('@sveltejs/kit').MaybePromise}
+ * @returns {import('@sveltejs/kit').MaybePromise<Response>}
  */
 async function svelteHandleCors({ event, resolve }) {
     // Apply CORS header for API routes
@@ -79,18 +80,36 @@ async function svelteHandleCors({ event, resolve }) {
 }
 
 /**
- * Handle Lucia auth
+ * Version controlled static assets for automatic cache busting
+ * 
+ * Hash is generated based on file contents, making sure cache is busted for clients
+ * when a change is pushed to deployment.
  * 
  * @type {import('@sveltejs/kit').Handle}
- * @returns {import('@sveltejs/kit').MaybePromise}
+ * @returns {import('@sveltejs/kit').MaybePromise<Response>}
  */
-async function svelteHandleLuciaAuth({ event, resolve }) {
-    /**
-     * @type {import('lucia-auth').AuthRequest}
-     */
-    event.locals.luciaAuth = luciaAuth.handleRequest(event)
-    return await resolve(event)
+async function staticAssetsVersion({ event, resolve }) {
+    return await resolve(event, {
+        transformPageChunk: /** @param {{ html: String, done: Boolean }} */ async ({ html }) => {
+            const cssContent = await readFile('static/css/main.css', { encoding: 'utf8' })
+            const fontContent = await readFile('static/css/font.css', { encoding: 'utf-8' })
+            return html.replaceAll('/css/main.css', `/css/main.css?v=${tinySimpleHash(cssContent)}`)
+                .replaceAll('/css/font.css', `/css/font.css?v=${tinySimpleHash(fontContent)}`)
+        }
+    })
 }
+
+/**
+ * Tiny Simple hash by bryc
+ * From the author of cyrb53
+ * 
+ * https://stackoverflow.com/a/52171480/12478479
+ * https://github.com/bryc/code/blob/master/jshash/experimental/cyrb53.js
+ * 
+ * @param {String} s 
+ * @returns {Number} Hashed number representation of the string
+ */
+function tinySimpleHash(s) { for(var i=0,h=9;i<s.length;) h = Math.imul(h^s.charCodeAt(i++), 9**9); return h^h >>> 9 }
 
 export const handle = sequence(
     svelteHandleCors,
@@ -98,5 +117,5 @@ export const handle = sequence(
     // svelteHandleAuth,
     svelteHandleWSSStartup,
     svelteHandleRabbitmqStartup,
-    svelteHandleLuciaAuth
+    staticAssetsVersion,
 )
