@@ -18,13 +18,13 @@ export const load = async ({ locals, url, depends }) => {
     // airy({ message: session, label: '[Layout load] Session:' })
     if (user) {
         const [ authKey ] = (await luciaAuth.getAllUserKeys(user.id)).filter((key) => key.providerId === 'google')
-        const { access_token, refresh_token, expiry_date, id_token } = await prisma.authToken.findFirst({
+        const { access_token, refresh_token, expiry_date } = await prisma.authToken.findFirst({
             where: {
                 key_id: `${authKey.providerId}:${authKey.providerUserId}`
             }
         })
-        airy({ message: authKey, label: '[Layout load] AuthKey:' })
-        airy({ message: access_token, label: '[Layout load] Access token:' })
+        // airy({ message: authKey, label: '[Layout load] AuthKey:' })
+        // airy({ message: access_token, label: '[Layout load] Access token:' })
         googleOauthClient = new google.auth.OAuth2(
             google_client_secret.web.client_id,
             google_client_secret.web.client_secret,
@@ -62,6 +62,7 @@ export const load = async ({ locals, url, depends }) => {
         url: url.pathname,
         user,
         client_id: googleOauthClient?._clientId,
-        access_token: googleOauthClient?.credentials?.access_token
+        access_token: googleOauthClient?.credentials?.access_token,
+        refresh_token: googleOauthClient?.credentials?.refresh_token,
     }
 }

@@ -12,6 +12,7 @@ declare global {
             user?: import('lucia-auth').UserSchema;
             client_id?: string;
             access_token?: string;
+            refresh_token?: string;
             streamed: {
                 aerialFolder?: Promise<{
                     files: import('googleapis').drive_v3.Schema$File[],

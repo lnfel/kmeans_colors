@@ -141,6 +141,38 @@
             return options.fn(node, options)
         }
     }
+
+    const copyState = {
+        idle: `
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy w-4 h-4 pointer-events-none">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+            </svg>`.trim(),
+        copy: `
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy-check w-4 h-4 pointer-events-none">
+                <path d="m12 15 2 2 4-4"/><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+            </svg>`.trim()
+    }
+
+    /**
+     * 
+     * @param {MouseEvent & { target: HTMLButtonElement }}
+     * @param text
+     */
+    function copy({ target }, text) {
+        const template = document.createElement('template')
+        template.innerHTML = copyState.copy
+        let svg = target.querySelector('svg')
+        svg.replaceWith(template.content.firstElementChild)
+
+        navigator.clipboard.writeText(text)
+
+        setTimeout(() => {
+            svg = target.querySelector('svg')
+            template.innerHTML = copyState.idle
+            svg.replaceWith(template.content.firstElementChild)
+        }, 1000)
+    }
 </script>
 
 <svelte:head>
@@ -201,6 +233,28 @@
                                     <span class="sr-only">Clear Aerial folder</span>
                                 </button>
                             {/await}
+                        </div>
+
+                        <div class="text-xs">
+                            <div class="relative flex items-center justify-between after:absolute after:pb-0.5 after:w-full after:-z-10 after:border-b-2 after:border-dotted after:border-indigo-300">
+                                <span class="bg-white pr-1">Access token</span>
+                                <button title="Copy access token" type="button" on:click={(event) => copy(event, $page.data.access_token)} class="text-indigo-600 bg-white p-1 text-left text-sm rounded-md border-2 border-transparent outline-none hover:text-indigo-500 focus:text-indigo-500 focus:border-indigo-500 disabled:text-slate-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy w-4 h-4 pointer-events-none">
+                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                                    </svg>
+                                    <span class="sr-only">Copy</span>
+                                </button>
+                            </div>
+
+                            <div class="relative flex items-center justify-between after:absolute after:pb-0.5 after:w-full after:-z-10 after:border-b-2 after:border-dotted after:border-indigo-300">
+                                <span class="bg-white pr-1">Refresh token</span>
+                                <button title="Copy refresh token" type="button" on:click={(event) => copy(event, $page.data.refresh_token)} class="text-indigo-600 bg-white p-1 text-left text-sm rounded-md border-2 border-transparent outline-none hover:text-indigo-500 focus:text-indigo-500 focus:border-indigo-500 disabled:text-slate-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy w-4 h-4 pointer-events-none">
+                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                                    </svg>
+                                    <span class="sr-only">Copy</span>
+                                </button>
+                            </div>
                         </div>
 
                         <form id="googleLogout" action="/api/oauth/google/logout" method="post" use:enhance={logout}>
