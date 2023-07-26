@@ -182,9 +182,9 @@
 
 
 <div>
-    <div class="flex justify-end text-slate-800">
+    <div class="flex justify-end">
         {#if user}
-            <div class="relative inline-block text-left" in:maybeSlide|global={{ fn: slide, delay: 600, duration: 300, easing: quintOut, axis: 'x' }} out:maybeSlide|global={{ fn: slide, duration: 300, easing: quintOut, axis: 'x' }}>
+            <div class="relative inline-block text-left text-slate-800" in:maybeSlide|global={{ fn: slide, delay: 600, duration: 300, easing: quintOut, axis: 'x' }} out:maybeSlide|global={{ fn: slide, duration: 300, easing: quintOut, axis: 'x' }}>
                 <div>
                     <!-- Note: Arbitrary width and height values are needed to match the height of other navigation buttons -->
                     <button type="button" on:click|stopPropagation={toggleAvatarDropdown} on:keydown={menuKeyboardListener} class="p-1 rounded-full bg-white text-sm font-semibold text-gray-900 shadow-sm ring-4 ring-inset ring-white outline-none border border-transparent hover:ring-indigo-500 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
