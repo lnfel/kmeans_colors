@@ -150,7 +150,7 @@
 
 
 <div>
-    <div class="flex justify-end">
+    <div class="flex justify-end text-slate-800">
         {#if user}
             <div class="relative inline-block text-left" in:maybeSlide|global={{ fn: slide, delay: 600, duration: 300, easing: quintOut, axis: 'x' }} out:maybeSlide|global={{ fn: slide, duration: 300, easing: quintOut, axis: 'x' }}>
                 <div>
@@ -166,7 +166,7 @@
                         <div class="space-y-2">
                             {#await $page.data?.streamed?.storageQuota}
                                 <div class="flex justify-between">
-                                    <span class="text-xs text-slate-800">Storage (0% full)</span>
+                                    <span class="text-xs">Storage (0% full)</span>
                                 </div>
                                 <div class="min-w-[160px] w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-400">
                                     <div class="bg-indigo-600 h-2.5 rounded-full" style={`width: 0%; transition: width .25s easeinout;`}></div>
@@ -174,7 +174,7 @@
                             {:then storageQuota}
                                 <div class="hidden">{occupiedSpace.set(storageQuota?.occupiedSpace ?? 50)}</div>
                                 <div class="flex justify-between">
-                                    <span class="text-xs text-slate-800">Storage ({storageQuota?.occupiedSpace ?? 50}% full)</span>
+                                    <span class="text-xs">Storage ({storageQuota?.occupiedSpace ?? 50}% full)</span>
                                 </div>
                                 <div class="min-w-[160px] w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-400">
                                     <div class="bg-indigo-600 h-2.5 rounded-full" style={`width: ${$occupiedSpace}%; transition: width .25s easeinout;`}></div>
@@ -183,7 +183,7 @@
                         </div>
                         
 
-                        <div class="flex items-center gap-2 text-xs text-slate-800">
+                        <div class="flex items-center gap-2 text-xs">
                             {#await $page.data?.streamed?.aerialFolder}
                                 <span>Aerial folder size: 0 bytes</span>
                                 <button type="button" disabled="{true}" title="Clear Aerial folder" role="menuitem" class="text-indigo-600 p-1 text-left text-sm rounded-md border-2 border-transparent outline-none hover:text-indigo-500 focus:text-indigo-500 focus:border-indigo-500 disabled:text-slate-400">
@@ -204,7 +204,7 @@
                         </div>
 
                         <form id="googleLogout" action="/api/oauth/google/logout" method="post" use:enhance={logout}>
-                            <button type="submit" title="Sign Out" role="menuitem" class="text-gray-700 px-2 py-1 text-left text-sm rounded-md border-2 border-slate-300 outline-none hover:text-indigo-500 hover:border-indigo-300 focus:text-indigo-500 focus:border-indigo-500">
+                            <button type="submit" title="Sign Out" role="menuitem" class="px-2 py-1 text-left text-sm rounded-md border-2 border-slate-300 outline-none hover:text-indigo-500 hover:border-indigo-300 focus:text-indigo-600 focus:border-indigo-500">
                                 Sign Out
                             </button>
                         </form>
