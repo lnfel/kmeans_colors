@@ -1,5 +1,6 @@
 import Prisma from '@prisma/client'
 import ShortUniqueId from 'short-unique-id'
+import { airy } from '$lib/aerial/hybrid/util.js'
 
 const { PrismaClient } = Prisma
 const prisma = new PrismaClient()
@@ -53,7 +54,7 @@ export const mimetypeMapToEnum = {
  * @returns {Promise<any>} Promise<any>
  */
 export const generateShortUniqueId = async (params, next) => {
-    console.log('generateShortUniqueId middleware params: ', params)
+    // airy({ topic: 'prisma', message: params, label: 'generateShortUniqueId:' })
 
     /**
      * Skip handling of Lucia models, prevents the following error:

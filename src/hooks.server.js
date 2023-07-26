@@ -6,7 +6,7 @@ import { sequence } from '@sveltejs/kit/hooks'
 import { svelteHandleWSSStartup } from '$lib/websocket/index.js'
 // import { cleanStorage, cleanLogs, cleanCronLogs } from '$lib/aerial/server/cron.js'
 import { svelteHandleRabbitmqStartup } from '$lib/rabbitmq/index.js'
-import { luciaAuth } from '$lib/aerial/server/lucia.js'
+import { svelteHandleLuciaAuth } from '$lib/aerial/server/lucia.js'
 
 /**
  * On dev, code on top level in hooks gets triggered only on first request
@@ -115,6 +115,7 @@ export const handle = sequence(
     svelteHandleCors,
     svelteHandleBotBlock,
     // svelteHandleAuth,
+    svelteHandleLuciaAuth,
     svelteHandleWSSStartup,
     svelteHandleRabbitmqStartup,
     staticAssetsVersion,

@@ -1,7 +1,8 @@
-import cron from 'node-cron'
-import { rm, readdir, appendFile, writeFile } from 'node:fs/promises'
-import path from 'node:path'
-import { storage_path } from '$lib/config.js'
+// NOTE: We are now using Quirrel cron jobs
+// import cron from 'node-cron'
+// import { rm, readdir, appendFile, writeFile } from 'node:fs/promises'
+// import path from 'node:path'
+// import { storage_path } from '$lib/config.js'
 
 /**
  * Returns current datetime

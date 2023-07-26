@@ -2,7 +2,7 @@ import { json, error } from "@sveltejs/kit"
 import { mkdir, writeFile } from 'node:fs/promises'
 import sharp from 'sharp'
 import prisma, { mimetypeMapToEnum } from '$lib/prisma.js'
-import { storage_path } from "$lib/config.js"
+import { storage_path, GlobalOAuth2Client } from "$lib/config.js"
 import { POST as quirrel } from '../quirrel/job/color-extraction/+server.js'
 import { fileCheck, emptyFile } from '$lib/aerial/hybrid/validation.js'
 import { getFileExtension } from '$lib/aerial/hybrid/util.js'
@@ -22,16 +22,8 @@ import { airy } from "$lib/aerial/hybrid/util.js"
  * TODO: change this to accept valid API requests
  * 
  * https://reqbin.com/req/c-dot4w5a2/curl-post-file
- * curl -include -X POST "localhost:5173/api/queue" -H "Accept: application/json" -d @debug/ceres_fauna_card.jpeg
- * curl -include -X POST "localhost:5173/api/queue" -H "Accept: application/json" -H "Origin: localhost" -d @ceres_fauna_card.jpeg --verbose
- * curl -include -X POST "localhost:5173/api/queue" -H "Accept: application/json" -H "Origin: https://ghostprinter.net" -d @ceres_fauna_card.jpeg --verbose
- * curl -include -X POST "localhost:5173/api/queue" -H "Accept: application/json" -H "Origin: https://ghostprinter.net" -d @ceres_fauna_card.jpeg
- * 
- * curl -include -X POST "localhost:5173/api/queue" -H "Accept: application/json" -F "file=@debug/ceres_fauna_card.jpeg;type=image/jpg" --verbose
- * curl -include -X POST "localhost:5173/api/queue" -H "Accept: application/json" -F "file=@debug/Resume - Apr2023.pdf;type=application/pdf" --verbose
- * curl -include -X POST "localhost:5173/api/queue" -H "Accept: application/json" -F "file=" --verbose
- * curl -include -X POST "localhost:5173/api/queue" -H "Accept: application/json" "Origin: https://ghostprinter.net" -F file=@ceres_fauna_card.jpeg --verbose
- * curl -include -X POST "localhost:5173/api/queue" -H "Accept: application/json" -F file=@ceres_fauna_card.jpeg --keepalive-time 600 -iv --limit-rate 500K --verbose
+ * curl --include -X POST "localhost:5173/api/queue" -H "Accept: application/json" -d @debug/ceres_fauna_card.jpeg
+ * curl --include -X POST "localhost:5173/api/queue" -H "Accept: application/json" -H "Authorization: Bearer <TOKEN_HERE>" -F "file=@debug/BK2o1_Resume_Nov2016.docx;type=application/vnd.openxmlformats-officedocument.wordprocessingml.document" --verbose
  * 
  * @type {import('@sveltejs/kit').RequestHandler}
  */
@@ -122,7 +114,9 @@ export const POST = async ({ request, locals }) => {
             }
         }
 
-        await quirrel.enqueue({ artifactCollectionId: collection.id, locals })
+        globalThis[GlobalOAuth2Client] = locals.googleOauthClient
+
+        await quirrel.enqueue({ artifactCollectionId: collection.id })
 
         return json({
             status: 200,

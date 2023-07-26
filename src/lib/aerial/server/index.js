@@ -1,5 +1,12 @@
-import { writeFile, access, constants } from 'node:fs/promises'
+import mupdf from 'mupdf'
+import { google } from 'googleapis'
+import { getOAuth2Client, isSignedIn } from 'svelte-google-auth'
+import { writeFile, access, constants, readFile, stat } from 'node:fs/promises'
 import KmeansColors, { defaultFlags, hexToRgb, hexToCmyk } from '$lib/execa/kmeans-colors.js'
+import { searchAerialFolder, aerialFolderCreate, startResumableUpload } from '$lib/aerial/server/google/drive.js'
+import { storage_path, GlobalOAuth2Client } from '$lib/config.js'
+import { airy } from '$lib/aerial/hybrid/util.js'
+import prisma from '$lib/prisma.js'
 
 /**
  * Calculate dominant colors of image
@@ -171,8 +178,185 @@ export const summarySingleSet = async (kmeans_colors = []) => {
     return cmyk
 }
 
+/**
+ * @typedef {Object} extractPdfColorsParams
+ * @property {Buffer|undefined} pdfBuffer
+ * @property {String} filepath - PDF filepath on disk
+ * @property {'application/pdf'} mimetype - PDF mimetype
+ * @property {import('@prisma/client').ArtifactCollection} artifactCollection
+ * @property {import('@prisma/client').Artifact} artifact
+ */
+
+/**
+ * Extracts pdf colors and updates artifact with kmeans_colors and cmyk data
+ * 
+ * @param {extractPdfColorsParams} extractPdfColorsParams
+ * @returns {void}
+ */
+export const extractPdfColors = ({ pdfBuffer, filepath, mimetype = 'application/pdf', artifactCollection, artifact }) => {
+    const kmeans_colors = []
+
+    /**
+     * MuPDF WASM
+     * https://mupdf.readthedocs.io/en/latest/mupdf-wasm.html
+     * https://mupdf.readthedocs.io/en/latest/mupdf-js.html
+     */
+    mupdf.ready.then(async () => {
+        const before = performance.now()
+        pdfBuffer = pdfBuffer ?? await readFile(filepath.replace('_1', ''))
+
+        const mupdfDocument = mupdf.Document.openDocument(pdfBuffer, mimetype)
+        const pages = mupdfDocument.countPages()
+        airy({ topic: 'quirrel', message: mupdfDocument, label: 'MuPDF document:' })
+        airy({ topic: 'quirrel', message: pages, label: 'MuPDF pages count:' })
+
+        // Convert each page to png image and save to storage
+        for (let i = 0; i < pages; i++) {
+            const page = mupdfDocument.loadPage(i)
+            // const pixmap = page.toPixmap(mupdf.Matrix.identity, mupdf.ColorSpace.DeviceRGB, false)
+            const pixmap = page.toPixmap(mupdf.Matrix.scale(0.5, 0.5), mupdf.ColorSpace.DeviceRGB, false)
+            // pixmap.setResolution(300, 300)
+            await writeFile(`${storage_path}/aerial/${artifactCollection.id}/${artifact.id}_${i + 1}.png`, pixmap.asPNG(), { flag: 'w+' })
+        }
+
+        // Extract colors
+        for (let i = 0; i < pages; i++) {
+            const color = await kmeansColors(`${storage_path}/aerial/${artifactCollection.id}/${artifact.id}_${i + 1}.png`)
+            kmeans_colors.push(color)
+        }
+
+        const kmeansColor = await prisma.kmeansColors.create({
+            data: {
+                artifactId: artifact.id,
+                colors: kmeans_colors
+            }
+        })
+
+        const cmykData = await summary(kmeansColor.colors)
+
+        const cmyk = await prisma.cMYK.create({
+            data: {
+                artifactId: artifact.id,
+                info: cmykData
+            }
+        })
+
+        await prisma.artifact.update({
+            where: {
+                id: artifact.id
+            },
+            data: {
+                url: `/storage/aerial/${artifactCollection.id}/${artifact.id}.pdf`,
+                kmeansColorsId: kmeansColor.id,
+                cmykId: cmyk.id,
+                pages
+            }
+        })
+
+        const after = performance.now()
+        airy({ topic: 'quirrel', message: `PDF color extraction done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} s` })
+        // https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-218.php
+        airy({ topic: 'quirrel', message: `${((1000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per second` })
+        airy({ topic: 'quirrel', message: `${((30000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per 30 seconds` })
+    })
+}
+
+/**
+ * DocMimetypes - docx and doc only
+ * @typedef {'application/vnd.openxmlformats-officedocument.wordprocessingml.document'|'application/msword'} DocMimetypes
+ */
+
+/**
+ * @typedef {Object} GoogleDocToPdfParams
+ * @property {String} filepath - Word document filepath on disk
+ * @property {DocMimetypes} mimetype - Mimetype of the document
+ * @property {import('@prisma/client').Artifact} artifact
+ */
+
+/**
+ * Convert word document to base64 pdf string using google drive API
+ * 
+ * Huge credits to Tanaike
+ * https://stackoverflow.com/users/7108653/tanaike
+ * 
+ * @param {GoogleDocToPdfParams} GoogleDocToPdfParams
+ * @returns {Promise<{ base64PDF: String }>}
+ */
+export const googleDocToPdf = async ({ filepath, mimetype, artifact }) => {
+    const split = 262144 // This is a sample chunk size. https://stackoverflow.com/a/73264129/12478479
+    const docBuffer = await readFile(filepath.replace('_1', ''))
+    const docSize = docBuffer.length
+    const array = [...new Int8Array(docBuffer)]
+    const chunks = [...Array(Math.ceil(array.length / split))].map((_) => Buffer.from(new Int8Array(array.splice(0, split))))
+
+    const client = globalThis[GlobalOAuth2Client]
+    // airy({ topic: 'quirrel', message: client, label: 'Client:' })
+
+    const aerialFolder = await searchAerialFolder(client) ?? await aerialFolderCreate(client)
+    airy({ topic: 'quirrel', message: aerialFolder, label: 'Aerial folder:' })
+
+    const resumableHeaders = {
+        "Authorization": `Bearer ${client.credentials.access_token}`,
+        "X-Upload-Content-Type": mimetype,
+        "X-Upload-Content-Length": (await stat(filepath.replace('_1', ''))).size,
+        "Content-Type": "application/json; charset=UTF-8"
+    }
+
+    const resumableBody = JSON.stringify({
+        name: artifact.label,
+        // mimeType: file.type
+        /**
+         * explicitly assign google workspace document mimeType so we can perform
+         * export operations with conversions
+         */
+        mimeType: 'application/vnd.google-apps.document',
+        parents: [aerialFolder.id]
+    })
+
+    // Perform resumable upload, initial request
+    const resumable = await startResumableUpload(resumableHeaders, resumableBody)
+    airy({ topic: 'quirrel', message: resumable.headers.get('location'), label: 'Headers location:' })
+
+    // Perform resumable upload, second part
+    let start = 0
+    let upload
+    for (let i = 0; i < chunks.length; i++) {
+        const end = start + chunks[i].length - 1
+        upload = await fetch(resumable.headers.get('location'), {
+            method: 'PUT',
+            headers: {
+                "Content-Range": `bytes ${start}-${end}/${docSize}`
+            },
+            body: chunks[i]
+        })
+        start = end + 1
+        if (upload?.data) {
+            airy({ topic: 'quirrel', message: upload.data, label: 'Upload data:' })
+        }
+    }
+    const uploadData = await upload.json()
+    airy({ topic: 'quirrel', message: uploadData, label: 'uploadData:' })
+
+    // Export docx to pdf
+    const drive = google.drive({version: 'v3', auth: client})
+    const exportResponse = await drive.files.export({
+            fileId: uploadData.id,
+            mimeType: 'application/pdf',
+        }, {
+            responseType: 'arraybuffer'
+        })
+    airy({ topic: 'quirrel', message: exportResponse.data, label: 'Export response data:' })
+
+    const base64PDF = exportResponse.status === 200
+        ? `data:application/pdf;base64,${Buffer.from(exportResponse.data).toString('base64')}`
+        : ''
+
+    return { base64PDF }
+}
+
 export default {
     kmeansColors,
     summary,
-    summarySingleSet
+    summarySingleSet,
+    googleDocToPdf
 }

@@ -4,14 +4,12 @@
  */
 // import { Queue } from 'quirrel/sveltekit'
 import { Queue } from 'quirrel/sveltekit.cjs'
-import { getOAuth2Client, isSignedIn } from 'svelte-google-auth'
-import { writeFile, readFile } from 'node:fs/promises'
-import { storage_path } from '$lib/config.js'
-import prisma, { mimetypeMapToEnum, mimetypeMapFromEnum } from '$lib/prisma.js'
+import { readFile } from 'node:fs/promises'
+import { storage_path, GlobalOAuth2Client } from '$lib/config.js'
+import prisma, { mimetypeMapFromEnum } from '$lib/prisma.js'
 import { getFileExtension } from '$lib/aerial/hybrid/util.js'
 import { fileCheck } from '$lib/aerial/hybrid/validation.js'
-import { kmeansColors, summary } from '$lib/aerial/server/index.js'
-import mupdf from 'mupdf'
+import { kmeansColors, summary, googleDocToPdf, extractPdfColors } from '$lib/aerial/server/index.js'
 import { GlobalRabbitChannel } from '$lib/rabbitmq/utils.js'
 import { rabbitDefaultQueue } from '$lib/rabbitmq/index.js'
 import { airy } from '$lib/aerial/hybrid/util.js'
@@ -90,77 +88,32 @@ const queue = Queue(
             }
 
             if (fileCheck.isPdf(mimetypeMapFromEnum[artifact.mimetype])) {
-                /**
-                 * MuPDF WASM
-                 * https://mupdf.readthedocs.io/en/latest/mupdf-wasm.html
-                 * https://mupdf.readthedocs.io/en/latest/mupdf-js.html
-                 */
-                mupdf.ready.then(async () => {
-                    const before = performance.now()
-                    const pdfBuffer = await readFile(filepath.replace('_1', ''))
-
-                    const mupdfDocument = mupdf.Document.openDocument(pdfBuffer, mimetypeMapFromEnum[artifact.mimetype])
-                    const pages = mupdfDocument.countPages()
-                    console.log("MuPDF document: ", mupdfDocument)
-                    console.log("Pages: ", pages)
-
-                    // Convert each page to png image and save to storage
-                    for (let i = 0; i < pages; i++) {
-                        const page = mupdfDocument.loadPage(i)
-                        // const pixmap = page.toPixmap(mupdf.Matrix.identity, mupdf.ColorSpace.DeviceRGB, false)
-                        const pixmap = page.toPixmap(mupdf.Matrix.scale(0.5, 0.5), mupdf.ColorSpace.DeviceRGB, false)
-                        // pixmap.setResolution(300, 300)
-                        await writeFile(`${storage_path}/aerial/${artifactCollection.id}/${artifact.id}_${i + 1}.png`, pixmap.asPNG(), { flag: 'w+' })
-                    }
-
-                    // Extract colors
-                    for (let i = 0; i < pages; i++) {
-                        const color = await kmeansColors(`${storage_path}/aerial/${artifactCollection.id}/${artifact.id}_${i + 1}.png`)
-                        kmeans_colors.push(color)
-                    }
-
-                    const kmeansColor = await prisma.kmeansColors.create({
-                        data: {
-                            artifactId: artifact.id,
-                            colors: kmeans_colors
-                        }
-                    })
-
-                    const cmykData = await summary(kmeansColor.colors)
-
-                    const cmyk = await prisma.cMYK.create({
-                        data: {
-                            artifactId: artifact.id,
-                            info: cmykData
-                        }
-                    })
-
-                    await prisma.artifact.update({
-                        where: {
-                            id: artifact.id
-                        },
-                        data: {
-                            url: `/storage/aerial/${job.artifactCollectionId}/${artifact.id}.pdf`,
-                            kmeansColorsId: kmeansColor.id,
-                            cmykId: cmyk.id,
-                            pages
-                        }
-                    })
-
-                    const after = performance.now()
-                    airy({ topic: 'quirrel', message: `PDF color extraction done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} s` })
-                    // https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-218.php
-                    airy({ topic: 'quirrel', message: `${((1000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per second` })
-                    airy({ topic: 'quirrel', message: `${((30000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per 30 seconds` })
+                extractPdfColors({
+                    pdfBuffer: await readFile(filepath.replace('_1', '')),
+                    mimetype: mimetypeMapFromEnum[artifact.mimetype],
+                    artifactCollection,
+                    artifact
                 })
             }
 
             if (fileCheck.isDoc(mimetypeMapFromEnum[artifact.mimetype])) {
                 // make a request to googleDrive API
-                if (isSignedIn(job.locals)) {
-                    console.log('isSignedIn: ', isSignedIn(job.locals))
-                    const split = 262144 // This is a sample chunk size. https://stackoverflow.com/a/73264129/12478479
-                }
+                airy({ topic: 'quirrel', message: 'Logged in with google' })
+                const before = performance.now()
+                const convertedDoc = await googleDocToPdf({
+                    filepath,
+                    mimetype: mimetypeMapFromEnum[artifact.mimetype],
+                    artifact
+                })
+                const pdfBuffer = Buffer.from(convertedDoc.base64PDF.replace('data:application/pdf;base64,', ''), 'base64')
+                extractPdfColors({
+                    pdfBuffer,
+                    mimetype: 'application/pdf',
+                    artifactCollection,
+                    artifact
+                })
+                const after = performance.now()
+                airy({ topic: 'quirrel', message: `Word doc color extraction done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} s` })
             }
 
             await prisma.artifactCollection.update({

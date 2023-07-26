@@ -118,8 +118,70 @@ export async function listAerialFolderDetails(auth) {
     return null
 }
 
+/**
+ * Look for Aerial folder in current user's google drive
+ * 
+ * https://github.com/googleapis/google-api-nodejs-client/issues/2208#issuecomment-671676734
+ * 
+ * @param {import('googleapis').Auth.OAuth2Client} client OAuth2Client
+ * @returns {Promise<import('googleapis').drive_v3.Schema$File|undefined>} Returns drive file object when found and undefined when not found
+ */
+export async function searchAerialFolder(client) {
+    const drive = google.drive({version: 'v3', auth: client})
+    const listResponse = await drive.files.list({
+        q: "mimeType='application/vnd.google-apps.folder' and trashed=false",
+        fields: 'files(id,name)',
+    })
+
+    return listResponse.data.files.find((folder) => folder.name === 'Aerial')
+}
+
+/**
+ * Create Aerial folder in current user's google drive
+ * 
+ * @param {import('googleapis').Auth.OAuth2Client} client
+ * @returns {Promise<import('googleapis').drive_v3.Schema$File>} Returns drive file object
+ */
+export async function aerialFolderCreate(client) {
+    const drive = google.drive({version: 'v3', auth: client})
+    const fileMetadata = {
+        name: 'Aerial',
+        mimeType: 'application/vnd.google-apps.folder',
+    }
+
+    const folderResponse = await drive.files.create({
+        requestBody: fileMetadata,
+        // fields: 'id,name,kind,mimeType',
+        fields: 'id,name',
+    })
+
+    return folderResponse.data
+}
+
+/**
+ * Initiate resumable upload by sending initial request with query parameter of uploadType=resumable
+ * 
+ * If the initiation request succeeds, the response includes a 200 OK HTTP status code. In addition, it includes a Location header that specifies the resumable session URI.
+ * 
+ * Save the resumable session URI so you can upload the file data and query the upload status. A resumable session URI expires after one week.
+ * 
+ * @param {[string, string][] | Record<string, string> | Headers} headers Request Headers
+ * @param {ReadableStream | XMLHttpRequestBodyInit} body Request Body
+ * @returns {Promise<Response>}
+ */
+export async function startResumableUpload(headers, body) {
+    return await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', {
+        method: 'POST',
+        headers,
+        body
+    })
+}
+
 export default {
     listDriveFiles,
     listStorageQuota,
-    listAerialFolderDetails
+    listAerialFolderDetails,
+    searchAerialFolder,
+    aerialFolderCreate,
+    startResumableUpload
 }

@@ -37,6 +37,7 @@ export const storage_path = path.join(__dirname, `../../${STORAGE_PATH}`)
 export const google_client_secret = getGoogleClientSecret('client_secret.json')
 export const google_oauth_callback_path = PUBLIC_GOOGLE_OAUTH_CALLBACK_PATH
 export const aerial_api_url = AERIAL_API_URL
+export const GlobalOAuth2Client = Symbol.for('sveltekit.google.OAuth2Client')
 export const app_url = PUBLIC_APP_URL
 // export const env = process.env.NODE_ENV
 // export const env = import.meta.env.MODE

@@ -2,8 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { fail, redirect } from '@sveltejs/kit'
 import sharp from 'sharp'
 import prisma, { mimetypeMapToEnum } from '$lib/prisma.js'
-// import { storage_path, GlobalLocals } from "$lib/config.js"
-import { storage_path } from "$lib/config.js"
+import { storage_path, GlobalOAuth2Client } from "$lib/config.js"
 import { POST as quirrel } from '../api/quirrel/job/color-extraction/+server.js'
 import { fileCheck, emptyFile } from '$lib/aerial/hybrid/validation.js'
 import { getFileExtension } from '$lib/aerial/hybrid/util.js'
@@ -137,7 +136,7 @@ export const actions = {
                 // }
             }
 
-            // globalThis[GlobalLocals] = locals
+            globalThis[GlobalOAuth2Client] = locals.googleOauthClient
 
             /**
              * Queue the created collection, no need to queue each artifacts

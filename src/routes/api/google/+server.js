@@ -16,6 +16,9 @@ import { google } from 'googleapis'
  * 
  * Huge credits to Tanaike
  * https://stackoverflow.com/users/7108653/tanaike
+ * 
+ * @type {import('@sveltejs/kit').RequestHandler}
+ * @returns {import('@sveltejs/kit').MaybePromise<Response>}
  */
 export const POST = async ({ request, locals, cookies, fetch }) => {
     const file = await request.json()
@@ -48,8 +51,10 @@ export const POST = async ({ request, locals, cookies, fetch }) => {
             const resumableBody = JSON.stringify({
                 name: file.name,
                 // mimeType: file.type
-                // explicitly assign google workspace document mimeType so we can perform
-                // export operations with conversions
+                /**
+                 * explicitly assign google workspace document mimeType so we can perform
+                 * export operations with conversions
+                 */
                 mimeType: 'application/vnd.google-apps.document',
                 parents: [aerialFolder.id]
             })

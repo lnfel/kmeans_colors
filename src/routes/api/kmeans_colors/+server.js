@@ -9,7 +9,8 @@ import { kmeansColors, summary } from '$lib/aerial/server/index.js'
  * 
  * https://kit.svelte.dev/docs/routing#server
  * 
- * @returns {Response} Response object
+ * @type {import('@sveltejs/kit').RequestHandler}
+ * @returns {import('@sveltejs/kit').MaybePromise<Response>}
  */
 export const POST = async ({ request, locals, cookies }) => {
     const { name, images } = await request.json()
