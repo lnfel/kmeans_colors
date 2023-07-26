@@ -79,6 +79,8 @@ async function svelteHandleCors({ event, resolve }) {
     return response
 }
 
+const preload_types = ['js', 'css', 'font']
+
 /**
  * Version controlled static assets for automatic cache busting
  * 
@@ -89,14 +91,21 @@ async function svelteHandleCors({ event, resolve }) {
  * @returns {import('@sveltejs/kit').MaybePromise<Response>}
  */
 async function staticAssetsVersion({ event, resolve }) {
-    return await resolve(event, {
+    /**
+     * @type {import('@sveltejs/kit').ResolveOptions}
+     */
+    const resolveOptions = {
         transformPageChunk: /** @param {{ html: String, done: Boolean }} */ async ({ html }) => {
             const cssContent = await readFile('static/css/main.css', { encoding: 'utf8' })
             const fontContent = await readFile('static/css/font.css', { encoding: 'utf-8' })
             return html.replaceAll('/css/main.css', `/css/main.css?v=${tinySimpleHash(cssContent)}`)
                 .replaceAll('/css/font.css', `/css/font.css?v=${tinySimpleHash(fontContent)}`)
+        },
+        preload: /** @param {{ type: "js" | "css" | "font" | "asset", path: String }} */ ({ type }) => {
+            return preload_types.includes(type)
         }
-    })
+    }
+    return await resolve(event, resolveOptions)
 }
 
 /**
