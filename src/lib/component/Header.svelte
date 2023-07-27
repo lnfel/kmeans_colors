@@ -2,7 +2,7 @@
     import { slide } from "svelte/transition"
     import { quintOut } from "svelte/easing"
     import { browser, dev } from "$app/environment"
-    import { pageTransitionsEnabled, devLayoutTestEnabled } from "$lib/aerial/stores/index.js"
+    import { pageTransitionsEnabled, devLayoutTestEnabled, menuExpanded } from "$lib/aerial/stores/index.js"
 
     import Logo from "$lib/component/Logo.svelte"
     // import GoogleClient from "$lib/component/GoogleClient.svelte"
@@ -50,7 +50,7 @@
     }
 
     /**
-     * Toggleable slide transition
+     * Toggleable transition
      * 
      * NOTE: TransitionConfig is only returned upon appending the element on the DOM.
      * The out transition will use the same TransitionConfig set upon during creation/appending of element to DOM.
@@ -59,70 +59,143 @@
      * The solution it to close the dropdown after changing preference.
      * 
      * @param {Element} node
-     * @param {import('svelte/transition').FlyParams & { fn: Function }} options
+     * @param {import('svelte/transition').SlideParams & { fn: Function }} options
      * @returns {import('svelte/transition').TransitionConfig} TransitionConfig
      */
-    $: maybeSlide = (node, options) => {
+    $: maybeTransition = (node, options) => {
         options = {
-            fn: slide,
-            delay: $pageTransitionsEnabled ? 250 : 0,
-            duration: $pageTransitionsEnabled ? 300 : 0,
-            easing: quintOut,
-            axis: 'y'
+            fn: options.fn,
+            delay: $pageTransitionsEnabled ? options.delay : 0,
+            duration: $pageTransitionsEnabled ? options.duration : 0,
+            easing: options.easing,
+            axis: options.axis
         }
         return options.fn(node, options)
     }
+
+    /**
+     * Convert string true and false to boolean counterparts
+     * 
+     * @param {String} string
+     * @returns {Boolean} boolean
+     */
+    function stringToBoolean(string) {
+        if (/^true$/i.test(string)) {
+            return true
+        }
+        if (/^false$/i.test(string)) {
+            return false
+        }
+    }
+
+    /**
+     * @param {MouseEvent & { target: HTMLButtonElement }}
+     */
+    function toggleMenu({ target }) {
+        menuExpanded.set(!stringToBoolean(target.ariaExpanded))
+        // console.log(menuExpanded, typeof menuExpanded)
+        target.ariaExpanded = $menuExpanded
+    }
+
+    function closeMenu() {
+        const navigationToggle = document.querySelector('#navigationToggle')
+        $menuExpanded.set(false)
+        navigationToggle.ariaExpanded = $menuExpanded
+    }
 </script>
 
-<header class="flex items-center justify-between lg:px-[3rem]">
+<header class="sticky top-0 pb-2 md:pb-0 px-4 lg:px-[3rem] space-y-4 md:space-y-0">
+    <div class="container mx-auto flex flex-col md:flex-row md:items-center justify-between">
     <Logo />
 
-    <div class="inline-grid gap-2" style="grid-template-columns: auto auto auto auto;">
-        <a href="/" class="max-w-fit text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-            </svg>
-            <span class="sr-only">Home</span>
-        </a>
-        <a href="/queue" class="max-w-fit text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
-            </svg>
-            <span class="sr-only">Queue</span>
-        </a>
+    <!-- <button id="navigationToggle" title="Navigation toggle" on:click|stopPropagation={toggleMenu} type="button" class="md:hidden text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500" aria-controls="navigationMenu" aria-expanded="false" aria-label="Navigation toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu pointer-events-none w-6 h-6">
+            <line x1="4" x2="20" y1="12" y2="12"/>
+            <line x1="4" x2="20" y1="6" y2="6"/>
+            <line x1="4" x2="20" y1="18" y2="18"/>
+        </svg>
+        <span class="sr-only">Navigation toggle</span>
+    </button> -->
 
-        <!-- Preferences -->
-        <div class="dropdown-menu relative">
-            <button on:click|stopPropagation={togglePreferencesDropdown} on:keydown={menuKeyboardListener} type="button" class="dropdown-toggle text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <!-- {#if $menuExpanded || onMediumScreen} -->
+        <!-- absolute md:static top-full  -->
+        <div id="navigationMenu" class="w-full inline-grid place-content-stretch md:place-content-end gap-2" style="grid-template-columns: auto auto auto auto auto;">
+            <a href="/" title="Home" in:maybeTransition={{ fn: slide, duration: 250, easing: quintOut, axis: 'y' }} out:maybeTransition={{ fn: slide, delay: 250, duration: 250, easing: quintOut, axis: 'y' }} class="menu-item md:max-w-fit flex justify-center text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home w-6 h-6">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
                 </svg>
-                <span class="sr-only">Preferences</span>
-            </button>
+                <span class="sr-only">Home</span>
+            </a>
+            <a href="/queue" title="Queue" in:maybeTransition={{ fn: slide, delay: 100, duration: 250, easing: quintOut, axis: 'y' }} out:maybeTransition={{ fn: slide, delay: 200, duration: 250, easing: quintOut, axis: 'y' }} class="menu-item md:max-w-fit flex justify-center text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers w-6 h-6">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                    <polyline points="2 17 12 22 22 17"/>
+                    <polyline points="2 12 12 17 22 12"/>
+                </svg>
+                <span class="sr-only">Queue</span>
+            </a>
+            <a href="/docs" title="Docs" in:maybeTransition={{ fn: slide, delay: 150, duration: 250, easing: quintOut, axis: 'y' }} out:maybeTransition={{ fn: slide, delay: 150, duration: 250, easing: quintOut, axis: 'y' }} class="menu-item md:max-w-fit flex justify-center text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text w-6 h-6">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                    <polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/>
+                    <line x1="16" x2="8" y1="17" y2="17"/>
+                    <line x1="10" x2="8" y1="9" y2="9"/>
+                </svg>
+                <span class="sr-only">Docs</span>
+            </a>
 
-            {#if preferencesToggle}
-                <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:maybeSlide|global class="dropdown-list absolute right-0 z-10 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 px-4 py-3 mt-2 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                    <span class="text-lg font-bold font-sculpin tracking-wide text-indigo-600">Preferences</span>
+            <!-- Preferences -->
+            <div class="menu-item dropdown-menu relative" in:maybeTransition={{ fn: slide, delay: 200, duration: 250, easing: quintOut, axis: 'y' }} out:maybeTransition={{ fn: slide, delay: 100, duration: 250, easing: quintOut, axis: 'y' }}>
+                <button title="Preferences" on:click|stopPropagation={togglePreferencesDropdown} on:keydown={menuKeyboardListener} type="button" class="dropdown-toggle w-full md:max-w-fit flex justify-center text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-2 w-6 h-6">
+                        <path d="M20 7h-9"/><path d="M14 17H5"/>
+                        <circle cx="17" cy="17" r="3"/>
+                        <circle cx="7" cy="7" r="3"/>
+                    </svg>
+                    <span class="sr-only">Preferences</span>
+                </button>
 
-                    <label class="relative flex items-center cursor-pointer">
-                        <input id="transitionPreference" type="checkbox" bind:checked={$pageTransitionsEnabled} on:change={(event) => togglePreference(event, pageTransitionsEnabled)} value="pageTransitionsEnabled" class="sr-only peer">
-                        <div class="w-11 h-6 bg-indigo-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-400 dark:peer-focus:ring-indigo-300 rounded-full peer dark:bg-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                        <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-800">Page transitions</span>
-                    </label>
+                {#if preferencesToggle}
+                    <div on:click|stopPropagation={()=>{}} on:keydown={menuKeyboardListener} transition:maybeTransition|local={{ fn: slide, duration: 300, easing: quintOut }} class="dropdown-list absolute right-0 z-10 whitespace-nowrap origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 px-4 py-3 mt-2 focus:outline-none space-y-2" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                        <span class="text-lg font-bold font-sculpin tracking-wide text-indigo-600">Preferences</span>
 
-                    {#if dev}
                         <label class="relative flex items-center cursor-pointer">
-                            <input id="devLayoutTestPreference" type="checkbox" bind:checked={$devLayoutTestEnabled} on:change={(event) => togglePreference(event, devLayoutTestEnabled)} value="devLayoutTestEnabled" class="sr-only peer">
+                            <input id="transitionPreference" type="checkbox" bind:checked={$pageTransitionsEnabled} on:change={(event) => togglePreference(event, pageTransitionsEnabled)} value="pageTransitionsEnabled" class="sr-only peer">
                             <div class="w-11 h-6 bg-indigo-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-400 dark:peer-focus:ring-indigo-300 rounded-full peer dark:bg-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                            <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-800">Layout test</span>
+                            <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-800">Page transitions</span>
                         </label>
-                    {/if}
-                </div>
-            {/if}
-        </div>
 
-        <!-- <GoogleClient /> -->
-        <LuciaGoogleClient />
+                        {#if dev}
+                            <label class="relative flex items-center cursor-pointer">
+                                <input id="devLayoutTestPreference" type="checkbox" bind:checked={$devLayoutTestEnabled} on:change={(event) => togglePreference(event, devLayoutTestEnabled)} value="devLayoutTestEnabled" class="sr-only peer">
+                                <div class="w-11 h-6 bg-indigo-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-400 dark:peer-focus:ring-indigo-300 rounded-full peer dark:bg-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-800">Layout test</span>
+                            </label>
+                        {/if}
+                    </div>
+                {/if}
+            </div>
+
+            <!-- <GoogleClient /> -->
+            <LuciaGoogleClient />
+        </div>
+    <!-- {/if} -->
     </div>
 </header>
+
+<style>
+    :global(header) {
+    /* :global(#navigationMenu) { */
+        background-image: radial-gradient(transparent 1px, #1e293b 1px);
+        background-size: 4px 4px;
+        backdrop-filter: saturate(50%) blur(4px);
+    }
+
+    @media (min-width: 768px) {
+        :global(#navigationMenu) {
+            background: none;
+            backdrop-filter: none;
+        }
+    }
+</style>

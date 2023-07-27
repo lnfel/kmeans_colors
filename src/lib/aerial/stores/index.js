@@ -16,6 +16,8 @@ export const pageTransitionsEnabled = writable(true)
  */
 export const devLayoutTestEnabled = writable(false)
 
+export const menuExpanded = writable(false)
+
 export default {
     pageTransitionsEnabled
 }
