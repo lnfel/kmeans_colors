@@ -212,8 +212,8 @@
     <link rel="canonical" href="https://www-staging.pingsailor.com"/>
 </svelte:head>
 
-<main class="lg:px-[3rem]">
-    <section>
+<main class="px-4 lg:px-[3rem]">
+    <section class="container mx-auto">
         <form id="aerialPrototype" method="POST" use:enhance={upload} class="flex flex-wrap gap-4 py-4" enctype="multipart/form-data">
             <FileInput bind:ref={fileinput} on:change={onChange} label="Upload" id="file" name="file" multiple accept="image/*,.pdf,.docx,.doc" />
 

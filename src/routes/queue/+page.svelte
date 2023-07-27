@@ -89,8 +89,8 @@
     <link rel="canonical" href="https://www-staging.pingsailor.com/queue"/>
 </svelte:head>
 
-<main class="lg:px-[3rem]">
-    <section class="py-4 space-y-8">
+<main class="px-4 lg:px-[3rem]">
+    <section class="container mx-auto py-4 space-y-8">
         <button disabled={webSocketEstablished} on:click={() => establishWebSocket()}>
             Establish WebSocket connection
         </button>
