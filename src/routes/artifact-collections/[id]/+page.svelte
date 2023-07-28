@@ -54,7 +54,7 @@
 </svelte:head>
 
 <main class="lg:px-[3rem]">
-    <section class="py-4 space-y-8">
+    <section class="container mx-auto py-4 space-y-8">
         <div class="space-y-2">
             <h1 class="font-sculpin text-3xl">Artifact Collection</h1>
             <p>ID: { $page.data?.artifactCollection?.id }</p>
