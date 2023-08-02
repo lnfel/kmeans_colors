@@ -4,6 +4,7 @@ import { searchForWorkspaceRoot } from 'vite'
 // import { Server } from 'socket.io'
 import { createWSSGlobalInstance, onHttpServerUpgrade } from './src/lib/websocket/utils.js'
 import { rabbitCreateGlobalConnection } from './src/lib/rabbitmq/utils.js'
+import 'dotenv/config'
 
 /**
  * Using WebSockets with SvelteKit
@@ -38,7 +39,7 @@ export default defineConfig({
         {
             name: 'integratedRabbitmqServer',
             configureServer(server) {
-                rabbitCreateGlobalConnection()
+                rabbitCreateGlobalConnection(process.env.RABBITMQ_CONNECTION_URL)
             }
         }
     ],

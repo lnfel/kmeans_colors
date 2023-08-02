@@ -27,6 +27,7 @@ jobs:
           envkey_QUIRREL_API_URL: ${{ secrets.QUIRREL_API_URL }}
           envkey_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.PUBLIC_GOOGLE_CLIENT_ID }}
           envkey_PUBLIC_GOOGLE_OAUTH_CALLBACK_PATH: ${{ secrets.PUBLIC_GOOGLE_OAUTH_CALLBACK_PATH }}
+          envkey_RABBITMQ_CONNECTION_URL: ${{ secrets.RABBITMQ_CONNECTION_URL }}
       
       - name: Create client_secret.json
         uses: DamianReeves/write-file-action@master

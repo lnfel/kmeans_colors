@@ -2,6 +2,7 @@ import * as path from 'path'
 import * as url from 'url'
 import { createWSSGlobalInstance, onHttpServerUpgrade } from './src/lib/websocket/utils.js'
 import { rabbitCreateGlobalConnection } from './src/lib/rabbitmq/utils.js'
+import 'dotenv/config'
 
 /**
  * First class support for websockets on sveltekit
@@ -19,7 +20,7 @@ const dirname = path.dirname(filename)
 createWSSGlobalInstance();
 
 // Rabbitmq connect
-rabbitCreateGlobalConnection();
+rabbitCreateGlobalConnection(process.env.RABBITMQ_CONNECTION_URL);
 
 
 /**
