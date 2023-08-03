@@ -25,10 +25,15 @@ export const rabbitCreateChannel = async (connection) => {
 export const rabbitDefaultQueue = 'aerial:job-queue'
 
 /**
+ * Create a durable queue with a type of quorum
+ * 
  * @type {import('amqplib').Options.AssertQueue}
  */
 export const rabbitDefaultQueueOptions = {
-    durable: false
+    durable: true,
+    arguments: {
+        "x-queue-type": 'quorum'
+    }
 }
 
 /**
