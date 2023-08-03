@@ -42,10 +42,10 @@ export const rabbitDefaultQueueOptions = {
  * @param {import('amqplib').Channel} channel
  * @param {String} queue The name of queue to be used
  * @param {import('amqplib').Options.AssertQueue} options
- * @returns {Promise<undefined>} Promise void
+ * @returns {Promise<import('amqplib').Replies.AssertQueue>} AssertQueue
  */
 export const rabbitUseQueue = async (channel, queue, options) => {
-    await channel.assertQueue(queue, options)
+    return await channel.assertQueue(queue, options)
 }
 
 /**
@@ -70,9 +70,10 @@ export const rabbitStartAerialQueue = async () => {
             airy({ topic: 'rabbitmq', message: "Connecting to Rabbitmq channel.", action: 'executing' })
 
             globalThis[GlobalRabbitChannel] = await rabbitCreateChannel(rabbitConnection)
-            await rabbitUseQueue(globalThis[GlobalRabbitChannel], rabbitDefaultQueue, rabbitDefaultQueueOptions)
-            
             airy({ topic: 'rabbitmq', message: "Connected to Rabbitmq channel.", action: 'success' })
+            
+            const assertQueue = await rabbitUseQueue(globalThis[GlobalRabbitChannel], rabbitDefaultQueue, rabbitDefaultQueueOptions)
+            airy({ topic: 'rabbitmq', message: `Asserted ${assertQueue.queue} into existence.`, action: 'success' })
         }
 
         rabbitInitialized = true
