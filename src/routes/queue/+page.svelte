@@ -45,7 +45,7 @@
         ws.addEventListener('message', (event) => {
             console.log('[websocket] message received', event)
         })
-        ws.on('error', console.log)
+        ws.addEventListener('error', console.log)
     }
 
     const disconnectWebSocket = () => {

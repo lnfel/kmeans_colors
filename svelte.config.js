@@ -26,6 +26,7 @@ const config = {
                 "connect-src": [
                     'self',
                     'data:',
+                    'ws:',
                     'wss:',
                     'https://apis.google.com/',
                     'https://accounts.google.com/gsi/',
