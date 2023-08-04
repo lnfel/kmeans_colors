@@ -53,7 +53,7 @@
     <link rel="canonical" href="https://www-staging.pingsailor.com/artifact-collections/{$page.data?.artifactCollection?.id}"/>
 </svelte:head>
 
-<main class="lg:px-[3rem]">
+<main class="px-4 lg:px-[3rem]">
     <section class="container mx-auto py-4 space-y-8">
         <div class="space-y-2">
             <h1 class="font-sculpin text-3xl">Artifact Collection</h1>
