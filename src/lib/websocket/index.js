@@ -45,7 +45,7 @@ const startupWebsocketServer = () => {
         })
 
         wssInitialized = true
-        console.log(wss.listenerCount('connection'))
+        // console.log(wss.listenerCount('connection'))
     }
 }
 

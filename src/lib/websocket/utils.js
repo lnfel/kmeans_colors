@@ -52,14 +52,19 @@ export const onHttpServerUpgrade = (request, sock, head) => {
 /**
  * Create WebSocket Server global instance
  * 
- * @param {import('ws').ServerOptions} options
- * @returns {import('ws').Server<import('ws').WebSocket>} wss
+ * @param {import('ws').ServerOptions} [options] ServerOptions
+ * @returns {import('ws').WebSocket.Server} WebSocket.Server
  */
-export const createWSSGlobalInstance = (options) => {
+export const createWSSGlobalInstance = (options = {}) => {
     /** @type {import('ws').Server<import('ws').WebSocket>} */
     // const wss = new WebSocketServer({ noServer: true })
     if (!globalThis[GlobalThisWSS]) {
-        const wss = new WebSocketServer(Object.assign({ port: 8080 }, options))
+        /** @type {import('ws').ServerOptions} */
+        const defaultServerOptions = {
+            port: 8080,
+            host: '0.0.0.0'
+        }
+        const wss = new WebSocketServer(Object.assign(defaultServerOptions, options))
         globalThis[GlobalThisWSS] = wss
 
         wss.on('connection',
