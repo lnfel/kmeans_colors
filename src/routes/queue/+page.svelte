@@ -30,7 +30,7 @@
      */
     let ws
 
-    const establishWebSocket = () => {
+    const connectWebSocket = () => {
         if (webSocketEstablished) return
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
         ws = new WebSocket(`${protocol}//${window.location.host}/websocket`)
@@ -44,6 +44,11 @@
         ws.addEventListener('message', (event) => {
             console.log('[websocket] message received', event)
         })
+    }
+
+    const disconnectWebSocket = () => {
+        ws.close()
+        webSocketEstablished = false
     }
     
     let fileinput, submitBtn
@@ -91,8 +96,11 @@
 
 <main class="px-4 lg:px-[3rem]">
     <section class="container mx-auto py-4 space-y-8">
-        <button disabled={webSocketEstablished} on:click={() => establishWebSocket()}>
-            Establish WebSocket connection
+        <button disabled={webSocketEstablished} on:click={() => connectWebSocket()} class="text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500 disabled:border-slate-300 disabled:text-slate-300">
+            Connect WebSocket
+        </button>
+        <button disabled={!webSocketEstablished} on:click={() => disconnectWebSocket()} class="text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500 disabled:border-slate-300 disabled:text-slate-300">
+            Disconnect WebSocket
         </button>
         <div class="space-y-2">
             <h1 class="font-sculpin text-3xl">Aerial Queue</h1>

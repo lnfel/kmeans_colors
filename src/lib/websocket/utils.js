@@ -1,6 +1,6 @@
 import { parse } from 'url'
 import { WebSocketServer } from 'ws'
-import { nanoid } from 'nanoid'
+import ShortUniqueId from "short-unique-id"
 import chalk from 'chalk'
 
 /**
@@ -18,6 +18,8 @@ export const GlobalThisWSS = Symbol.for('sveltekit.wss')
 
 /**
  * Websocket clients
+ * 
+ * In case we want to monitor connected clients
  * 
  * https://ably.com/blog/web-app-websockets-nodejs
  * 
@@ -50,33 +52,31 @@ export const onHttpServerUpgrade = (request, sock, head) => {
 /**
  * Create WebSocket Server global instance
  * 
+ * @param {import('ws').ServerOptions} options
  * @returns {import('ws').Server<import('ws').WebSocket>} wss
  */
-export const createWSSGlobalInstance = () => {
-    /**
-     * @type {import('ws').Server<import('ws').WebSocket>}
-     */
-    const wss = new WebSocketServer({ noServer: true })
-    globalThis[GlobalThisWSS] = wss
+export const createWSSGlobalInstance = (options) => {
+    /** @type {import('ws').Server<import('ws').WebSocket>} */
+    // const wss = new WebSocketServer({ noServer: true })
+    if (!globalThis[GlobalThisWSS]) {
+        const wss = new WebSocketServer(Object.assign({ port: 8080 }, options))
+        globalThis[GlobalThisWSS] = wss
 
-    wss.on('connection',
-    /**
-     * @param {import('ws').Server<import('ws').WebSocket} ws 
-     */
-    (ws) => {
-        ws.socketId = nanoid()
-        console.log(`${chalk.blueBright('[wss]')} Websocket client connected (${ws.socketId})`)
-        wsClients.set(ws, { socketId: ws.socketId })
-    })
+        wss.on('connection',
+        /** @param {import('ws').Server<import('ws').WebSocket} ws */
+        (ws) => {
+            ws.socketId = `ws_${new ShortUniqueId()()}`
+            console.log(`${chalk.blueBright('[wss:global]')} Websocket client connected (${ws.socketId})`)
+            wsClients.set(ws, { socketId: ws.socketId })
+            console.log(`${chalk.blueBright('[wss:global]')} Client count (${wsClients.size})`)
 
-    wss.on('close',
-    /**
-     * @param {import('ws').Server<import('ws').WebSocket} ws 
-     */
-    (ws) => {
-        console.log(`${chalk.blueBright('[wss]')} Websocket client disconnected (${ws.socketId})`)
-        wsClients.delete(ws)
-    })
+            ws.on('close', () => {
+                console.log(`${chalk.blueBright('[wss:global]')} Websocket client disconnected (${ws.socketId})`)
+                wsClients.delete(ws)
+                console.log(`${chalk.blueBright('[wss:global]')} Client count (${wsClients.size})`)
+            })
+        })
 
-    return wss
+        return wss
+    }
 }

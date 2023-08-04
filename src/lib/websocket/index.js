@@ -10,17 +10,16 @@ let wssInitialized = false
 const startupWebsocketServer = () => {
     if (wssInitialized) return;
 
-    airy({ topic: 'wss', message: "Starting Websockets Server.", action: 'executing' })
-
     /**
      * @type {import('ws').Server<import('ws').WebSocket>}
      */
     const wss = globalThis[GlobalThisWSS]
 
-    if (wss !== undefined) {
+    if (wss !== undefined && wss.listenerCount('connection') < 2) {
+        airy({ topic: 'wss', message: "Attaching listeners.", action: 'executing' })
         wss.on('connection',
         /**
-         * Callback
+         * This is run everytime a client connects
          * 
          * @param {import('ws').Server<import('ws').WebSocket} ws 
          * @param {import('http').IncomingMessage} request 
@@ -36,13 +35,17 @@ const startupWebsocketServer = () => {
 
             ws.send(`Hello from SvelteKit ${new Date().toLocaleString()} (${ws.socketId})]`)
 
+            /**
+             * This close listener fires when the said client disconnects.
+             * NOTE: the close listener in createWSSGlobalInstance will not fire along this
+             */
             ws.on('close', () => {
-                console.log(`[wss:kit] client disconnected (${ws.socketId})`)
                 airy({ topic: 'wss', message: `Client disconnected (${ws.socketId}).` })
             })
         })
 
         wssInitialized = true
+        console.log(wss.listenerCount('connection'))
     }
 }
 
@@ -53,6 +56,8 @@ const startupWebsocketServer = () => {
  * @returns {import('@sveltejs/kit').MaybePromise}
  */
 export const svelteHandleWSSStartup = async ({ event, resolve }) => {
+    airy({ topic: 'wss', message: "Running sveltekit wss hook.", action: 'executing' })
+
     startupWebsocketServer()
     // Skip WebSocket server when pre-rendering pages
     if (!building) {
