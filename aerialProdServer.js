@@ -17,7 +17,7 @@ const filename = url.fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 // semi-colon is important here since we are using IIAF below
-createWSSGlobalInstance();
+createWSSGlobalInstance({ port: 443 });
 
 // Rabbitmq connect
 rabbitCreateGlobalConnection(process.env.RABBITMQ_CONNECTION_URL);
