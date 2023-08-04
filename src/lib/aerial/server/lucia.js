@@ -218,7 +218,7 @@ export async function svelteHandleLuciaAuth({ event, resolve }) {
         }
     }
 
-    airy({ topic: 'hooks', message: googleOauthClient, label: 'Before tokenInfo:' })
+    // airy({ topic: 'hooks', message: googleOauthClient, label: 'Before tokenInfo:' })
 
     let tokenInfo, newAccessToken
     if (googleOauthClient.credentials.hasOwnProperty('access_token') && googleOauthClient.credentials.hasOwnProperty('refresh_token')) {
