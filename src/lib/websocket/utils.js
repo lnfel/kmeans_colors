@@ -81,6 +81,8 @@ export const createWSSGlobalInstance = (options = {}) => {
                 wsClients.delete(ws)
                 console.log(`${chalk.blueBright('[wss:global]')} Client count (${wsClients.size})`)
             })
+
+            ws.on('error', console.log)
         })
 
         return wss
