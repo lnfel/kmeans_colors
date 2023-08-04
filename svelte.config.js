@@ -26,6 +26,7 @@ const config = {
                 "connect-src": [
                     'self',
                     'data:',
+                    'wss:',
                     'https://apis.google.com/',
                     'https://accounts.google.com/gsi/',
                     'https://filetools2.pdf24.org/'
