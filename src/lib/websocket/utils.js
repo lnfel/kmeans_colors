@@ -43,7 +43,7 @@ export const onHttpServerUpgrade = (request, sock, head) => {
      * @type {import('ws').Server<import('ws').WebSocket>}
      */
     const wss = globalThis[GlobalThisWSS]
-    wss.handleUpgrade(request, sock, head, (ws) => {
+    wss.handleUpgrade(request, sock, head, (ws, request) => {
         console.log(`${chalk.blueBright('[wss]')} ${chalk.yellowBright('Creating new websocket connection.')}`)
         wss.emit('connection', ws, request)
     })
@@ -61,8 +61,9 @@ export const createWSSGlobalInstance = (options = {}) => {
     if (!globalThis[GlobalThisWSS]) {
         /** @type {import('ws').ServerOptions} */
         const defaultServerOptions = {
-            port: 8080,
-            host: '0.0.0.0'
+            // port: 8080,
+            // host: '0.0.0.0',
+            noServer: true
         }
         const wss = new WebSocketServer(Object.assign(defaultServerOptions, options))
         globalThis[GlobalThisWSS] = wss
