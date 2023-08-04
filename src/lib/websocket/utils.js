@@ -37,6 +37,7 @@ export const wsClients = new Map()
  */
 export const onHttpServerUpgrade = (request, sock, head) => {
     const pathname = request.url ? parse(request.url).pathname : null
+    console.log('onHttpServerUpgrade pathname: ', pathname)
     if (pathname !== '/websocket') return
 
     /**

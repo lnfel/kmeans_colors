@@ -31,6 +31,7 @@ export default defineConfig({
         sveltekit(),
         {
             name: 'integratedWebsocketServer',
+            /** @param {import('vite').ViteDevServer} server */
             configureServer(server) {
                 createWSSGlobalInstance()
                 server.httpServer?.on('upgrade', onHttpServerUpgrade)
@@ -38,6 +39,7 @@ export default defineConfig({
         },
         {
             name: 'integratedRabbitmqServer',
+            /** @param {import('vite').ViteDevServer} server */
             configureServer(server) {
                 rabbitCreateGlobalConnection(process.env.RABBITMQ_CONNECTION_URL)
             }
