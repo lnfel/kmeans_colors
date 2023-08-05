@@ -8,7 +8,6 @@ import { STORAGE_PATH } from '$env/static/private'
 
 /**
  * Clean storage/tmp folder every Wednesday at 4 PM
- * TODO: Move storage_path/tmp
  */
 const cron = CronJob(
     'api/quirrel/cron/clean-tmp',

@@ -122,3 +122,17 @@ export const airy = async ({ topic, message = '', label = '', action = 'default'
         }
     }
 }
+
+/**
+ * Current date and time with post meridiem
+ * 
+ * @returns {String} Datetime in `MM-DD-YYYY HH:mm Ante` 12 hour format
+ */
+export const currentDateTime = () => {
+    return new Date()
+        .toLocaleString('en-PH', {timezone: 'Asia/Manila', hour12: true, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})
+        .toUpperCase()
+        .replaceAll(/(,)|([.])/g, '')
+        .replaceAll(/\s+/g, ' ') // replace invisible unicode character U+202f
+        .replaceAll(/\//g, '-')
+}
