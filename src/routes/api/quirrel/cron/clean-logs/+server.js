@@ -1,6 +1,7 @@
 import { CronJob } from 'quirrel/sveltekit.js'
-import { rm, readdir, appendFile } from 'node:fs/promises'
+import { rm, readdir, appendFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { storage_path } from '$lib/config.js'
 
 /**
  * Clean logs every Monday at 4 PM
@@ -20,6 +21,8 @@ const cron = CronJob(
         try {
             // Do something here
             appendFile(cronlogpath, `[${currentDateTime}] Performed storage cleaning.\n`)
+            appendFile(cronlogpath, `storage_path: ${storage_path}\n`)
+            appendFile(cronlogpath, `cronlogpath: ${cronlogpath}\n`)
         } catch (error) {
             appendFile(cronlogpath, `[${currentDateTime}] ${error}\n`)
         }
