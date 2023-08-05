@@ -33,7 +33,7 @@
     const connectWebSocket = () => {
         if (webSocketEstablished) return
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-        ws = new WebSocket(`${protocol}//${window.location.host}/websocket/`)
+        ws = new WebSocket(`${protocol}//${window.location.host}/websocket`)
         ws.addEventListener('open', (event) => {
             webSocketEstablished = true
             console.log('[websocket] connection open', event)
