@@ -129,11 +129,20 @@ export const POST = async ({ cookies, locals, request }) => {
         airy({ message: session, label: '[Google OAuth Callback] createSession Session:' })
         locals.luciaAuth.setSession(session)
         airy({ message: tokens, label: '[Google OAuth Callback] Tokens:' })
+        /**
+         * Create authToken for user if no associated google key
+         * Otherwise update the tokens with new ones.
+         */
         const authToken = await prisma.authToken.upsert({
             where: {
                 key_id: `google:${providerUser.sub}`,
             },
-            update: {},
+            update: {
+                key_id: `google:${providerUser.sub}`,
+                access_token: tokens.accessToken,
+                refresh_token: tokens.refreshToken,
+                expiry_date: tokens.accessTokenExpiresIn,
+            },
             create: {
                 key_id: `google:${providerUser.sub}`,
                 access_token: tokens.accessToken,
