@@ -104,7 +104,7 @@
     }
 </script>
 
-<header class="sticky top-0 pb-2 md:pb-0 px-4 lg:px-[3rem] space-y-4 md:space-y-0">
+<header class="sticky top-0 pb-2 md:pb-0 px-4 lg:px-[3rem] space-y-4 md:space-y-0 z-10">
     <div class="container mx-auto flex flex-col md:flex-row md:items-center justify-between">
     <Logo />
 
