@@ -87,6 +87,10 @@ export const generateShortUniqueId = async (params, next) => {
     return await next(params)
 }
 
+/**
+ * TODO: Migrate to use prisma client extensions instead
+ * @see {@link https://www.prisma.io/docs/concepts/components/prisma-client/client-extensions | Prisma Client extensions}
+ */
 prisma.$use(generateShortUniqueId)
 
 export default prisma
