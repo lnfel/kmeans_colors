@@ -55,13 +55,14 @@ export async function listStorageQuota(auth) {
  * 
  * @param {String|Number} bytes Bytes to convert
  * @param {Number} decimals Number of decimal places to show
+ * @param {Boolean} base10 Default unit of measure is KiB which is equivalent to 1024 bytes. Enable if you want to measure in 1 kB per 1000 bytes
  * @returns {String} Converted bytes string accompanied with proper unit of measurement
  */
-function formatBytes(bytes, decimals = 2) {
+function formatBytes(bytes, decimals = 2, base10 = false) {
     if (!+bytes) return '0 bytes'
-    const k = 1024
+    const k = base10 ? 1000 : 1024
     const dm = decimals < 0 ? 0 : decimals
-    const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+    const sizes = base10 ? ['Bytes', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
 
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
