@@ -23,7 +23,7 @@ export const GlobalThisWSS = Symbol.for('sveltekit.wss')
  * 
  * https://ably.com/blog/web-app-websockets-nodejs
  * 
- * @type {Map}
+ * @type {Map<import('ws').Server<import('ws').WebSocket>, String>}
  */
 export const wsClients = new Map()
 
@@ -41,7 +41,7 @@ export const onHttpServerUpgrade = (request, sock, head) => {
     if (pathname !== '/websocket') return
 
     /**
-     * @type {import('ws').Server<import('ws').WebSocket>}
+     * @type {import('ws').Server}
      */
     const wss = globalThis[GlobalThisWSS]
     wss.handleUpgrade(request, sock, head, (ws, request) => {
@@ -70,7 +70,7 @@ export const createWSSGlobalInstance = (options = {}) => {
         globalThis[GlobalThisWSS] = wss
 
         wss.on('connection',
-        /** @param {import('ws').Server<import('ws').WebSocket} ws */
+        /** @param {import('ws').WebSocket & { socketId?: String }} ws */
         (ws) => {
             ws.socketId = `ws_${new ShortUniqueId()()}`
             console.log(`${chalk.blueBright('[wss:global]')} Websocket client connected (${ws.socketId})`)

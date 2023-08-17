@@ -21,7 +21,7 @@ const startupWebsocketServer = () => {
         /**
          * This is run everytime a client connects
          * 
-         * @param {import('ws').Server<import('ws').WebSocket} ws 
+         * @param {import('ws').WebSocket} ws 
          * @param {import('http').IncomingMessage} request 
          */
         (ws, request) => {
@@ -37,7 +37,7 @@ const startupWebsocketServer = () => {
 
             /**
              * This close listener fires when the said client disconnects.
-             * NOTE: the close listener in createWSSGlobalInstance will not fire along this
+             * NOTE: the close listener in createWSSGlobalInstance will fire first before this
              */
             ws.on('close', () => {
                 airy({ topic: 'wss', message: `Client disconnected (${ws.socketId}).` })
@@ -62,7 +62,7 @@ export const svelteHandleWSSStartup = async ({ event, resolve }) => {
     // Skip WebSocket server when pre-rendering pages
     if (!building) {
         /**
-         * @type {import('ws').Server<import('ws').WebSocket>}
+         * @type {import('ws').Server}
          */
         const wss = globalThis[GlobalThisWSS]
         if (wss !== undefined) {
@@ -95,7 +95,7 @@ export const WSSStartupOnce = async () => {
 
     if (!building) {
         /**
-         * @type {import('ws').Server<import('ws').WebSocket>}
+         * @type {import('ws').Server}
          */
         const wss = globalThis[GlobalThisWSS]
     }
