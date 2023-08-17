@@ -27,6 +27,50 @@ export const GlobalThisWSS = Symbol.for('sveltekit.wss')
  */
 export const wsClients = new Map()
 
+export class WebSocketClients {
+    constructor() {
+        this.list = new Object()
+        /** @type {String[]} */
+        this.clientIds = new Array()
+    }
+    /**
+     * Add websocket client to list
+     * 
+     * @param {String} id 
+     * @param {import('ws').Server<import('ws').WebSocket} ws 
+     */
+    add(id, ws) {
+        this.list[id] = ws
+    }
+    /**
+     * Remove websocket client from list
+     * 
+     * @param {String} id 
+     */
+    remove(id) {
+        delete this.list[id]
+    }
+    /**
+     * Add client id tracking from client side
+     * 
+     * @param {String} id 
+     */
+    addId(id) {
+        this.clientIds.push(id)
+    }
+    /**
+     * Remove client id tracking from client side
+     * 
+     * @param {String} id 
+     */
+    removeId(id) {
+        const index = this.clientIds.findIndex((clientId) => clientId === id)
+        this.clientIds.splice(index, 1)
+    }
+}
+
+export const websocketClients = new WebSocketClients()
+
 /**
  * Handle http server upgrade
  * 
@@ -76,12 +120,16 @@ export const createWSSGlobalInstance = (options = {}) => {
             ws.socketId = `ws_${new ShortUniqueId()()}`
             console.log(`${chalk.blueBright('[wss:global]')} Websocket client connected (${ws.socketId})`)
             wsClients.set(ws, { socketId: ws.socketId })
+            websocketClients.add(ws.socketId, ws)
             console.log(`${chalk.blueBright('[wss:global]')} Client count (${wsClients.size})`)
+            console.log(`${chalk.blueBright('[wss:global]')} websocketClients.list: `, Object.keys(websocketClients.list))
 
             ws.on('close', () => {
                 console.log(`${chalk.blueBright('[wss:global]')} Websocket client disconnected (${ws.socketId})`)
                 wsClients.delete(ws)
+                websocketClients.remove(ws.socketId)
                 console.log(`${chalk.blueBright('[wss:global]')} Client count (${wsClients.size})`)
+                console.log(`${chalk.blueBright('[wss:global]')} websocketClients.list: `, Object.keys(websocketClients.list))
             })
 
             ws.on('error', console.log)
