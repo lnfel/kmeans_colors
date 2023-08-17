@@ -34,7 +34,7 @@
         if (webSocketEstablished) return
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
         ws = new WebSocket(`${protocol}//${window.location.host}/websocket`)
-        ws.addEventListener('open', (event) => {
+        // ws.binaryType = 'arraybuffer'
             webSocketEstablished = true
             console.log('[websocket] connection open', event)
         })
@@ -43,6 +43,16 @@
         })
         ws.addEventListener('message', (event) => {
             console.log('[websocket] message received', event)
+            // Sending javascript object as binary message and unwrapping it back is kind of not achievable atm
+            // if (event.data instanceof ArrayBuffer) {
+            //     /** @type {ArrayBuffer} */
+            //     const data = event.data
+            //     console.log('data: ', data)
+            //     const view = new DataView(data)
+            //     console.log('view: ', view)
+            //     const dataUint8 = new Uint8Array(data)
+            //     console.log(dataUint8)
+            // }
         })
         ws.addEventListener('error', console.log)
     }

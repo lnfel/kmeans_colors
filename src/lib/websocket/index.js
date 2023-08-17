@@ -1,5 +1,7 @@
 import { building } from '$app/environment'
-import { GlobalThisWSS } from '$lib/websocket/utils.js'
+// import { serialize } from 'v8'
+// import { WebSocket } from 'ws'
+import { GlobalThisWSS, wsClients } from '$lib/websocket/utils.js'
 import { airy } from '$lib/aerial/hybrid/util.js'
 
 let wssInitialized = false
@@ -33,7 +35,17 @@ const startupWebsocketServer = () => {
              */
             airy({ topic: 'wss', message: `Client connected (${ws.socketId}).` })
 
-            ws.send(`Hello from SvelteKit ${new Date().toLocaleString()} (${ws.socketId})]`)
+            /**
+             * Currently no way to deserialize this on client side
+             * Lead: https://gist.github.com/jonathanlurie/04fa6343e64f750d03072ac92584b5df
+             * - BSON etc.
+             */
+            // ws.send(
+            //     serialize({
+            //         message: `Hello from SvelteKit ${new Date().toLocaleString()} (${socketId})`,
+            //         clients: wsClients
+            //     }),
+            // )
 
             /**
              * This close listener fires when the said client disconnects.
