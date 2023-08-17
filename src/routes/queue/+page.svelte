@@ -5,6 +5,7 @@
 	import { quintOut } from 'svelte/easing'
     import { invalidate } from "$app/navigation"
     import { validateFileInput, error } from "$lib/aerial/client/index.js"
+    // import { websocketClients } from "$lib/websocket/utils"
 
     import Pulse from "$lib/component/Pulse.svelte"
     import FileInput from "$lib/component/input/File.svelte"
@@ -29,20 +30,30 @@
      * @type {import('@types/ws').WebSocket | null}
      */
     let ws
+    // let wsClients = []
 
     const connectWebSocket = () => {
         if (webSocketEstablished) return
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
         ws = new WebSocket(`${protocol}//${window.location.host}/websocket`)
         // ws.binaryType = 'arraybuffer'
+        ws.addEventListener('open', (event) => {
             webSocketEstablished = true
             console.log('[websocket] connection open', event)
+            // console.log('websocketClients.list: ', Object.keys(websocketClients.list))
         })
         ws.addEventListener('close', (event) => {
             console.log('[websocket] connection closed', event)
         })
         ws.addEventListener('message', (event) => {
             console.log('[websocket] message received', event)
+
+            // Monitor connected client ids
+            // if (event.data.startsWith('client:add')) {
+            //     websocketClients.addId(event.data.split(':')[2])
+            //     wsClients = websocketClients.clientIds
+            // }
+
             // Sending javascript object as binary message and unwrapping it back is kind of not achievable atm
             // if (event.data instanceof ArrayBuffer) {
             //     /** @type {ArrayBuffer} */

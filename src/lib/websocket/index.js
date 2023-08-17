@@ -33,7 +33,8 @@ const startupWebsocketServer = () => {
              * if (!session) ws.close(1008, 'User not authenticated')
              * ws.userId = session.userId
              */
-            airy({ topic: 'wss', message: `Client connected (${ws.socketId}).` })
+            const socketId = ws.socketId
+            airy({ topic: 'wss', message: `Client connected (${socketId}).` })
 
             /**
              * Currently no way to deserialize this on client side
@@ -52,8 +53,23 @@ const startupWebsocketServer = () => {
              * NOTE: the close listener in createWSSGlobalInstance will fire first before this
              */
             ws.on('close', () => {
-                airy({ topic: 'wss', message: `Client disconnected (${ws.socketId}).` })
+                airy({ topic: 'wss', message: `Client disconnected (${socketId}).` })
             })
+
+            /**
+             * Broadcast connected ws client id to all open connections
+             * We can monitor connected client this way on the front-end but is unreliable
+             * due to the fact we won't get previous connected clients ourselves since we
+             * need to make a connection first.
+             * 
+             * Better solution might be to have a persistent storage for this ids such as
+             * database or a text file.
+             */
+            // wss.clients.forEach((ws) => {
+            //     if (ws.readyState === WebSocket.OPEN) {
+            //         ws.send(`client:add:${socketId}`)
+            //     }
+            // })
         })
 
         wssInitialized = true
