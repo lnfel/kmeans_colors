@@ -174,6 +174,7 @@ export async function svelteHandleLuciaAuth({ event, resolve }) {
                 scope: googleAuthConfig.scope.join(' ')
             })
         } catch (error) {
+            airy({ topic: 'hooks', message: 'Unauthorized', label: 'svelteHandleLuciaAuth:' })
             return new json({ message: 'Unauthorized' }, { status: 401 })
         }
     } else {
