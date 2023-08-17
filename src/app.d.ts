@@ -6,6 +6,7 @@ declare global {
         interface Locals {
             luciaAuth: AuthRequest;
             googleOauthClient: import('googleapis').Auth.OAuth2Client;
+            wss: import('ws').Server;
         }
 
         interface PageData {
