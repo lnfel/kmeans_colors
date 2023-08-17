@@ -135,6 +135,12 @@ const queue = Queue(
             } else {
                 airy({ topic: 'quirrel', message: `Rabbitmq channel not detected, please make sure we are connected to Rabbitmq server and a channel is created.`, action: 'error' })
             }
+
+            /** @type {import('ws').WebSocket} */
+            const ws = globalThis[artifactCollection.label]
+            if (ws) {
+                ws.send(`color-extraction:done:${job.artifactCollectionId}`)
+            }
         })
     }
 )

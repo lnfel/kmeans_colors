@@ -128,11 +128,16 @@ export const createWSSGlobalInstance = (options = {}) => {
                 console.log(`${chalk.blueBright('[wss:global]')} Websocket client disconnected (${ws.socketId})`)
                 wsClients.delete(ws)
                 websocketClients.remove(ws.socketId)
+                delete globalThis[ws.socketId]
                 console.log(`${chalk.blueBright('[wss:global]')} Client count (${wsClients.size})`)
                 console.log(`${chalk.blueBright('[wss:global]')} websocketClients.list: `, Object.keys(websocketClients.list))
+                console.log(`${chalk.blueBright('[wss:global]')} ${ws.socketId} removed: `, !globalThis.hasOwnProperty(ws.socketId))
             })
 
             ws.on('error', console.log)
+
+            // Pass ws client to global instance so we can call it in quirrel endpoint
+            globalThis[ws.socketId] = ws
         })
 
         return wss
