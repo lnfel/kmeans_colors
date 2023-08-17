@@ -124,24 +124,24 @@ const queue = Queue(
                     processed: true
                 }
             })
-
-            /**
-             * @type {import('amqplib').Channel}
-             */
-            const rabbitChannel = globalThis[GlobalRabbitChannel]
-            if (rabbitChannel) {
-                rabbitChannel.sendToQueue(rabbitDefaultQueue, Buffer.from(job.artifactCollectionId))
-                airy({ topic: 'quirrel', message: `Sending notification to rabbit queue (${job.artifactCollectionId})`, action: 'executing' })
-            } else {
-                airy({ topic: 'quirrel', message: `Rabbitmq channel not detected, please make sure we are connected to Rabbitmq server and a channel is created.`, action: 'error' })
-            }
-
-            /** @type {import('ws').WebSocket} */
-            const ws = globalThis[artifactCollection.label]
-            if (ws) {
-                ws.send(`color-extraction:done:${job.artifactCollectionId}`)
-            }
         })
+
+        /**
+         * @type {import('amqplib').Channel}
+         */
+        const rabbitChannel = globalThis[GlobalRabbitChannel]
+        if (rabbitChannel) {
+            rabbitChannel.sendToQueue(rabbitDefaultQueue, Buffer.from(job.artifactCollectionId))
+            airy({ topic: 'quirrel', message: `Sending notification to rabbit queue (${job.artifactCollectionId})`, action: 'executing' })
+        } else {
+            airy({ topic: 'quirrel', message: `Rabbitmq channel not detected, please make sure we are connected to Rabbitmq server and a channel is created.`, action: 'error' })
+        }
+
+        /** @type {import('ws').WebSocket} */
+        const ws = globalThis[artifactCollection.label]
+        if (ws) {
+            ws.send(`color-extraction:done:${job.artifactCollectionId}`)
+        }
     }
 )
 
