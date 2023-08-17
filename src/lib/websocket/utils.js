@@ -1,4 +1,4 @@
-import { parse } from 'url'
+// import { parse } from 'url'
 import { WebSocketServer } from 'ws'
 import ShortUniqueId from "short-unique-id"
 import chalk from 'chalk'
@@ -36,7 +36,8 @@ export const wsClients = new Map()
  * @returns {undefined}
  */
 export const onHttpServerUpgrade = (request, sock, head) => {
-    const pathname = request.url ? parse(request.url).pathname : null
+    // const pathname = request.url ? parse(request.url).pathname : null
+    const pathname = request.url ? new URL(request.url, request.headers.origin).pathname : null
     console.log('onHttpServerUpgrade pathname: ', pathname)
     if (pathname !== '/websocket') return
 
