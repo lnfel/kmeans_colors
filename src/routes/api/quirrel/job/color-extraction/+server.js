@@ -45,7 +45,8 @@ const queue = Queue(
 
         const artifacts = artifactCollection.artifacts
 
-        artifacts.forEach(async (artifact) => {
+        for (const artifact of artifacts) {
+        // artifacts.forEach(async (artifact) => {
             // Check mimetype and process color extraction based on type of file
 
             airy({ topic: 'quirrel', message: artifact, label: 'Artifact:' })
@@ -124,7 +125,8 @@ const queue = Queue(
                     processed: true
                 }
             })
-        })
+        // })
+        }
 
         /**
          * @type {import('amqplib').Channel}
@@ -141,6 +143,7 @@ const queue = Queue(
         const ws = globalThis[artifactCollection.label]
         if (ws) {
             ws.send(`color-extraction:done:${job.artifactCollectionId}`)
+            airy({ topic: 'quirrel', message: `Sending notification to websocket client (color-extraction:done:${job.artifactCollectionId})`, action: 'executing' })
         }
     }
 )
