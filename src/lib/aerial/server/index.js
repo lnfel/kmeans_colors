@@ -191,9 +191,9 @@ export const summarySingleSet = async (kmeans_colors = []) => {
  * Extracts pdf colors and updates artifact with kmeans_colors and cmyk data
  * 
  * @param {extractPdfColorsParams} extractPdfColorsParams
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export const extractPdfColors = ({ pdfBuffer, filepath, mimetype = 'application/pdf', artifactCollection, artifact }) => {
+export const extractPdfColors = async ({ pdfBuffer, filepath, mimetype = 'application/pdf', artifactCollection, artifact }) => {
     const kmeans_colors = []
 
     /**
@@ -201,7 +201,7 @@ export const extractPdfColors = ({ pdfBuffer, filepath, mimetype = 'application/
      * https://mupdf.readthedocs.io/en/latest/mupdf-wasm.html
      * https://mupdf.readthedocs.io/en/latest/mupdf-js.html
      */
-    mupdf.ready.then(async () => {
+    // mupdf.ready.then(async () => {
         const before = performance.now()
         pdfBuffer = pdfBuffer ?? await readFile(filepath.replace('_1', ''))
 
@@ -254,11 +254,11 @@ export const extractPdfColors = ({ pdfBuffer, filepath, mimetype = 'application/
         })
 
         const after = performance.now()
-        airy({ topic: 'quirrel', message: `PDF color extraction done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} s` })
+        await airy({ topic: 'quirrel', message: `PDF color extraction done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} s` })
         // https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-218.php
-        airy({ topic: 'quirrel', message: `${((1000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per second` })
-        airy({ topic: 'quirrel', message: `${((30000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per 30 seconds` })
-    })
+        await airy({ topic: 'quirrel', message: `${((1000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per second` })
+        await airy({ topic: 'quirrel', message: `${((30000 * pages) / (after - before)).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} page(s) processed per 30 seconds` })
+    // })
 }
 
 /**

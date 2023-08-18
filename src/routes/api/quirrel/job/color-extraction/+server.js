@@ -88,7 +88,7 @@ const queue = Queue(
             }
 
             if (fileCheck.isPdf(mimetypeMapFromEnum[artifact.mimetype])) {
-                extractPdfColors({
+                await extractPdfColors({
                     pdfBuffer: await readFile(filepath.replace('_1', '')),
                     mimetype: mimetypeMapFromEnum[artifact.mimetype],
                     artifactCollection,
@@ -106,7 +106,7 @@ const queue = Queue(
                     artifact
                 })
                 const pdfBuffer = Buffer.from(convertedDoc.base64PDF.replace('data:application/pdf;base64,', ''), 'base64')
-                extractPdfColors({
+                await extractPdfColors({
                     pdfBuffer,
                     mimetype: 'application/pdf',
                     artifactCollection,
