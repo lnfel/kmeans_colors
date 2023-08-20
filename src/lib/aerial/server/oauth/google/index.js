@@ -67,15 +67,15 @@ export async function getProviderUser(access_token) {
  * No need for this anymore since we are using a custom provider
  * @param {String} code 
  */
-export async function validateCallback(code) {
-    const tokens = await getTokens(code)
-    const providerUser = await getProviderUser(tokens.accessToken)
-    const providerUserId = providerUser.sub
-    // Please see https://github.com/pilcrowOnPaper/lucia/issues/852
-    // const providerAuth = await connectAuth(luciaAuth, 'google', providerUserId)
-    // return {
-    //     ...providerAuth,
-    //     providerUser,
-    //     tokens
-    // }
-}
+// export async function validateCallback(code) {
+//     const tokens = await getTokens(code)
+//     const providerUser = await getProviderUser(tokens.accessToken)
+//     const providerUserId = providerUser.sub
+//     // Please see https://github.com/pilcrowOnPaper/lucia/issues/852
+//     // const providerAuth = await connectAuth(luciaAuth, 'google', providerUserId)
+//     // return {
+//     //     ...providerAuth,
+//     //     providerUser,
+//     //     tokens
+//     // }
+// }
