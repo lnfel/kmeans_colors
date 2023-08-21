@@ -1,8 +1,9 @@
+import { AuthRequest } from 'lucia'
 
 declare global {
     declare namespace App {
         interface Locals {
-            luciaAuth: import('lucia').AuthRequest;
+            luciaAuth: AuthRequest<Lucia.Auth>;
             googleOauthClient: import('googleapis').Auth.OAuth2Client;
             wss: import('ws').Server;
         }
@@ -33,7 +34,7 @@ declare global {
         interface Platform {}
     }
     declare namespace Lucia {
-        type Auth = import('lucia').Auth;
+        type Auth = import('lucia').Auth<import('lucia').Configuration>;
         type UserAttributes = {
             name: string;
             // google_username: string;
