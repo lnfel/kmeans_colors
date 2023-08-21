@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit'
 // import { OAuth2Client } from 'google-auth-library'
-import { luciaAuth, googleAuth, aerialGoogleAuth } from '$lib/aerial/server/lucia.js'
+import { luciaAuth, googleAuth, aerialGoogleAuth, generateCustomUserId } from '$lib/aerial/server/lucia.js'
 import { google_client_secret, app_url, google_oauth_callback_path } from '$lib/config.js'
 import prisma from '$lib/prisma.js'
 import { airy } from '$lib/aerial/hybrid/util.js'
@@ -55,27 +55,34 @@ export const GET = async ({ cookies, url, locals }) => {
     airy({ message: storedState, label: '[Google OAuth Callback] Stored state:' })
 
     // validate state
-    if (!state || !storedState || state !== storedState) {
-        throw new Response(null, { status: 401 })
+    if (!storedState || !state || storedState !== state || !code) {
+        throw new Response(null, { status: 400 })
     }
 
     try {
-        const { existingUser, providerUser, createUser, createPersistentKey, tokens } = await googleAuth.validateCallback(code)
+        // const { existingUser, providerUser, createUser, createPersistentKey, tokens } = await googleAuth.validateCallback(code)
+        const { existingUser, googleUser, createUser, googleTokens } = await googleAuth.validateCallback(code)
         airy({ message: existingUser, label: '[Google OAuth Callback] Existing user:' })
-        airy({ message: providerUser, label: '[Google OAuth Callback] Google user:' })
+        airy({ message: googleUser, label: '[Google OAuth Callback] Google user:' })
         const getUser = async () => {
             if (existingUser) return existingUser
             // create a new user if the user does not exist
             const user = await createUser({
                 // attributes
-                name: providerUser.name,
-                picture: providerUser.picture
+                userId: generateCustomUserId(),
+                attributes: {
+                    name: googleUser.name,
+                    picture: googleUser.picture
+                }
             })
             return user
         }
 
         const user = await getUser()
-        const session = await luciaAuth.createSession(user.id)
+        const session = await luciaAuth.createSession({
+            userId: user.id,
+            attributes: {},
+        })
         airy({ message: session, label: '[Google OAuth Callback] createSession Session:' })
         locals.luciaAuth.setSession(session)
         airy({ message: locals, label: '[Google OAuth Callback] Locals:' })
@@ -105,55 +112,61 @@ export const POST = async ({ cookies, locals, request }) => {
     airy({ message: storedState, label: '[Google OAuth Callback] Stored state:' })
 
     // validate state
-    if (!state || !storedState || state !== storedState) {
-        throw new Response(null, { status: 401 })
+    if (!storedState || !state || storedState !== state || !code) {
+        throw new Response(null, { status: 400 })
     }
 
     try {
-        const { existingUser, providerUser, createUser, createPersistentKey, tokens } = await aerialGoogleAuth.validateCallback(code)
+        // const { existingUser, providerUser, createUser, createPersistentKey, tokens } = await aerialGoogleAuth.validateCallback(code)
+        const { existingUser, googleUser, createUser, googleTokens } = await aerialGoogleAuth.validateCallback(code)
         airy({ message: existingUser, label: '[Google OAuth Callback] Existing user:' })
-        airy({ message: providerUser, label: '[Google OAuth Callback] Google user:' })
+        airy({ message: googleUser, label: '[Google OAuth Callback] Google user:' })
         const getUser = async () => {
             if (existingUser) return existingUser;
             // create a new user if the user does not exist
             const user = await createUser({
-                // attributes
-                name: providerUser.name,
-                picture: providerUser.picture
+                userId: generateCustomUserId(),
+                attributes: {
+                    name: googleUser.name,
+                    picture: googleUser.picture
+                }
             })
             return user
         }
 
         const user = await getUser()
-        const session = await luciaAuth.createSession(user.id)
+        const session = await luciaAuth.createSession({
+            userId: user.id,
+            attributes: {},
+        })
         airy({ message: session, label: '[Google OAuth Callback] createSession Session:' })
         locals.luciaAuth.setSession(session)
-        airy({ message: tokens, label: '[Google OAuth Callback] Tokens:' })
+        airy({ message: googleTokens, label: '[Google OAuth Callback] Tokens:' })
         /**
          * Create authToken for user if no associated google key
          * Otherwise update the tokens with new ones.
          */
         const authToken = await prisma.authToken.upsert({
             where: {
-                key_id: `google:${providerUser.sub}`,
+                key_id: `google:${googleUser.sub}`,
             },
             update: {
-                key_id: `google:${providerUser.sub}`,
-                access_token: tokens.accessToken,
-                refresh_token: tokens.refreshToken,
-                expiry_date: tokens.accessTokenExpiresIn,
+                key_id: `google:${googleUser.sub}`,
+                access_token: googleTokens.accessToken,
+                refresh_token: googleTokens.refreshToken,
+                expiry_date: googleTokens.accessTokenExpiresIn,
             },
             create: {
-                key_id: `google:${providerUser.sub}`,
-                access_token: tokens.accessToken,
-                refresh_token: tokens.refreshToken,
-                expiry_date: tokens.accessTokenExpiresIn,
+                key_id: `google:${googleUser.sub}`,
+                access_token: googleTokens.accessToken,
+                refresh_token: googleTokens.refreshToken,
+                expiry_date: googleTokens.accessTokenExpiresIn,
                 // id_token: tokens.idToken
             }
         })
         airy({ message: authToken, label: '[Google OAuth Callback] AuthToken:' })
     } catch (error) {
-        console.log(error.message ?? error)
+        airy({ message: error.message ?? error, label: '[Google OAuth Callback]' })
         return new Response(null, {
             status: 500
         })

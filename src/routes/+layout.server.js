@@ -12,12 +12,11 @@ import { google_client_secret, app_url, google_oauth_callback_path } from '$lib/
  */
 export const load = async ({ locals, url, depends }) => {
     let driveFiles, storageQuota, aerialFolder, googleOauthClient
-    const { user, session } = await locals.luciaAuth.validateUser()
-    // airy({ message: user, label: '[Layout load] User:' })
+    const session = await locals.luciaAuth.validate()
     // airy({ message: locals.luciaAuth, label: '[Layout load] Lucia Auth:' })
     // airy({ message: session, label: '[Layout load] Session:' })
-    if (user) {
-        const [ authKey ] = (await luciaAuth.getAllUserKeys(user.id)).filter((key) => key.providerId === 'google')
+    if (session?.user) {
+        const [ authKey ] = (await luciaAuth.getAllUserKeys(session.user.id)).filter((key) => key.providerId === 'google')
         const { access_token, refresh_token, expiry_date } = await prisma.authToken.findFirst({
             where: {
                 key_id: `${authKey.providerId}:${authKey.providerUserId}`
@@ -60,7 +59,7 @@ export const load = async ({ locals, url, depends }) => {
         },
         // We must know the pathname change beforehand for the page transition to be accurate
         url: url.pathname,
-        user,
+        user: session?.user,
         client_id: googleOauthClient?._clientId,
         access_token: googleOauthClient?.credentials?.access_token,
         refresh_token: googleOauthClient?.credentials?.refresh_token,

@@ -60,7 +60,9 @@ export async function getProviderUser(access_token) {
      * @type {String}
      */
     const googleUserId = googleUser.sub
-    return [googleUserId, googleUser]
+    // Migrate to Lucia v2
+    // return [googleUserId, googleUser]
+    return googleUser
 }
 
 /**

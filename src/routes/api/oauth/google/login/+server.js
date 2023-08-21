@@ -23,7 +23,11 @@ export const GET = async ({ cookies, url, locals }) => {
     }
 
     // get url to redirect the user to, with the state
-    const [googleAuthURL, state] = await googleAuth.getAuthorizationUrl(`${url.origin}${google_oauth_callback_path}`)
+    // const [googleAuthURL, state] = await googleAuth.getAuthorizationUrl(`${url.origin}${google_oauth_callback_path}`)
+
+    // Migrate to Lucia v2
+    // get url to redirect the user to, with the state
+    const [googleAuthURL, state] = await googleAuth.getAuthorizationUrl()
 
     // the state can be stored in cookies or localstorage for request validation on callback
     cookies.set("google_oauth_state", state, {

@@ -1,17 +1,15 @@
-import { AuthRequest, Auth, Configuration } from "lucia-auth"
 
-// <Auth<Configuration>>
 declare global {
     declare namespace App {
         interface Locals {
-            luciaAuth: AuthRequest;
+            luciaAuth: import('lucia').AuthRequest;
             googleOauthClient: import('googleapis').Auth.OAuth2Client;
             wss: import('ws').Server;
         }
 
         interface PageData {
             url: URL|string;
-            user?: import('lucia-auth').UserSchema;
+            user?: import('lucia').UserSchema;
             client_id?: string;
             access_token?: string;
             refresh_token?: string;
@@ -35,10 +33,12 @@ declare global {
         interface Platform {}
     }
     declare namespace Lucia {
-        type Auth = Auth<Configuration>
+        type Auth = import('lucia').Auth;
         type UserAttributes = {
             name: string;
+            // google_username: string;
             picture: string;
-        }
+        };
+        type DatabaseSessionAttributes = {};
     }
 }

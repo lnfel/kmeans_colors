@@ -110,6 +110,7 @@ model CMYK {
 model AuthUser {
     id String @id @unique
     name String?
+    // google_username String?
     picture String?
     auth_session AuthSession[]
     auth_key AuthKey[]
@@ -132,8 +133,8 @@ model AuthKey {
     id String @id @unique
     hashed_password String?
     user_id String
-    primary_key Boolean
-    expires BigInt?
+    // primary_key Boolean
+    // expires BigInt?
     auth_user AuthUser? @relation(references: [id], fields: [user_id], onDelete: Cascade)
     auth_token AuthToken?
 

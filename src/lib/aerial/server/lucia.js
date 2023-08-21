@@ -1,9 +1,9 @@
 import { dev } from '$app/environment'
 import { json } from '@sveltejs/kit'
-import lucia from 'lucia-auth'
-import { sveltekit } from 'lucia-auth/middleware'
-import prismaAdapter from '@lucia-auth/adapter-prisma'
-import { provider } from '@lucia-auth/oauth'
+import { lucia, Auth } from 'lucia'
+import { sveltekit } from 'lucia/middleware'
+import { prisma as prismaAdapter } from '@lucia-auth/adapter-prisma'
+import { providerUserAuth, __experimental_createOAuth2AuthorizationUrl } from '@lucia-auth/oauth'
 import { google as luciaGoogleProvider } from '@lucia-auth/oauth/providers'
 import { google } from 'googleapis'
 import ShortUniqueId from 'short-unique-id'
@@ -13,23 +13,38 @@ import { getTokens, getProviderUser } from '$lib/aerial/server/oauth/google/inde
 import { airy } from '$lib/aerial/hybrid/util.js'
 
 /**
- * @type {import('lucia-auth').Auth<import('lucia-auth').Configuration>}
+ * @type {import('lucia').Auth}
  */
 export const luciaAuth = lucia({
-    adapter: prismaAdapter(prisma),
+    adapter: prismaAdapter(prisma, {
+        user: 'authUser',
+        key: 'authKey',
+        session: 'authSession'
+    }),
     env: dev ? 'DEV' : 'PROD',
     middleware: sveltekit(),
-    transformDatabaseUser: (user) => {
+    /**
+     * @param {import('lucia').UserSchema} user 
+     * @returns {import('@lucia-auth/oauth/dist/lucia').LuciaDatabaseUserAttributes}
+     */
+    getUserAttributes: (user) => {
         return {
             id: user.id,
             name: user.name,
+            // googleUsername: user.google_username,
             picture: user.picture
         }
     },
-    generateCustomUserId: async () => {
-        return `au_${new ShortUniqueId()()}`
-    }
 })
+
+/**
+ * Generate custom id for Lucia user
+ * 
+ * @returns {String}
+ */
+export function generateCustomUserId() {
+    return `au_${new ShortUniqueId()()}`
+}
 
 /**
  * @typedef {Object} OAuthConfig
@@ -40,7 +55,11 @@ export const luciaAuth = lucia({
  */
 
 /**
- * @type {OAuthConfig & { redirectUri: String, accessType?: 'online'|'offline' }}
+ * @typedef {OAuthConfig & { redirectUri: String, accessType?: 'online'|'offline' }} GoogleAuthConfig
+ */
+
+/**
+ * @type {GoogleAuthConfig}
  */
 export const googleAuthConfig = {
     clientId: google_client_secret.web.client_id,
@@ -61,6 +80,131 @@ export const googleAuthConfig = {
 export const googleAuth = luciaGoogleProvider(luciaAuth, googleAuthConfig)
 
 /**
+ * @callback CreateKey
+ * @param {String} userId
+ * @returns {Promise<import('lucia').Key>}
+ */
+
+/**
+ * @callback CreateUser
+ * @param {{
+ *      userId?: String,
+ *      attributes: import('@lucia-auth/oauth/dist/lucia').LuciaDatabaseUserAttributes
+ * }} options
+ * @returns {import('@lucia-auth/oauth/dist/lucia').LuciaUser}
+ */
+
+/**
+ * @typedef {Auth & {
+ *      existingUser: import('@lucia-auth/oauth/dist/lucia').LuciaUser,
+ *      createKey: CreateKey,
+ *      createUser: CreateUser
+ * }} ProviderUserAuth
+ */
+
+/**
+ * @typedef {ProviderUserAuth & {
+ *      googleUser: import('@lucia-auth/oauth/providers').GoogleUser,
+ *      googleTokens: {accessToken: String, refreshToken: String, accessTokenExpiresIn: Number}
+ * }} GoogleUserAuth
+ */
+
+/**
+ * @see {@link https://discord.com/channels/1004048134218981416/1142097564179648616 | Using abstract classes to define OAuth providers}
+ */
+class OAuth2Provider {
+    /** @type {String} */
+    providerId
+    /** @type {Auth} */
+    auth
+
+    /**
+     * @param {String} providerUserId 
+     * @returns {Promise<ProviderUserAuth>}
+     */
+    async providerUserAuth(providerUserId) {
+        return await providerUserAuth(this.auth, this.providerId, providerUserId)
+    }
+
+    /**
+     * @param {String} providerId 
+     * @param {Auth} auth 
+     */
+    constructor(providerId, auth) {
+        this.providerId = providerId
+        this.auth = auth
+    }
+
+    /**
+     * This is an abstract method and must be implemented manually
+     * 
+     * @param {String} code 
+     * @returns {Promise<ProviderUserAuth>}
+     */
+    async validateCallback(code) {}
+
+    /**
+     * This is an abstract method and must be implemented manually
+     * 
+     * @returns {Promise<[url: URL, state: String]>}
+     */
+    async getAuthorizationUrl() {}
+}
+
+/**
+ * @see {@link https://discord.com/channels/1004048134218981416/1142097564179648616 | Using abstract classes to define OAuth providers}
+ */
+class GoogleAuth extends OAuth2Provider {
+    /** @type {GoogleAuthConfig} */
+    config
+
+    /**
+     * @param {import('lucia').Auth} auth 
+     * @param {GoogleAuthConfig} config 
+     */
+    constructor(auth, config) {
+        // super is the constructor of extended class OAuth2Provider
+        super('google', auth)
+        this.config = config
+    }
+
+    /**
+     * @see lucia implementation at {@link @lucia-auth/oauth/dist/providers/google.js}
+     * 
+     * @param {String} code 
+     * @returns {Promise<ProviderUserAuth & GoogleUserAuth>}
+     */
+    async validateCallback(code) {
+        const googleTokens = await getTokens(code)
+        const googleUser = await getProviderUser(googleTokens.accessToken)
+        const providerUserId = googleUser.sub
+        const googleUserAuth = await this.providerUserAuth(providerUserId)
+        return {
+            ...googleUserAuth,
+            googleUser,
+            googleTokens
+        }
+    }
+
+    /**
+     * @returns {Promise<[url: URL, state: String]>}
+     */
+    async getAuthorizationUrl() {
+        const scopeConfig = this.config.scope ?? []
+        const defaultScope = ["https://www.googleapis.com/auth/userinfo.profile"]
+
+        return await __experimental_createOAuth2AuthorizationUrl('https://accounts.google.com/o/oauth2/v2/auth', {
+            clientId: this.config.clientId,
+            redirectUri: this.config.redirectUri,
+            scope: Array.from(new Set(defaultScope.concat(scopeConfig))),
+            searchParams: {
+                access_type: this.config.accessType ?? 'online'
+            }
+        })
+    }
+}
+
+/**
  * @callback GetAuthorizationUrl
  * @param {String} state
  * @returns {Promise<URL>}
@@ -78,7 +222,9 @@ const aerialGoogleAuthConfig = {
     getTokens,
     getProviderUser
 }
-export const aerialGoogleAuth = provider(luciaAuth, aerialGoogleAuthConfig)
+// Migrate to Lucia v2
+// export const aerialGoogleAuth = provider(luciaAuth, aerialGoogleAuthConfig)
+export const aerialGoogleAuth = new GoogleAuth(luciaAuth, googleAuthConfig)
 
 /**
  * Get Lucia active session
@@ -209,13 +355,15 @@ export async function svelteHandleLuciaAuth({ event, resolve }) {
 
             // airy({ message: session, label: '[Hooks] Session:' })
 
-            authToken = session.auth_user.auth_key.filter((key) => key.id.startsWith('google:'))?.[0]?.auth_token
-            const { id: authTokenId, key_id, ...authTokenCredentials } = authToken
-            googleOauthClient.setCredentials({
-                ...authTokenCredentials,
-                token_type: 'Bearer',
-                scope: googleAuthConfig.scope.join(' ')
-            })
+            if (session) {
+                authToken = session.auth_user.auth_key.filter((key) => key.id.startsWith('google:'))?.[0]?.auth_token
+                const { id: authTokenId, key_id, ...authTokenCredentials } = authToken
+                googleOauthClient.setCredentials({
+                    ...authTokenCredentials,
+                    token_type: 'Bearer',
+                    scope: googleAuthConfig.scope.join(' ')
+                })
+            }
         }
     }
 
@@ -231,25 +379,51 @@ export async function svelteHandleLuciaAuth({ event, resolve }) {
             airy({ topic: 'hooks', message: error.response.data, label: 'tokenInfo Error:' })
             // throw new Error(error.response.data, 400)
 
-            // Refresh access_token using refresh_token
-            newAccessToken = await googleOauthClient.refreshAccessToken()
+            try {
+                // Refresh access_token using refresh_token
+                newAccessToken = await googleOauthClient.refreshAccessToken()
 
-            // Used for testing curl requests
-            // googleOauthClient.credentials.access_token = 'Test curl request 3'
-            // newAccessToken = googleOauthClient
+                // Used for testing curl requests
+                // googleOauthClient.credentials.access_token = 'Test curl request 3'
+                // newAccessToken = googleOauthClient
 
-            const { token_type, scope, id_token, ...newAccessTokenCredentials } = newAccessToken.credentials
+                const { token_type, scope, id_token, ...newAccessTokenCredentials } = newAccessToken.credentials
 
-            // Save new active token to database
-            if (authToken) {
-                await prisma.authToken.update({
-                    where: {
-                        key_id: authToken.key_id
-                    },
-                    data: {
-                        ...newAccessTokenCredentials
-                    }
-                })
+                // Save new active token to database
+                if (authToken) {
+                    await prisma.authToken.update({
+                        where: {
+                            key_id: authToken.key_id
+                        },
+                        data: {
+                            ...newAccessTokenCredentials
+                        }
+                    })
+                }
+            } catch (error) {
+                airy({ topic: 'hooks', message: error.response.data, label: 'refreshAccessToken Error:' })
+                if (error.response.data.error === 'invalid_grant') {
+                    airy({ topic: 'hooks', message: 'Removing invalid session, cookies and keys.' })
+                    // TODO: Upgrade Lucia to latest version and find a way to delete revoked credentials on Lucia User, Session and Keys
+                    // event.locals.luciaAuth.validateUser()
+                    // const session = await prisma.authSession.delete({
+                    //     where: {
+                    //         id: sessionId
+                    //     }
+                    // })
+                    // await prisma.authKey.delete({
+                    //     where: {
+                    //         user_id: session.user_id,
+                    //         AND: {
+                    //             id: {
+                    //                 startsWith: 'google:'
+                    //             }
+                    //         }
+                    //     }
+                    // })
+                    // event.cookies.delete('auth_session')
+                    // event.cookies.delete('google_oauth_state')
+                }
             }
         }
     }
