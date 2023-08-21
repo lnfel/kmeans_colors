@@ -13,7 +13,7 @@ import { getTokens, getProviderUser } from '$lib/aerial/server/oauth/google/inde
 import { airy } from '$lib/aerial/hybrid/util.js'
 
 /**
- * @type {import('lucia').Auth}
+ * @type {import('lucia').Auth<import('lucia').Configuration>}
  */
 export const luciaAuth = lucia({
     adapter: prismaAdapter(prisma, {
@@ -75,8 +75,10 @@ export const googleAuthConfig = {
     accessType: 'offline',
 }
 
-// Deprecation notice
-// TODO: we are using custom google provider
+/**
+ * Typical way of initializing google oauth as shown in lucia docs.
+ * Keeping this as a reference.
+ */
 export const googleAuth = luciaGoogleProvider(luciaAuth, googleAuthConfig)
 
 /**
@@ -401,28 +403,35 @@ export async function svelteHandleLuciaAuth({ event, resolve }) {
                     })
                 }
             } catch (error) {
-                airy({ topic: 'hooks', message: error.response.data, label: 'refreshAccessToken Error:' })
+                await airy({ topic: 'hooks', message: error.response.data, label: 'refreshAccessToken Error:' })
+                /**
+                 * invalid_grant usually means the user removed/revoked the connection in their google account
+                 * or the refresh token expired which only happens when google app service is in testing,
+                 * tokens with offline access type won't have their refresh token expire
+                 */
                 if (error.response.data.error === 'invalid_grant') {
-                    airy({ topic: 'hooks', message: 'Removing invalid session, cookies and keys.' })
-                    // TODO: Upgrade Lucia to latest version and find a way to delete revoked credentials on Lucia User, Session and Keys
-                    // event.locals.luciaAuth.validateUser()
-                    // const session = await prisma.authSession.delete({
-                    //     where: {
-                    //         id: sessionId
-                    //     }
-                    // })
-                    // await prisma.authKey.delete({
-                    //     where: {
-                    //         user_id: session.user_id,
-                    //         AND: {
-                    //             id: {
-                    //                 startsWith: 'google:'
-                    //             }
-                    //         }
-                    //     }
-                    // })
-                    // event.cookies.delete('auth_session')
-                    // event.cookies.delete('google_oauth_state')
+                    await airy({ topic: 'hooks', message: 'Removing invalid session, cookies and keys.' })
+                    // remove invalid session
+                    const session = await prisma.authSession.delete({
+                        where: {
+                            id: sessionId
+                        }
+                    })
+                    // remove revoked key
+                    await prisma.authKey.deleteMany({
+                        where: {
+                            user_id: session.user_id,
+                            AND: {
+                                id: {
+                                    startsWith: 'google:'
+                                }
+                            }
+                        }
+                    })
+                    event.cookies.delete('auth_session')
+                    event.cookies.delete('google_oauth_state')
+
+                    // notify user about the revocation or expiration of their session
                 }
             }
         }
