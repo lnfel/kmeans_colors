@@ -1,6 +1,6 @@
 <script>
-    import { page } from '$app/stores'
     import { onMount } from 'svelte'
+    import { browser } from '$app/environment'
     import { fly } from 'svelte/transition'
     import '../tailwind.css'
     import { pageTransitionsEnabled } from "$lib/aerial/stores/index.js"
@@ -23,18 +23,18 @@
         }
     }
 
-    onMount(() => {
-        if ($page.data?.session?.message) {
+    $: {
+        if (browser && data?.session?.message) {
             addToast({
                 data: {
                     title: 'Google',
-                    description: $page.data.session.message,
+                    description: data.session.message,
                     color: 'bg-rose-500'
                 },
                 closeDelay: 8000,
             })
         }
-    })
+    }
 </script>
 
 <Header />
