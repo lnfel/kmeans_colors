@@ -24,7 +24,7 @@
     }
 
     onMount(() => {
-        if ($page.data.session.message) {
+        if ($page.data?.session?.message) {
             addToast({
                 data: {
                     title: 'Google',
