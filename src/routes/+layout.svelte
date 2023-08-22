@@ -1,7 +1,10 @@
 <script>
+    import { page } from '$app/stores'
+    import { onMount } from 'svelte'
     import { fly } from 'svelte/transition'
     import '../tailwind.css'
     import { pageTransitionsEnabled } from "$lib/aerial/stores/index.js"
+    import Toaster, { addToast } from '$lib/component/melt/Toast.svelte'
 
     import Header from "$lib/component/Header.svelte"
 
@@ -19,6 +22,19 @@
             return options.fn(node, options)
         }
     }
+
+    onMount(() => {
+        if ($page.data.session.message) {
+            addToast({
+                data: {
+                    title: 'Google',
+                    description: $page.data.session.message,
+                    color: 'bg-rose-500'
+                },
+                closeDelay: 8000,
+            })
+        }
+    })
 </script>
 
 <Header />
@@ -29,3 +45,5 @@
         <slot />
     </div>
 {/key}
+
+<Toaster />

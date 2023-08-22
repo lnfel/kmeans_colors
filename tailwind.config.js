@@ -1,5 +1,8 @@
+import plugin from 'tailwindcss/plugin'
+import typography from '@tailwindcss/typography'
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
     content: ['./src/**/*.{html,js,svelte,ts}'],
     theme: {
         extend: {
@@ -24,5 +27,20 @@ module.exports = {
             }
         },
     },
-    plugins: [],
+    plugins: [
+        typography,
+        plugin(function ({ addVariant, matchUtilities, theme }) {
+            addVariant('hocus', ['&:hover', '&:focus'])
+            // Square utility
+            matchUtilities(
+                {
+                    square: (value) => ({
+                        width: value,
+                        height: value,
+                    })
+                },
+                { values: theme('spacing') }
+            )
+        })
+    ],
 }

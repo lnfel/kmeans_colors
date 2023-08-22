@@ -1,5 +1,5 @@
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { sveltekit } from '@sveltejs/kit/vite'
+import { defineConfig } from 'vite'
 import { searchForWorkspaceRoot } from 'vite'
 // import { Server } from 'socket.io'
 import { createWSSGlobalInstance, onHttpServerUpgrade } from './src/lib/websocket/utils.js'

@@ -432,6 +432,9 @@ export async function svelteHandleLuciaAuth({ event, resolve }) {
                     event.cookies.delete('google_oauth_state')
 
                     // notify user about the revocation or expiration of their session
+                    event.locals.session = {
+                        message: 'Access has been revoked or expired, if this was not intended please try logging in again.'
+                    }
                 }
             }
         }

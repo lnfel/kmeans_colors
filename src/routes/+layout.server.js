@@ -63,5 +63,6 @@ export const load = async ({ locals, url, depends }) => {
         client_id: googleOauthClient?._clientId,
         access_token: googleOauthClient?.credentials?.access_token,
         refresh_token: googleOauthClient?.credentials?.refresh_token,
+        session: locals.session ?? null,
     }
 }
