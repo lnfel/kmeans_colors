@@ -411,23 +411,45 @@ export async function svelteHandleLuciaAuth({ event, resolve }) {
                  */
                 if (error.response.data.error === 'invalid_grant') {
                     await airy({ topic: 'hooks', message: 'Removing invalid session, cookies and keys.' })
-                    // remove invalid session
-                    const session = await prisma.authSession.delete({
+                    /**
+                     * Cascade delete from AuthUser
+                     * Right now /api/oauth/google/callback creates a new user when
+                     * aerialGoogleAuth.validateCallback has no existingUser, deleting the AuthUser directly would
+                     * prevent us having multiple users with the same name, if we want to support multiple oauth,
+                     * we must modify the logic to support account linking instead.
+                     * 
+                     * @see {@link https://lucia-auth.com/guidebook/oauth-account-linking | Guide to OAuth account linking}
+                     */
+                    const session = await prisma.authSession.findFirst({
+                        select: {
+                            user_id: true
+                        },
                         where: {
                             id: sessionId
-                        }
+                        },
                     })
-                    // remove revoked key
-                    await prisma.authKey.deleteMany({
+                    await prisma.authUser.delete({
                         where: {
-                            user_id: session.user_id,
-                            AND: {
-                                id: {
-                                    startsWith: 'google:'
-                                }
-                            }
+                            id: session.user_id
                         }
                     })
+                    // remove invalid session
+                    // const session = await prisma.authSession.delete({
+                    //     where: {
+                    //         id: sessionId
+                    //     }
+                    // })
+                    // remove revoked key
+                    // await prisma.authKey.deleteMany({
+                    //     where: {
+                    //         user_id: session.user_id,
+                    //         AND: {
+                    //             id: {
+                    //                 startsWith: 'google:'
+                    //             }
+                    //         }
+                    //     }
+                    // })
                     event.cookies.delete('auth_session')
                     event.cookies.delete('google_oauth_state')
 
