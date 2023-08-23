@@ -420,42 +420,45 @@ export async function svelteHandleLuciaAuth({ event, resolve }) {
                      * 
                      * @see {@link https://lucia-auth.com/guidebook/oauth-account-linking | Guide to OAuth account linking}
                      */
-                    const session = await prisma.authSession.findFirst({
-                        select: {
-                            user_id: true
-                        },
-                        where: {
-                            id: sessionId
-                        },
-                    })
-                    await prisma.authUser.delete({
-                        where: {
-                            id: session.user_id
-                        }
-                    })
-                    // remove invalid session
-                    // const session = await prisma.authSession.delete({
-                    //     where: {
-                    //         id: sessionId
-                    //     }
-                    // })
-                    // remove revoked key
-                    // await prisma.authKey.deleteMany({
-                    //     where: {
-                    //         user_id: session.user_id,
-                    //         AND: {
-                    //             id: {
-                    //                 startsWith: 'google:'
-                    //             }
-                    //         }
-                    //     }
-                    // })
-                    event.cookies.delete('auth_session')
-                    event.cookies.delete('google_oauth_state')
+                    if (sessionId) {
+                        const session = await prisma.authSession.findFirst({
+                            select: {
+                                user_id: true
+                            },
+                            where: {
+                                id: sessionId
+                            },
+                        })
+                        await prisma.authUser.delete({
+                            where: {
+                                id: session.user_id
+                            }
+                        })
+                        event.cookies.delete('auth_session')
+                        event.cookies.delete('google_oauth_state')
 
-                    // notify user about the revocation or expiration of their session
-                    event.locals.session = {
-                        message: 'Access has been revoked or expired, if this was not intended please try logging in again.'
+                        // notify user about the revocation or expiration of their session
+                        event.locals.session = {
+                            message: 'Access has been revoked or expired, if this was not intended please try logging in again.'
+                        }
+                    }
+
+                    if (autorizationHeader) {
+                        const key = await prisma.authKey.findFirst({
+                            select: {
+                                user_id: true
+                            },
+                            where: {
+                                id: authToken.key_id
+                            }
+                        })
+                        await prisma.authUser.delete({
+                            where: {
+                                id: key.user_id
+                            }
+                        })
+                        // this one is for api response
+                        return json({ message: 'Access has been revoked or expired, if this was not intended please try logging in again and get a new api key.' }, { status: 400 })
                     }
                 }
             }
