@@ -147,10 +147,11 @@ model AuthToken {
     key_id String @unique
     access_token String @db.Text
     refresh_token String @db.Text
+    aerial_token String @db.Text
     // id_token String @db.Text
     expiry_date BigInt
     auth_key AuthKey @relation(references: [id], fields: [key_id], onDelete: Cascade)
 
-    @@index([key_id])
+    @@index(fields: [key_id, aerial_token(length: 40)])
     @@map("LuciaToken")
 }

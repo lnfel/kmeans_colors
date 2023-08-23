@@ -11,17 +11,18 @@ import { google_client_secret, app_url, google_oauth_callback_path } from '$lib/
  * @type {import('@sveltejs/kit').ServerLoad}
  */
 export const load = async ({ locals, url, depends }) => {
-    let driveFiles, storageQuota, aerialFolder, googleOauthClient
+    let driveFiles, storageQuota, aerialFolder, googleOauthClient, aerial_token
     const session = await locals.luciaAuth.validate()
     // airy({ message: locals.luciaAuth, label: '[Layout load] Lucia Auth:' })
     // airy({ message: session, label: '[Layout load] Session:' })
     if (session?.user) {
         const [ authKey ] = (await luciaAuth.getAllUserKeys(session.user.id)).filter((key) => key.providerId === 'google')
-        const { access_token, refresh_token, expiry_date } = await prisma.authToken.findFirst({
+        const { access_token, refresh_token, expiry_date, aerial_token: aerialToken } = await prisma.authToken.findFirst({
             where: {
                 key_id: `${authKey.providerId}:${authKey.providerUserId}`
             }
         })
+        aerial_token = aerialToken
         // airy({ message: authKey, label: '[Layout load] AuthKey:' })
         // airy({ message: access_token, label: '[Layout load] Access token:' })
         googleOauthClient = new google.auth.OAuth2(
@@ -61,8 +62,9 @@ export const load = async ({ locals, url, depends }) => {
         url: url.pathname,
         user: session?.user,
         client_id: googleOauthClient?._clientId,
-        access_token: googleOauthClient?.credentials?.access_token,
-        refresh_token: googleOauthClient?.credentials?.refresh_token,
+        // access_token: googleOauthClient?.credentials?.access_token,
+        // refresh_token: googleOauthClient?.credentials?.refresh_token,
+        aerial_token,
         session: locals.session ?? null,
     }
 }

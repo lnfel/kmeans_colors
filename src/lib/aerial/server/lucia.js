@@ -311,7 +311,7 @@ export async function svelteHandleLuciaAuth({ event, resolve }) {
                     expiry_date: true,
                 },
                 where: {
-                    access_token: bearerToken
+                    aerial_token: bearerToken
                 }
             })
             const { key_id, ...authTokenCredentials } = authToken

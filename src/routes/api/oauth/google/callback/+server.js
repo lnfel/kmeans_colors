@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit'
+import { generateRandomString } from 'lucia/utils'
 // import { OAuth2Client } from 'google-auth-library'
 import { luciaAuth, googleAuth, aerialGoogleAuth, generateCustomUserId } from '$lib/aerial/server/lucia.js'
 import { google_client_secret, app_url, google_oauth_callback_path } from '$lib/config.js'
@@ -161,6 +162,7 @@ export const POST = async ({ cookies, locals, request }) => {
                 access_token: googleTokens.accessToken,
                 refresh_token: googleTokens.refreshToken,
                 expiry_date: googleTokens.accessTokenExpiresIn,
+                aerial_token: `aerial_${generateRandomString(33)}`
                 // id_token: tokens.idToken
             }
         })
