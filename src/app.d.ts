@@ -6,6 +6,8 @@ declare global {
             luciaAuth: AuthRequest<Lucia.Auth>;
             googleOauthClient: import('googleapis').Auth.OAuth2Client;
             wss: import('ws').Server;
+            // Probably change this to something like `push: { message: String }`
+            session: { message: String };
         }
 
         interface PageData {
