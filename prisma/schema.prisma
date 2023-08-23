@@ -142,16 +142,22 @@ model AuthKey {
     @@map("LuciaKey")
 }
 
+// @@index creates non-unique INDEX
+// @unique creates obviously a UNIQUE INDEX
+// When tested with sql queries both uses keys to search the database:
+// EXPLAIN SELECT aerial_token FROM LuciaToken WHERE `aerial_token` = 'aerial_xkmdmrraz32wsjfnuan2nh2m2h54qmgsq';
+// EXPLAIN SELECT * FROM LuciaToken WHERE key_id = 'google:118007072333995437948';
+// https://stackoverflow.com/a/708508/12478479
 model AuthToken {
     id String @id @unique
     key_id String @unique
     access_token String @db.Text
     refresh_token String @db.Text
-    aerial_token String @db.Text
+    aerial_token String @db.VarChar(40) @unique
     // id_token String @db.Text
     expiry_date BigInt
     auth_key AuthKey @relation(references: [id], fields: [key_id], onDelete: Cascade)
 
-    @@index(fields: [key_id, aerial_token(length: 40)])
+    @@index([key_id])
     @@map("LuciaToken")
 }
