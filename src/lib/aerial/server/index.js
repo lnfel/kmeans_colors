@@ -185,6 +185,7 @@ export const summarySingleSet = async (kmeans_colors = []) => {
  * @property {'application/pdf'} mimetype - PDF mimetype
  * @property {import('@prisma/client').ArtifactCollection} artifactCollection
  * @property {import('@prisma/client').Artifact} artifact
+ * @property {String} extension - File extension to use for generated url
  */
 
 /**
@@ -193,7 +194,7 @@ export const summarySingleSet = async (kmeans_colors = []) => {
  * @param {extractPdfColorsParams} extractPdfColorsParams
  * @returns {Promise<void>}
  */
-export const extractPdfColors = async ({ pdfBuffer, filepath, mimetype = 'application/pdf', artifactCollection, artifact }) => {
+export const extractPdfColors = async ({ pdfBuffer, filepath, mimetype = 'application/pdf', artifactCollection, artifact, extension = '.pdf' }) => {
     const kmeans_colors = []
 
     /**
@@ -246,7 +247,7 @@ export const extractPdfColors = async ({ pdfBuffer, filepath, mimetype = 'applic
                 id: artifact.id
             },
             data: {
-                url: `/storage/aerial/${artifactCollection.id}/${artifact.id}.pdf`,
+                url: `/storage/aerial/${artifactCollection.id}/${artifact.id}${extension}`,
                 kmeansColorsId: kmeansColor.id,
                 cmykId: cmyk.id,
                 pages

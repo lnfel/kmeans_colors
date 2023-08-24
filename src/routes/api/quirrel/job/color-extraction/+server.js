@@ -111,7 +111,8 @@ const queue = Queue(
                     pdfBuffer,
                     mimetype: 'application/pdf',
                     artifactCollection,
-                    artifact
+                    artifact,
+                    extension: getFileExtension(mimetypeMapFromEnum[artifact.mimetype])
                 })
                 const after = performance.now()
                 airy({ topic: 'quirrel', message: `Word doc color extraction done in ${((after - before) / 1000).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} s` })
