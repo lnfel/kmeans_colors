@@ -3,8 +3,9 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "concurrently 'vite dev --open' 'DISABLE_TELEMETRY=true quirrel'",
-		"dev:windows": "concurrently \"vite dev --open\" \"quirrel\"",
+		"dev:mac": "concurrently 'vite dev' 'DISABLE_TELEMETRY=true quirrel'",
+        "dev:macos:open": "concurrently 'vite dev --open' 'DISABLE_TELEMETRY=true quirrel'",
+		"dev:windows:open": "concurrently \"vite dev --open\" \"quirrel\"",
 		"build": "pm2 reload ecosystem.config.cjs --only 'quirrel' && vite build --mode staging && quirrel ci",
 		"build:prod": "vite build && quirrel ci --production && npm run postbuild && npm run npm:ci",
 		"postbuild": "node -r dotenv/config ./scripts/postbuild.js",
