@@ -1,5 +1,5 @@
 import { json, error } from '@sveltejs/kit'
-import prisma, { mimetypeMapToEnum } from '$lib/prisma.js'
+import prisma from '$lib/prisma.js'
 import { rm } from "node:fs/promises"
 import { storage_path } from '$lib/config.js'
 
