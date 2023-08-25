@@ -57,7 +57,9 @@ export const load = async ({ params, url }) => {
 
             for (let pageIndex = 0; pageIndex < artifact.pages; pageIndex++) {
                 const page = {
-                    url: artifact.url.replace('.pdf', `_${pageIndex + 1}.png`),
+                    url: artifact.url
+                        .replace(/.pdf$/, `_${pageIndex + 1}.png`)
+                        .replace(/.docx?$/, `_${pageIndex + 1}.png`),
                     colors: artifact.kmeansColors.colors[pageIndex],
                     cmyk: {
                         total: artifact.cmyk.info.total[pageIndex],
