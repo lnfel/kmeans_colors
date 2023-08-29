@@ -12,6 +12,7 @@ import { fileCheck } from '$lib/aerial/hybrid/validation.js'
 import { kmeansColors, summary, googleDocToPdf, extractPdfColors } from '$lib/aerial/server/index.js'
 import { GlobalRabbitChannel } from '$lib/rabbitmq/utils.js'
 import { rabbitDefaultQueue } from '$lib/rabbitmq/index.js'
+import { GlobalThisWSS } from '$lib/websocket/utils.js'
 import { airy } from '$lib/aerial/hybrid/util.js'
 
 /**
@@ -145,6 +146,16 @@ const queue = Queue(
         if (ws) {
             ws.send(`color-extraction:done:${job.artifactCollectionId}`)
             airy({ topic: 'quirrel', message: `Sending notification to websocket client (color-extraction:done:${job.artifactCollectionId})`, action: 'executing' })
+        }
+
+        /**
+         * @type {import('ws').Server}
+         */
+        const wss = globalThis[GlobalThisWSS]
+        if (wss !== undefined) {
+            wss.clients.forEach((client) => {
+                client.send('update:artifactCollections')
+            })
         }
     }
 )

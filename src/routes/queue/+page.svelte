@@ -1,5 +1,7 @@
 <script>
     import { page } from "$app/stores"
+    import { browser } from "$app/environment"
+    import { onDestroy } from "svelte"
     import { enhance } from "$app/forms"
     import { fly, fade } from 'svelte/transition'
 	import { quintOut } from 'svelte/easing'
@@ -48,6 +50,10 @@
         ws.addEventListener('message', (event) => {
             console.log('[websocket] message received', event)
 
+            if (event.data.startsWith('update:')) {
+                invalidate('page:queue')
+            }
+
             // Monitor connected client ids
             // if (event.data.startsWith('client:add')) {
             //     websocketClients.addId(event.data.split(':')[2])
@@ -69,9 +75,17 @@
     }
 
     const disconnectWebSocket = () => {
-        ws.close()
+        ws?.close()
         webSocketEstablished = false
     }
+
+    if (browser) {
+        connectWebSocket()
+    }
+
+    onDestroy(() => {
+        disconnectWebSocket()
+    })
     
     let fileinput, submitBtn
 
@@ -118,7 +132,7 @@
 
 <main class="px-4 lg:px-[3rem]">
     <section class="container mx-auto py-4 space-y-8">
-        <button disabled={webSocketEstablished} on:click={() => connectWebSocket()} class="text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500 disabled:border-slate-300 disabled:text-slate-300">
+        <!-- <button disabled={webSocketEstablished} on:click={() => connectWebSocket()} class="text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500 disabled:border-slate-300 disabled:text-slate-300">
             Connect WebSocket
         </button>
         <button disabled={!webSocketEstablished} on:click={() => disconnectWebSocket()} class="text-slate-700 dark:text-indigo-200 rounded-md border-2 border-indigo-300 px-1.5 py-1 outline-none hover:border-indigo-500 focus:border-indigo-500 focus:text-indigo-500 disabled:border-slate-300 disabled:text-slate-300">
@@ -127,7 +141,7 @@
         <div class="space-y-2">
             <h1 class="font-sculpin text-3xl">Aerial Queue</h1>
             <p>Extract colors of images and document files in queued batches.</p>
-        </div>
+        </div> -->
 
         <form id="aerialQueue" method="POST" use:enhance={queue} class="flex flex-wrap gap-4" enctype="multipart/form-data">
             <TextInput label="Label" id="label" name="label" placeholder="Optional label for this collection">
