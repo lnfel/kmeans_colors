@@ -117,27 +117,30 @@ export const createWSSGlobalInstance = (options = {}) => {
         wss.on('connection',
         /** @param {import('ws').WebSocket & { socketId?: String }} ws */
         (ws) => {
-            ws.socketId = `ws_${new ShortUniqueId()()}`
-            console.log(`${chalk.blueBright('[wss:global]')} Websocket client connected (${ws.socketId})`)
-            wsClients.set(ws, { socketId: ws.socketId })
-            websocketClients.add(ws.socketId, ws)
+            const socketId = `ws_${new ShortUniqueId()()}`
+            ws.socketId = socketId
+            console.log(`${chalk.blueBright('[wss:global]')} Websocket client connected (${socketId})`)
+            wsClients.set(ws, { socketId: socketId })
+            websocketClients.add(socketId, ws)
             console.log(`${chalk.blueBright('[wss:global]')} Client count (${wsClients.size})`)
             console.log(`${chalk.blueBright('[wss:global]')} websocketClients.list: `, Object.keys(websocketClients.list))
 
+            ws.send(`connection-id:${socketId}`)
+
             ws.on('close', () => {
-                console.log(`${chalk.blueBright('[wss:global]')} Websocket client disconnected (${ws.socketId})`)
+                console.log(`${chalk.blueBright('[wss:global]')} Websocket client disconnected (${socketId})`)
                 wsClients.delete(ws)
-                websocketClients.remove(ws.socketId)
-                delete globalThis[ws.socketId]
+                websocketClients.remove(socketId)
+                delete globalThis[socketId]
                 console.log(`${chalk.blueBright('[wss:global]')} Client count (${wsClients.size})`)
                 console.log(`${chalk.blueBright('[wss:global]')} websocketClients.list: `, Object.keys(websocketClients.list))
-                console.log(`${chalk.blueBright('[wss:global]')} ${ws.socketId} removed: `, !globalThis.hasOwnProperty(ws.socketId))
+                console.log(`${chalk.blueBright('[wss:global]')} ${socketId} removed: `, !globalThis.hasOwnProperty(socketId))
             })
 
             ws.on('error', console.log)
 
             // Pass ws client to global instance so we can call it in quirrel endpoint
-            globalThis[ws.socketId] = ws
+            globalThis[socketId] = ws
         })
 
         return wss

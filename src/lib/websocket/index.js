@@ -36,7 +36,7 @@ const startupWebsocketServer = () => {
             const socketId = ws.socketId
             airy({ topic: 'wss', message: `Client connected (${socketId}).` })
             // ws.send(`Hello from SvelteKit ${new Date().toLocaleString()} (${socketId})`)
-            ws.send(`connection-id:${socketId}`)
+            // ws.send(`connection-id:${socketId}`)
 
             /**
              * Currently no way to deserialize this on client side
