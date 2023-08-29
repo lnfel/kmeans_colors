@@ -114,6 +114,8 @@ export const createWSSGlobalInstance = (options = {}) => {
         const wss = new WebSocketServer(Object.assign(defaultServerOptions, options))
         globalThis[GlobalThisWSS] = wss
 
+        console.log(`${chalk.blueBright('[wss:global]')} Websocket server initialized.`)
+
         wss.on('connection',
         /** @param {import('ws').WebSocket & { socketId?: String }} ws */
         (ws) => {
