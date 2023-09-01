@@ -19,7 +19,7 @@ import { storage_path } from '$lib/config.js'
  * curl -inlcude -X GET "localhost:5173/api/artifact-collections/artc_vhXpCQ" -H "Accept: application/json"
  * 
  * @type {import('@sveltejs/kit').RequestHandler}
- * @returns {JSON} ArtifactCollection
+ * @returns {import('@sveltejs/kit').MaybePromise<Response>} ArtifactCollection
  */
 export async function GET({ params, url }) {
     try {
@@ -97,7 +97,7 @@ export async function GET({ params, url }) {
  * https://github.com/prisma/prisma/issues/4072#issuecomment-1127067981
  * 
  * @type {import('@sveltejs/kit').RequestHandler}
- * @returns {JSON} ArtifactCollection
+ * @returns {import('@sveltejs/kit').MaybePromise<Response>} ArtifactCollection
  */
 export async function DELETE({ params, url }) {
     try {
