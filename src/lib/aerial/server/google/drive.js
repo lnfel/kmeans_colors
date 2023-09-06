@@ -29,7 +29,7 @@ export async function listDriveFiles(auth) {
  * https://developers.google.com/drive/api/v3/reference/about/get
  * 
  * @param {import('googleapis').Auth.OAuth2Client} auth
- * @returns {Promise<Object>}
+ * @returns {Promise<Aerial.StorageQuota>}
  */
 export async function listStorageQuota(auth) {
     try {
@@ -88,7 +88,7 @@ function occupiedStorageSpaceToPercentile(totalSpace, occupiedSpace) {
  * https://stackoverflow.com/questions/24720075/how-to-get-list-of-files-by-folder-on-google-drive-api
  * 
  * @param {Auth.OAuth2Client} auth 
- * @returns {Promise<import('googleapis').drive_v3.Schema$FileList & { totalSizeInBytes: Number, totalSize: String }>} Drive FileList
+ * @returns {Promise<Aerial.Folder>} Drive FileList
  */
 export async function listAerialFolderDetails(auth) {
     const drive = google.drive({ version: 'v3', auth })

@@ -18,20 +18,10 @@ declare global {
             // refresh_token?: string;
             aerial_token?: string;
             streamed: {
-                aerialFolder?: Promise<{
-                    files: import('googleapis').drive_v3.Schema$File[],
-                    totalSizeInBytes: number;
-                    totalSize: string;
-                    id: string;
-                }>;
-                storageQuota?: Promise<{
-                    limit: string;
-                    usage: string;
-                    usageInDrive: string;
-                    usageInDriveTrash: string;
-                    occupiedSpace: number;
-                }>;
-            }
+                aerialFolder?: Promise<Aerial.Folder>;
+                storageQuota?: Promise<Aerial.StorageQuota>;
+            },
+            artifacts?: Aerial.FormattedArtifacts;
         }
 
         interface Platform {}
@@ -44,5 +34,40 @@ declare global {
             picture: string;
         };
         type DatabaseSessionAttributes = {};
+    }
+    declare namespace Aerial {
+        type Artifact = import('@prisma/client').Artifact;
+        type ArtifactType = import('@prisma/client').ArtifactType;
+        type FormattedArtifacts = {
+            pages: {
+                url: string;
+                colors: any;
+                cmyk: {
+                    total: any;
+                    summary: any;
+                    whiteSpace: any;
+                    coloredSpace: any;
+                };
+                description: string;
+            }[];
+            id: string;
+            label: string;
+            type: Aerial.ArtifactType;
+            created_at: string;
+            updated_at: string;
+        }[];
+        type Folder = {
+            files: import('googleapis').drive_v3.Schema$File[],
+            totalSizeInBytes: number;
+            totalSize: string;
+            id: string;
+        };
+        type StorageQuota = {
+            limit: string;
+            usage: string;
+            usageInDrive: string;
+            usageInDriveTrash: string;
+            occupiedSpace: number;
+        };
     }
 }
