@@ -284,75 +284,80 @@ export const extractPdfColors = async ({ pdfBuffer, filepath, mimetype = 'applic
  * @returns {Promise<{ base64PDF: String }>}
  */
 export const googleDocToPdf = async ({ filepath, mimetype, artifact }) => {
-    const split = 262144 // This is a sample chunk size. https://stackoverflow.com/a/73264129/12478479
-    const docBuffer = await readFile(filepath.replace('_1', ''))
-    const docSize = docBuffer.length
-    const array = [...new Int8Array(docBuffer)]
-    const chunks = [...Array(Math.ceil(array.length / split))].map((_) => Buffer.from(new Int8Array(array.splice(0, split))))
+    try {
+        const split = 262144 // This is a sample chunk size. https://stackoverflow.com/a/73264129/12478479
+        const docBuffer = await readFile(filepath.replace('_1', ''))
+        const docSize = docBuffer.length
+        const array = [...new Int8Array(docBuffer)]
+        const chunks = [...Array(Math.ceil(array.length / split))].map((_) => Buffer.from(new Int8Array(array.splice(0, split))))
 
-    const client = globalThis[GlobalOAuth2Client]
-    // airy({ topic: 'quirrel', message: client, label: 'Client:' })
+        const client = globalThis[GlobalOAuth2Client]
+        // airy({ topic: 'quirrel', message: client, label: 'Client:' })
 
-    const aerialFolder = await searchAerialFolder(client) ?? await aerialFolderCreate(client)
-    airy({ topic: 'quirrel', message: aerialFolder, label: 'Aerial folder:' })
+        const aerialFolder = await searchAerialFolder(client) ?? await aerialFolderCreate(client)
+        airy({ topic: 'quirrel', message: aerialFolder, label: 'Aerial folder:' })
 
-    const resumableHeaders = {
-        "Authorization": `Bearer ${client.credentials.access_token}`,
-        "X-Upload-Content-Type": mimetype,
-        "X-Upload-Content-Length": (await stat(filepath.replace('_1', ''))).size,
-        "Content-Type": "application/json; charset=UTF-8"
-    }
-
-    const resumableBody = JSON.stringify({
-        name: artifact.label,
-        // mimeType: file.type
-        /**
-         * explicitly assign google workspace document mimeType so we can perform
-         * export operations with conversions
-         */
-        mimeType: 'application/vnd.google-apps.document',
-        parents: [aerialFolder.id]
-    })
-
-    // Perform resumable upload, initial request
-    const resumable = await startResumableUpload(resumableHeaders, resumableBody)
-    airy({ topic: 'quirrel', message: resumable.headers.get('location'), label: 'Headers location:' })
-
-    // Perform resumable upload, second part
-    let start = 0
-    let upload
-    for (let i = 0; i < chunks.length; i++) {
-        const end = start + chunks[i].length - 1
-        upload = await fetch(resumable.headers.get('location'), {
-            method: 'PUT',
-            headers: {
-                "Content-Range": `bytes ${start}-${end}/${docSize}`
-            },
-            body: chunks[i]
-        })
-        start = end + 1
-        if (upload?.data) {
-            airy({ topic: 'quirrel', message: upload.data, label: 'Upload data:' })
+        const resumableHeaders = {
+            "Authorization": `Bearer ${client.credentials.access_token}`,
+            "X-Upload-Content-Type": mimetype,
+            "X-Upload-Content-Length": (await stat(filepath.replace('_1', ''))).size,
+            "Content-Type": "application/json; charset=UTF-8"
         }
-    }
-    const uploadData = await upload.json()
-    airy({ topic: 'quirrel', message: uploadData, label: 'uploadData:' })
 
-    // Export docx to pdf
-    const drive = google.drive({version: 'v3', auth: client})
-    const exportResponse = await drive.files.export({
-            fileId: uploadData.id,
-            mimeType: 'application/pdf',
-        }, {
-            responseType: 'arraybuffer'
+        const resumableBody = JSON.stringify({
+            name: artifact.label,
+            // mimeType: file.type
+            /**
+             * explicitly assign google workspace document mimeType so we can perform
+             * export operations with conversions
+             */
+            mimeType: 'application/vnd.google-apps.document',
+            parents: [aerialFolder.id]
         })
-    airy({ topic: 'quirrel', message: exportResponse.data, label: 'Export response data:' })
 
-    const base64PDF = exportResponse.status === 200
-        ? `data:application/pdf;base64,${Buffer.from(exportResponse.data).toString('base64')}`
-        : ''
+        // Perform resumable upload, initial request
+        const resumable = await startResumableUpload(resumableHeaders, resumableBody)
+        airy({ topic: 'quirrel', message: resumable.headers.get('location'), label: 'Headers location:' })
 
-    return { base64PDF }
+        // Perform resumable upload, second part
+        let start = 0
+        let upload
+        for (let i = 0; i < chunks.length; i++) {
+            const end = start + chunks[i].length - 1
+            upload = await fetch(resumable.headers.get('location'), {
+                method: 'PUT',
+                headers: {
+                    "Content-Range": `bytes ${start}-${end}/${docSize}`
+                },
+                body: chunks[i]
+            })
+            start = end + 1
+            if (upload?.data) {
+                airy({ topic: 'quirrel', message: upload.data, label: 'Upload data:' })
+            }
+        }
+        const uploadData = await upload.json()
+        airy({ topic: 'quirrel', message: uploadData, label: 'uploadData:' })
+
+        // Export docx to pdf
+        const drive = google.drive({version: 'v3', auth: client})
+        const exportResponse = await drive.files.export({
+                fileId: uploadData.id,
+                mimeType: 'application/pdf',
+            }, {
+                responseType: 'arraybuffer'
+            })
+        airy({ topic: 'quirrel', message: exportResponse.data, label: 'Export response data:' })
+
+        const base64PDF = exportResponse.status === 200
+            ? `data:application/pdf;base64,${Buffer.from(exportResponse.data).toString('base64')}`
+            : ''
+
+        return { base64PDF }
+    } catch (error) {
+        airy({ topic: 'quirrel', message: error, label: 'googleDocToPdf' })
+        throw Error(error.message ?? error)
+    }
 }
 
 export default {
