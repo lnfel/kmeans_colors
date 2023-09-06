@@ -123,7 +123,7 @@ export const POST = async ({ request, locals }) => {
             message: 'Successfully queued files for aerial processing.',
         })
     } catch (errorDetail) {
-        console.log(errorDetail)
+        airy({ message: errorDetail, label: '/api/queue POST:', action: 'error' })
         throw error(400, errorDetail.message)
     }
 }
