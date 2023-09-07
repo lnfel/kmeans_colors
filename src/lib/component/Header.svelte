@@ -5,7 +5,6 @@
     import { pageTransitionsEnabled, devLayoutTestEnabled, menuExpanded } from "$lib/aerial/stores/index.js"
 
     import Logo from "$lib/component/Logo.svelte"
-    // import GoogleClient from "$lib/component/GoogleClient.svelte"
     import LuciaGoogleClient from "$lib/component/LuciaGoogleClient.svelte"
 
     let preferencesToggle = false
@@ -177,7 +176,6 @@
                 {/if}
             </div>
 
-            <!-- <GoogleClient /> -->
             <LuciaGoogleClient />
         </div>
     <!-- {/if} -->
