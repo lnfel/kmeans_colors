@@ -1,6 +1,6 @@
 import { dev } from '$app/environment'
 import { json } from '@sveltejs/kit'
-import { lucia, Auth } from 'lucia'
+import { lucia } from 'lucia'
 import { sveltekit } from 'lucia/middleware'
 import { prisma as prismaAdapter } from '@lucia-auth/adapter-prisma'
 import { providerUserAuth, __experimental_createOAuth2AuthorizationUrl } from '@lucia-auth/oauth'
@@ -97,7 +97,7 @@ export const googleAuth = luciaGoogleProvider(luciaAuth, googleAuthConfig)
  */
 
 /**
- * @typedef {Auth & {
+ * @typedef {import('lucia').Auth & {
  *      existingUser: import('@lucia-auth/oauth/dist/lucia').LuciaUser,
  *      createKey: CreateKey,
  *      createUser: CreateUser
@@ -117,7 +117,7 @@ export const googleAuth = luciaGoogleProvider(luciaAuth, googleAuthConfig)
 class OAuth2Provider {
     /** @type {String} */
     providerId
-    /** @type {Auth} */
+    /** @type {import('lucia').Auth} */
     auth
 
     /**
@@ -130,7 +130,7 @@ class OAuth2Provider {
 
     /**
      * @param {String} providerId 
-     * @param {Auth} auth 
+     * @param {import('lucia').Auth} auth 
      */
     constructor(providerId, auth) {
         this.providerId = providerId
