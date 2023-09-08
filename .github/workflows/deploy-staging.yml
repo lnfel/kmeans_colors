@@ -59,12 +59,18 @@ jobs:
       # Unable to process file command 'env' successfully.
       # https://github.com/pnpm/action-setup/pull/75
       # https://medium.com/@ibraheemabukaff/github-actions-exporting-multi-line-one-line-value-environment-variable-5bb86d01e866
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-of-a-multiline-string
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
+        # old command errors with "Unable to process file command 'env' successfully."
+        # echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+          {
+            echo "STORE_PATH<<EOF"
+            pnpm store path --silent
+            echo EOF
+          } >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v3
