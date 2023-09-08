@@ -56,11 +56,15 @@ jobs:
           version: 8
           run_install: false
 
+      # Unable to process file command 'env' successfully.
+      # https://github.com/pnpm/action-setup/pull/75
+      # https://medium.com/@ibraheemabukaff/github-actions-exporting-multi-line-one-line-value-environment-variable-5bb86d01e866
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v3
