@@ -2,15 +2,20 @@
     import { slide } from "svelte/transition"
     import { quintOut } from "svelte/easing"
     import { browser, dev } from "$app/environment"
-    import { pageTransitionsEnabled, devLayoutTestEnabled, menuExpanded } from "$lib/aerial/stores/index.js"
+    import { pageTransitionsEnabled, devLayoutTestEnabled, aerialTheme, menuExpanded } from "$lib/aerial/stores/index.js"
 
     import Logo from "$lib/component/Logo.svelte"
     import LuciaGoogleClient from "$lib/component/LuciaGoogleClient.svelte"
 
     let preferencesToggle = false
+    $: systemTheme = $aerialTheme === null ? true : false
 
     if (browser) {
         document.addEventListener('click', closePreferencesDropdown)
+        let theme = localStorage.getItem("aerial:theme")
+        theme !== null
+            ? aerialTheme.set(theme === 'dark' ? true : false)
+            : aerialTheme.set(null)
         pageTransitionsEnabled.set(localStorage.getItem("aerial:preferences:pageTransitionsEnabled"))
         devLayoutTestEnabled.set(localStorage.getItem("aerial:preferences:devLayoutTestEnabled"))
     }
@@ -37,15 +42,66 @@
      * @param {import('svelte/store').Writable<?Boolean>} store
      */
     function togglePreference({ target }, store) {
-        if (target.checked) {
-            localStorage.setItem(`aerial:preferences:${target.value}`, true)
-        } else {
-            localStorage.removeItem(`aerial:preferences:${target.value}`)
-        }
+        target.checked
+            ? localStorage.setItem(`aerial:preferences:${target.value}`, true)
+            : localStorage.removeItem(`aerial:preferences:${target.value}`)
         store.update(() => localStorage.getItem(`aerial:preferences:${target.value}`))
         if (target.value === 'pageTransitionsEnabled') {
             closePreferencesDropdown()
         }
+    }
+
+    /**
+     * Toggle between light and dark theme or system preference
+     * 
+     * 
+     * ```js
+     * dark = true
+     * light = false
+     * system = null
+     * ```
+     * 
+     * @param {Event & { target: HTMLInputElement }} event
+     * @param {import('svelte/store').Writable<'light' | 'dark'>} store
+     */
+    function toggleTheme({ target }, store) {
+        const switchToNextThemeMap = {
+            dark: {
+                next: () => localStorage.setItem('aerial:theme', 'light'),
+                value: 'light'
+            },
+            light: {
+                next: () => localStorage.removeItem('aerial:theme'),
+                value: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+            },
+            system: {
+                next: () => localStorage.setItem('aerial:theme', 'dark'),
+                value: 'dark'
+            },
+        }
+        let theme = localStorage.getItem("aerial:theme") === null ? 'system' : localStorage.getItem("aerial:theme")
+        switchToNextThemeMap[theme].next()
+        document.documentElement.classList.remove('light', 'dark')
+        document.documentElement.classList.add(switchToNextThemeMap[theme].value)
+        theme = localStorage.getItem("aerial:theme")
+        theme !== null
+            ? aerialTheme.set(theme === 'dark' ? true : false)
+            : aerialTheme.set(null)
+    }
+
+    function systemThemeButtonBG() {
+        if (!systemTheme) return '';
+
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'peer-indeterminate:after:bg-slate-800'
+            : 'peer-indeterminate:after:bg-white'
+    }
+
+    function aerialThemeLabel(checked) {
+        if (typeof checked === 'boolean') {
+            return checked ? 'dark' : 'light'
+        }
+        return null
     }
 
     /**
@@ -160,6 +216,12 @@
                         <span class="text-lg font-bold font-sculpin tracking-wide text-indigo-600">Preferences</span>
 
                         <label class="relative flex items-center cursor-pointer">
+                            <input id="aerialTheme" type="checkbox" bind:indeterminate={systemTheme} bind:checked={$aerialTheme} on:change={(event) => toggleTheme(event, aerialTheme)} value="aerialTheme" class="sr-only peer">
+                            <div class="w-11 h-6 bg-indigo-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-400 dark:peer-focus:ring-indigo-300 rounded-full peer dark:bg-gray-400 peer-checked:after:translate-x-full peer-indeterminate:after:translate-x-1/2 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white {systemThemeButtonBG()} after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                            <span class="ml-3 text-sm capitalize font-medium text-gray-900 dark:text-gray-800">{ aerialThemeLabel($aerialTheme) ?? 'System' }</span>
+                        </label>
+
+                        <label class="relative flex items-center cursor-pointer">
                             <input id="transitionPreference" type="checkbox" bind:checked={$pageTransitionsEnabled} on:change={(event) => togglePreference(event, pageTransitionsEnabled)} value="pageTransitionsEnabled" class="sr-only peer">
                             <div class="w-11 h-6 bg-indigo-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-400 dark:peer-focus:ring-indigo-300 rounded-full peer dark:bg-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                             <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-800">Page transitions</span>
@@ -183,11 +245,28 @@
 </header>
 
 <style>
+    :global(.light header),
     :global(header) {
-    /* :global(#navigationMenu) { */
+        /* bg-indigo-50 */
+        background-image: radial-gradient(transparent 1px, #eef2ff 1px);
+        background-size: 4px 4px;
+        backdrop-filter: saturate(50%) blur(4px);
+    }
+
+    :global(.dark header) {
+        /* bg-slate-800 */
         background-image: radial-gradient(transparent 1px, #1e293b 1px);
         background-size: 4px 4px;
         backdrop-filter: saturate(50%) blur(4px);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :global(header) {
+            /* bg-slate-800 */
+            background-image: radial-gradient(transparent 1px, #1e293b 1px);
+            background-size: 4px 4px;
+            backdrop-filter: saturate(50%) blur(4px);
+        }
     }
 
     @media (min-width: 768px) {

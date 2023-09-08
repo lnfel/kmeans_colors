@@ -16,8 +16,18 @@ export const pageTransitionsEnabled = writable(true)
  */
 export const devLayoutTestEnabled = writable(false)
 
+/**
+ * User theme preference or system preference
+ * 
+ * @type {import('svelte/store').Writable<'light' | 'dark'>} nullable
+ */
+export const aerialTheme = writable()
+
 export const menuExpanded = writable(false)
 
 export default {
-    pageTransitionsEnabled
+    pageTransitionsEnabled,
+    devLayoutTestEnabled,
+    aerialTheme,
+    menuExpanded
 }
