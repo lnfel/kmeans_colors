@@ -63,10 +63,8 @@ jobs:
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
-        # old command errors with "Unable to process file command 'env' successfully."
-        # echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+          echo -n "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
 
       - name: Setup pnpm cache
         uses: actions/cache@v3
