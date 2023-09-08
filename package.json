@@ -11,7 +11,7 @@
 		"postbuild": "node -r dotenv/config ./scripts/postbuild.js",
 		"postinstall": "node -r dotenv/config ./scripts/postinstall.js",
 		"npm:ci": "cd ./build && npm ci --omit dev",
-		"pnpm:build:prod": "pnpx prisma generate && vite build && pnpm run postbuild && pnpm run pnpm:ci",
+		"pnpm:build:prod": "pnpm dlx prisma generate && pnpm dlx vite build && pnpm run postbuild && pnpm run pnpm:ci",
 		"pnpm:ci": "pnpm install --frozen-lockfile",
 		"preview": "concurrently 'vite preview --open' 'DISABLE_TELEMETRY=true quirrel'",
 		"prepare": "svelte-kit sync",
