@@ -67,8 +67,8 @@ jobs:
         # echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
         run: |
           {
-            echo "STORE_PATH<<EOF"
-            pnpm store path --silent
+            echo 'STORE_PATH<<EOF'
+            $(pnpm store path --silent)
             echo EOF
           } >> $GITHUB_ENV
 
