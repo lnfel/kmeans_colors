@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from "svelte"
+    import { browser } from "$app/environment"
 
     export let status = ''
     export let message = ''
@@ -9,7 +9,8 @@
     ]
     /** @type {String|undefined} */
     let iconpath
-    let svgIcon
+    /** @type {Promise<String>} */
+    let promise = new Promise(() => {})
 
     /**
      * Random image not more than once
@@ -38,26 +39,25 @@
         return iconpath
     }
 
-    onMount(async () => {
-        iconpath = randomIcon(0, icons.length)
-
-        const response = await fetch(iconpath)
-        svgIcon = await response.text()
-    })
+    $: {
+        if (browser) {
+            iconpath = randomIcon(0, icons.length)
+            promise = fetch(iconpath).then(async (response) => await response.text())
+        }
+    }
 </script>
 
-{#if svgIcon}
-    <div class="flex flex-col items-center space-y-4">
+{#await promise then svgIcon}
+    <div class="container mx-auto flex flex-col items-center space-y-4">
         <h1 class="font-sculpin text-3xl self-start lg:self-center">Looks like we are lost...</h1>
         {#if status && message}
             <p class="self-start lg:self-center">{status}: {message}</p>
         {/if}
-        <!-- <img src={iconpath} alt="We are lost" width="300" height="300" /> -->
         <div class="text-indigo-510 dark:text-indigo-200">
             {@html svgIcon}
         </div>
         <a href="/" class="inline-flex items-center text-base font-medium rounded-md shadow-sm text-white dark:text-indigo-900 dark:focus:text-white bg-indigo-800 dark:bg-indigo-300 dark:focus:bg-indigo-700 hover:bg-indigo-700 dark:hover:bg-indigo-200 focus:outline-none focus:ring-2 dark:focus:ring-0 focus:ring-offset-2 dark:focus:ring-offset-0 focus:ring-indigo-800 border-2 border-transparent dark:focus:border-indigo-100 px-4 py-2 disabled:bg-slate-300 dark:disabled:bg-slate-300 dark:disabled:text-slate-400">
-            Go back home
+            Let's find our way back
         </a>
     </div>
-{/if}
+{/await}
